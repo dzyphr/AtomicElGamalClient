@@ -1,0 +1,10 @@
+/site-packages
+/lib
+/bin
+/__pycache__
+*/__pycache__
+AtomicMultiSigECC/py/__pycache__/
+p1Initiate 
+ElGamal
+lib64
+*.env
