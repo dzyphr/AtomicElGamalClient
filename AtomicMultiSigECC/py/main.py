@@ -8,6 +8,7 @@ import json
 import base64
 import time
 import random
+from dotenv import load_dotenv
 import org.ergoplatform
 import sigmastate
 from sigmastate.interpreter.CryptoConstants import * 
@@ -21,7 +22,7 @@ import sys
 #ERGO ECC ADD point.add(point)
 #ERGO ECC MULTIPLY G dlogGroup().generator().multiply(scalar) 
 #[IN ERGOSCRIPT(on chain script) MULTIPLY IS Generator.exp(scalar)] because generator is GroupElement
-def main(contractName, ergo, wallet_mnemonic, mnemonic_password, senderAddress, args):
+def main(args):
     #Basic Variables
     curve = dlogGroup()
     n =  int(str(curve.order()))
@@ -47,8 +48,8 @@ def main(contractName, ergo, wallet_mnemonic, mnemonic_password, senderAddress, 
         p1InitiateOBJECT =  {
             "rs": str(rs),
             "ks": str(ks),
-            "rsG": str(rsGERGO),
-            "ksG": str(ksGERGO)
+            "rsG": "(" + str(rsGERGO.getXCoord().toBigInteger()) + ", " + str(rsGERGO.getYCoord().toBigInteger()) + ")",
+            "ksG": "(" + str(ksGERGO.getXCoord().toBigInteger()) + ", " + str(ksGERGO.getYCoord().toBigInteger()) + ")"
         }
         return json.dumps(p1InitiateOBJECT, indent=4)
 

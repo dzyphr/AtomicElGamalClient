@@ -1,6 +1,10 @@
-sudo apt install python3.10-venv && 
-python3 -m pip install customtkinter && 
+sudo apt install python3.10-venv &&
 python3 -m venv . &&
 chmod +x bin/activate && . bin/activate &&
+python3 -m pip install python-dotenv &&
+python3 -m pip install ergpy &&
+python3 -m pip install numpy &&
+python3 -m pip install libnum &&
+python3 -m pip install customtkinter && 
 python3 py/main.py 
 

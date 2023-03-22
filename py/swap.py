@@ -30,15 +30,29 @@ def initiateSwap(self):
     elif self.senderChain == self.receiverChain:
         print("same chain selected for both sides of swap!")
     else:
-        self.tab_view = SwapTab(master=self.frame, width=600, height=600)
-        self.tab_view.pack()
-        os.mkdir("swap1") #TODO: swapname modularity
-        initiation = os.popen("python3 -u AtomicMultiSigECC/py/deploy.py p1Initiate").read() #run wit -u for unbuffered stream
-        self.tab_view.rslabel.configure(text="rs: " + json.loads(initiation)["rs"])
-        self.tab_view.kslabel.configure(text="ks: " + json.loads(initiation)["ks"])
-        self.tab_view.rsGlabel.configure(text="rsG: " + json.loads(initiation)["rsG"])
-        self.tab_view.ksGlabel.configure(text="ksG: " + json.loads(initiation)["ksG"])
-        f = open("swap1/initiation.atomicswap", "w")
-        f.write(initiation)
-        f.close()
-        print(initiation)
+        self.currentReceiver = self.CounterpartyElGamalKey.get()
+        if self.currentReceiver == "":
+            print("receiver ElGamal Key not specified!")
+        elif len(self.currentReceiver) < 616:
+            print("receiver ElGamal Key is less than 2048 bit")
+        elif any(c.isalpha() for c in self.currentReceiver):
+            print("detected alphabetical characters, hexadecimal keys not implemented yet")
+        else:
+            self.tab_view = SwapTab(master=self.frame, width=600, height=600)
+            self.tab_view.pack()
+            os.mkdir("swap1") #TODO: swapname modularity
+            initiation = os.popen("python3 -u AtomicMultiSigECC/py/deploy.py p1Initiate").read() #run wit -u for unbuffered stream
+            self.tab_view.rslabel.configure(text="rs: " + json.loads(initiation)["rs"])
+            self.tab_view.kslabel.configure(text="ks: " + json.loads(initiation)["ks"])
+            self.tab_view.rsGlabel.configure(text="rsG: " + json.loads(initiation)["rsG"])
+            self.tab_view.ksGlabel.configure(text="ksG: " + json.loads(initiation)["ksG"])
+            f = open("swap1/initiation.atomicswap", "w")
+            f.write(initiation)
+            f.close()
+            f = open("swap1/Receiver.ElGamalPub", "w")
+            f.write(self.currentReceiver)
+            f.close()
+            f = open("swap1/SenderKey.ElGamalPub", "w")#maybe we can just backup the whole private keyfile in this instance
+            f.write(self.ElGamalPublicKey)
+            f.close()
+            print(initiation)

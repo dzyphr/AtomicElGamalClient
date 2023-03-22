@@ -17,15 +17,16 @@ class GUI(customtkinter.CTk):
 
         self.frame = customtkinter.CTkFrame(master=root)
         self.frame.pack(pady=20, padx=30, fill="both", expand=True)
-        
+      
         self.ElGamalPublicKey = ""
+        self.ElGamalPub = customtkinter.CTkLabel( master=self.frame, text="ElGamal PubKey: "+self.ElGamalPublicKey,font=("Roboto", 12))
+        self.ElGamalPub.pack(padx=0.5, pady=0.5)
+
         self.keyDict = {}
         self.thisDir = os.listdir(".")
         dirElGamalKeysGetLast(self)
         firstElGamalKey(self)
         
-        self.ElGamalPub = customtkinter.CTkLabel( master=self.frame, text="ElGamal PubKey: "+self.ElGamalPublicKey,font=("Roboto", 12)) 
-        self.ElGamalPub.pack(padx=0.5, pady=0.5)
 
         def goGenElGamalKey(): #exposes ElGamal KeyGen to self 
             genNewElGamalKey(self)                                     
