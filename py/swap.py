@@ -6,19 +6,27 @@ class SwapTab(customtkinter.CTkTabview):
 
 def setInitiator(self):
     if self.isInitiator == True:
+        if hasattr(self, 'swap_tab_view'):
+            self.swap_tab_view.pack_forget()
         self.initiateButton.pack_forget()
         self.isInitiator = False
         self.initiatorCommitLabel.pack()
         self.initiatorCommitment.pack()
         self.responseCommitLabel.pack()
         self.respondButton.pack()
+        if hasattr(self, 'swap_tab_view'):
+            self.swap_tab_view.pack()
     else:
+        if hasattr(self, 'swap_tab_view'):
+            self.swap_tab_view.pack_forget()
         self.isInitiator = True
         self.initiateButton.pack()
         self.respondButton.pack_forget()
         self.initiatorCommitLabel.pack_forget()
         self.initiatorCommitment.pack_forget()
         self.responseCommitLabel.pack_forget()
+        if hasattr(self, 'swap_tab_view'):
+            self.swap_tab_view.pack()
 
 def determineSwapName():
     swap = "swap"
@@ -41,7 +49,7 @@ def determineSwapName():
 
 def initiateSwap(self):
     def copyENCInit():
-            pyperclip.copy(open(self.initiation_tab_view.get() + "/ENC_initiation.atomicswap", "r").read()) 
+            pyperclip.copy(open(self.swap_tab_view.get() + "/ENC_initiation.atomicswap", "r").read()) 
             #make sure active tab functions get swap name from current open tab
     if self.senderChain  == "NotSelected" or self.receiverChain == "NotSelected":
         print("at least one chain not selected!")
@@ -58,26 +66,26 @@ def initiateSwap(self):
         elif self.isInitiator == True:
             self.currentswapname = determineSwapName()
             if self.swapTabSet == False:
-                self.initiation_tab_view = SwapTab(master=self.frame, width=600, height=600)
-                self.initiation_tab_view.add(self.currentswapname)
-                self.initiation_tab_view.pack()
-                self.initiation_tab_view.label = customtkinter.CTkLabel(master=self.initiation_tab_view.tab(self.currentswapname), \
+                self.swap_tab_view = SwapTab(master=self.frame, width=600, height=600)
+                self.swap_tab_view.add(self.currentswapname)
+                self.swap_tab_view.label = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
                     text="Click to copy Generated Pedersen Commitments: ")
-                self.initiation_tab_view.label.grid(row=0, column=0, padx=10, pady=10)
-                self.initiation_tab_view.newElGamalKeyButton = \
-                        customtkinter.CTkButton(master=self.initiation_tab_view.tab(self.currentswapname), \
+                self.swap_tab_view.label.grid(row=0, column=0, padx=10, pady=10)
+                self.swap_tab_view.newElGamalKeyButton = \
+                        customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
                         text="Copy", command=copyENCInit)
-                self.initiation_tab_view.newElGamalKeyButton.grid(row=1, column=0, padx=10, pady=10) #ElGamal KeyGen Button
-                self.initiationTabSet = True
+                self.swap_tab_view.newElGamalKeyButton.grid(row=1, column=0, padx=10, pady=10) #ElGamal KeyGen Button
+                self.swap_tab_view.pack()
+                self.swapTabSet = True
             else:
-                self.initiation_tab_view.add(self.currentswapname)
-                self.initiation_tab_view.label = customtkinter.CTkLabel(master=self.initiation_tab_view.tab(self.currentswapname), \
+                self.swap_tab_view.add(self.currentswapname)
+                self.swap_tab_view.label = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
                     text="Click to copy Generated Pedersen Commitments: ")
-                self.initiation_tab_view.label.grid(row=0, column=0, padx=10, pady=10)
-                self.initiation_tab_view.newElGamalKeyButton = \
-                        customtkinter.CTkButton(master=self.initiation_tab_view.tab(self.currentswapname), \
+                self.swap_tab_view.label.grid(row=0, column=0, padx=10, pady=10)
+                self.swap_tab_view.newElGamalKeyButton = \
+                        customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
                         text="Copy", command=copyENCInit)
-                self.initiation_tab_view.newElGamalKeyButton.grid(row=1, column=0, padx=10, pady=10) #ElGamal KeyGen Button
+                self.swap_tab_view.newElGamalKeyButton.grid(row=1, column=0, padx=10, pady=10) #ElGamal KeyGen Button
 
             initiation = os.popen("python3 -u AtomicMultiSigECC/py/deploy.py p1Initiate").read() #run wit -u for unbuffered stream
             #to get stuff from plaintext swapfiles use json LOADS, then select by key
@@ -101,16 +109,16 @@ def initiateSwap(self):
         elif self.isInitiator == False:
             self.currentswapname = determineSwapName()
             if self.swapTabSet == False:
-                self.responder_tab_view = SwapTab(master=self.frame, width=600, height=600)
-                self.responder_tab_view.add(self.currentswapname)
-                self.responder_tab_view.pack()
-                self.responseTabSet = True
+                self.swap_tab_view = SwapTab(master=self.frame, width=600, height=600)
+                self.swap_tab_view.add(self.currentswapname)
+                self.swap_tab_view.pack()
+                self.swapTabSet = True
             else:
-                self.responder_tab_view.add(self.currentswapname)
+                self.swap_tab_view.add(self.currentswapname)
             f = open(self.currentswapname + "/initiation.atomicswap", "w")
             f.write(self.initiatorCommitment.get())
             f.close()
             decryptElGamal = \
                     "./ElGamal decryptFromPubKey " + self.currentswapname + "/initiaton.atomicswap " + \
-                    self.currentReceiver + ' '+ self.ElGamalKeyFileName
+                    self.currentReceiver + ' ' + self.ElGamalKeyFileName
             print(decryptElGamal)

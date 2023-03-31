@@ -13,20 +13,22 @@ class GUI(customtkinter.CTk):
         customtkinter.set_default_color_theme("dark-blue")
 
         root = customtkinter.CTk()
-        root.geometry("1400x1200")
+        root.geometry("800x1000")
 
         self.frame = customtkinter.CTkFrame(master=root)
         self.frame.pack(pady=20, padx=30, fill="both", expand=True)
       
         self.ElGamalPublicKey = ""
-        self.ElGamalPub = customtkinter.CTkLabel( master=self.frame, text="ElGamal PubKey: "+self.ElGamalPublicKey,font=("Roboto", 12))
-        self.ElGamalPub.pack(padx=0.5, pady=0.5)
-
+        self.ElGamalPub = customtkinter.CTkLabel( master=self.frame, text="ElGamal Key File: ",font=("Roboto", 12))
         self.keyDict = {}
         self.thisDir = os.listdir(".")
-        dirElGamalKeysGetLast(self)
-        firstElGamalKey(self)
+        if firstElGamalKey(self) == False:
+            self.ElGamalKeyFileName = dirElGamalKeysGetLast(self)
+    
         
+        self.ElGamalPub = customtkinter.CTkLabel( master=self.frame, \
+                text="ElGamal Key File: " + self.ElGamalKeyFileName,font=("Roboto", 12))
+        self.ElGamalPub.pack(padx=0.5, pady=0.5)
 
         def goGenElGamalKey(): #exposes ElGamal KeyGen to self 
             genNewElGamalKey(self)                                     
@@ -51,7 +53,6 @@ class GUI(customtkinter.CTk):
             setSenderChain(self, choice)
         self.fromChain = customtkinter.CTkOptionMenu(master=self.frame, values=chains, command=goSetSenderChain)
         self.fromChain.pack(padx=20, pady=10)
-       
 
         #receiver chain dropdown
         self.receiverChain = "NotSelected"
@@ -70,14 +71,15 @@ class GUI(customtkinter.CTk):
        
         def goSetInitiator():
             setInitiator(self)
-        initiatorCheckbox = customtkinter.CTkCheckBox(master=self.frame, text="Are you the Swap Initiator:", command=goSetInitiator)
+        initiatorCheckbox = customtkinter.CTkCheckBox(master=self.frame, text="<-- Check if you are the Initiatior", \
+                command=goSetInitiator)
         initiatorCheckbox.pack(padx=20, pady=10)
 
         self.swapTabSet = False
        #responder stuff
 
-        
-        self.initiatorCommitLabel = customtkinter.CTkLabel(master=self.frame, text="Paste the Initiator's Generated Pedersen Commitments: ")
+        self.initiatorCommitLabel = customtkinter.CTkLabel(master=self.frame, \
+                text="Paste the Initiator's Generated Pedersen Commitments: ")
         self.initiatorCommitLabel.pack()
         self.initiatorCommitment = customtkinter.CTkEntry(master=self.frame, placeholder_text="Initiator's Commitments", \
                 width=700, height=5)

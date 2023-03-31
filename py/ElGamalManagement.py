@@ -5,16 +5,29 @@ from threading import *
 
 
 def dirElGamalKeysGetLast(self):
+    Keys = []
+ 
     for file in self.thisDir:
         if file.endswith('.ElGamalKey'):
             f = open(file, "r")
             j = json.loads(f.read())
-            self.ElGamalKeyFileName = file
             self.keyDict[j["Public Key"]] = j["Private Key"]
-            self.ElGamalPublicKey = j["Public Key"] #uses the last public key found as default
-            self.ElGamalPub.configure(text="ElGamal PubKey: " + j["Public Key"])
+            Keys.append(file)
+    Keys.sort()
+    lastkey = Keys.pop()
+    f = open(lastkey, "r")
+    j = json.loads(f.read())
+    self.ElGamalPublicKey = j["Public Key"]
+    self.ElGamalPub.configure(text="ElGamal Key File: " + lastkey)
+    return lastkey
+    
 
 def firstElGamalKey(self):
+    for file in self.thisDir:
+        if file.endswith('.ElGamalKey'):
+            f = open(file, "r")
+            j = json.loads(f.read())
+            self.keyDict[j["Public Key"]] = j["Private Key"]
     if len(self.keyDict) == 0: #if there are no ElGamal Keys in the dir then make a new one
         self.ElGamalPublicKey = os.popen("./ElGamal genPubKey").read().rstrip()
         f = open(self.ElGamalPublicKey, "r")
@@ -22,7 +35,10 @@ def firstElGamalKey(self):
         j = json.loads(f.read())
         self.ElGamalPublicKey = j["Public Key"]
         self.keyDict[j["Public Key"]] = j["Private Key"]
-        self.ElGamalPub.configure(text="ElGamal PubKey: " + j["Public Key"])
+        self.ElGamalPub.configure(text="ElGamal Key File: " + self.ElGamalKeyFileName)
+        return True
+    else:
+        return False
 
 def genNewElGamalKey(self):
     def work():
@@ -32,5 +48,5 @@ def genNewElGamalKey(self):
         j = json.loads(f.read())
         self.ElGamalPublicKey = j["Public Key"]
         self.keyDict[j["Public Key"]] = j["Private Key"]
-        self.ElGamalPub.configure(text="ElGamal PubKey: " + j["Public Key"])
+        self.ElGamalPub.configure(text="ElGamal Key File: " + self.ElGamalKeyFileName)
     self.thread_pool_executor.submit(work)
