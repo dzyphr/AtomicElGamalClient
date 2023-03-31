@@ -53,65 +53,80 @@ def main(args):
         }
         return json.dumps(p1InitiateOBJECT, indent=4)
 
+    def p2Response():
+        rr = random.randrange(0, n)
+        rr = rr % n
+        rr = rr % javaBigIntegerMAX
+        rrERGO = BigInteger(str(rr))
+        kr = random.randrange(0, n)
+        kr = kr % n
+        kr = kr % javaBigIntegerMAX
+        krERGO = BigInteger(str(kr))
+        krGERGO = dlogGroup().generator().multiply(krERGO).normalize()
+    #    print("krGX-ERGO:", int(str(krGERGO.getXCoord().toBigInteger())), "krGY-ERGO:", int(str(krGERGO.getYCoord().toBigInteger())))
+        krG = scalar_mult(kr, g)
+        rrG = scalar_mult(rr, g)
+        hashContent = message.encode() + str(ksGERGO.add(krGERGO)).encode()
+        sha256.update(hashContent)
+        e = int(sha256.digest().hex(), 16)
+        e = e % n
+        e = e % javaBigIntegerMAX
+        eERGO = BigInteger(str(int(sha256.digest().hex(), 16)))
+     #   print("e:", e)
+        sr = kr + (e * rr)
+        def gen_sr(kr, e, rr):
+            sr = kr + (e * rr)
+            sr = sr % n
+            sr = sr % javaBigIntegerMAX
+            while sr > javaBigIntegerMAX:
+                rr = random.randrange(0, n)
+                sr = kr + (e * rr)
+                sr = sr % n
+                sr = sr % javaBigIntegerMAX
+                if sr < javaBigIntegerMAX:
+                    return sr
+                else: 
+                    continue
+            return sr 
+        sr = gen_sr(kr, e, rr)
+        srERGO = BigInteger(str(sr))
+      #  print("\np2 creates their multisig value sr:", sr)
+        x = secrets.randbits(256)
+        x = x % n
+        x = x % javaBigIntegerMAX
+        xERGO = BigInteger(str(x))
+       # print("\np2 creates a 256bit secret preimage x:", x)
+        xGERGO = dlogGroup().generator().multiply(xERGO).normalize()
+       # print("xGERGO:", xGERGO)
+        srGERGO = dlogGroup().generator().multiply(srERGO).normalize()#sr is on ERGO
+        srG = scalar_mult(sr, g)
+        xG = scalar_mult(x, g)#x is on EVM chain
+       # print("srGX-ERGO:", int(str(srGERGO.getXCoord().toBigInteger())), "srGY-ERGO:", int(str(srGERGO.getYCoord().toBigInteger())))
+       # print("\np2 multiplies the preimage by secp256k1 generator G to get xG:", xG)
+        sr_ = sr + x
+        sr_ = sr_  
+       # print("\np2 computes a partial equation for p1 sr_ = sr - x. \n\nsr_:", sr_)
+       # print("\np2 sends sr_ and xG along with srG to p1")
+        p2RespondOBJECT = {
+                "sr_": str(sr_),
+                "xG": str(xG),
+                "srG": "(" + str(srGERGO.getXCoord().toBigInteger()) + ", " + str(srGERGO.getYCoord().toBigInteger()) + ")",
+                #TODO: make chain specific
+        }
+        return json.dumps(p2RespondOBJECT, indent=4)
+
+
+
     if len(args) > 1:
         command = args[1]
         if command == "p1Initiate":
             sys.stdout.write(str(p1Initiate()))
+        if command == "p2Respond":
+            sys.stdout.write(str(p2Respond()))
+    
+
 
     '''
-    rr = random.randrange(0, n)
-    rr = rr % n
-    rr = rr % javaBigIntegerMAX
-    rrERGO = BigInteger(str(rr))
-    kr = random.randrange(0, n)
-    kr = kr % n
-    kr = kr % javaBigIntegerMAX
-    krERGO = BigInteger(str(kr))
-    krGERGO = dlogGroup().generator().multiply(krERGO).normalize()
-    print("krGX-ERGO:", int(str(krGERGO.getXCoord().toBigInteger())), "krGY-ERGO:", int(str(krGERGO.getYCoord().toBigInteger())))
-    krG = scalar_mult(kr, g)
-    rrG = scalar_mult(rr, g)
-    hashContent = message.encode() + str(ksGERGO.add(krGERGO)).encode()
-    sha256.update(hashContent)
-    e = int(sha256.digest().hex(), 16)
-    e = e % n
-    e = e % javaBigIntegerMAX
-    eERGO = BigInteger(str(int(sha256.digest().hex(), 16)))
-    print("e:", e)
-    sr = kr + (e * rr)
-    def gen_sr(kr, e, rr):
-        sr = kr + (e * rr)
-        sr = sr % n
-        sr = sr % javaBigIntegerMAX
-        while sr > javaBigIntegerMAX:
-            rr = random.randrange(0, n)
-            sr = kr + (e * rr)
-            sr = sr % n
-            sr = sr % javaBigIntegerMAX
-            if sr < javaBigIntegerMAX:
-                return sr
-            else: 
-                continue
-        return sr 
-    sr = gen_sr(kr, e, rr)
-    srERGO = BigInteger(str(sr))
-    print("\np2 creates their multisig value sr:", sr)
-    x = secrets.randbits(256)
-    x = x % n
-    x = x % javaBigIntegerMAX
-    xERGO = BigInteger(str(x))
-    print("\np2 creates a 256bit secret preimage x:", x)
-    xGERGO = dlogGroup().generator().multiply(xERGO).normalize()
-    print("xGERGO:", xGERGO)
-    srGERGO = dlogGroup().generator().multiply(srERGO).normalize()#sr is on ERGO
-    srG = scalar_mult(sr, g)
-    xG = scalar_mult(x, g)#x is on EVM chain
-    print("srGX-ERGO:", int(str(srGERGO.getXCoord().toBigInteger())), "srGY-ERGO:", int(str(srGERGO.getYCoord().toBigInteger())))
-    print("\np2 multiplies the preimage by secp256k1 generator G to get xG:", xG)
-    sr_ = sr + x
-    sr_ = sr_  
-    print("\np2 computes a partial equation for p1 sr_ = sr - x. \n\nsr_:", sr_)
-    print("\np2 sends sr_ and xG along with srG to p1")
     check = add_points(srG, xG) #P1 CHECKS WITH ECC
     sr_G = scalar_mult(sr_, g)
     print("\np1 checks that srG + xG == sr_G", check, "==", sr_G, "and that xG are locking funds in contract")

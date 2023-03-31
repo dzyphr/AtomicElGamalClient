@@ -64,7 +64,7 @@ class GUI(customtkinter.CTk):
         def goInitiateSwap():
             initiateSwap(self)
         self.initiateButton = customtkinter.CTkButton(master=self.frame, text="Initiate Swap", command=goInitiateSwap)
-
+        
         #isInitiator Checkbox
         self.isInitiator = False
        
@@ -72,6 +72,24 @@ class GUI(customtkinter.CTk):
             setInitiator(self)
         initiatorCheckbox = customtkinter.CTkCheckBox(master=self.frame, text="Are you the Swap Initiator:", command=goSetInitiator)
         initiatorCheckbox.pack(padx=20, pady=10)
+
+        self.swapTabSet = False
+       #responder stuff
+
+        
+        self.initiatorCommitLabel = customtkinter.CTkLabel(master=self.frame, text="Paste the Initiator's Generated Pedersen Commitments: ")
+        self.initiatorCommitLabel.pack()
+        self.initiatorCommitment = customtkinter.CTkEntry(master=self.frame, placeholder_text="Initiator's Commitments", \
+                width=700, height=5)
+        self.initiatorCommitment.pack()
+        self.responseCommitLabel = customtkinter.CTkLabel(master=self.frame, text="Click to generate response commitment: ")
+        self.responseCommitLabel.pack()
+        self.respondButton = customtkinter.CTkButton(master=self.frame, text="Respond to Swap", command=goInitiateSwap)
+        self.respondButton.pack()
+
+
+
+
         root.mainloop()     
 
 if __name__ == "__main__":

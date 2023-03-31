@@ -8,3 +8,5 @@ p1Initiate
 ElGamal
 lib64
 *.env
+/swap*
+Key*
