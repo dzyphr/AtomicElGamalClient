@@ -19,6 +19,7 @@ import waits
 import coinSelection
 import scalaPipe
 import sys
+import ast
 #ERGO ECC ADD point.add(point)
 #ERGO ECC MULTIPLY G dlogGroup().generator().multiply(scalar) 
 #[IN ERGOSCRIPT(on chain script) MULTIPLY IS Generator.exp(scalar)] because generator is GroupElement
@@ -46,14 +47,16 @@ def main(args):
         ksGERGO = dlogGroup().generator().multiply(ksERGO).normalize()
         #return a JSON for easy cross lang/client parsing!
         p1InitiateOBJECT =  {
-            "rs": str(rs),
-            "ks": str(ks),
             "rsG": "(" + str(rsGERGO.getXCoord().toBigInteger()) + ", " + str(rsGERGO.getYCoord().toBigInteger()) + ")",
             "ksG": "(" + str(ksGERGO.getXCoord().toBigInteger()) + ", " + str(ksGERGO.getYCoord().toBigInteger()) + ")"
         }
         return json.dumps(p1InitiateOBJECT, indent=4)
 
-    def p2Response():
+    def p2Response(ksGERGO):
+        ksGERGO = ast.literal_eval(ksGERGO)
+        ksGERGO_X = ksGERGO[0]
+        ksGERGO_Y = ksGERGO[1]        
+        ksGERGO = dlogGroup().curve().createPoint(BigInteger(str(ksGERGO_X)), BigInteger(str(ksGERGO_Y)))
         rr = random.randrange(0, n)
         rr = rr % n
         rr = rr % javaBigIntegerMAX
@@ -122,7 +125,10 @@ def main(args):
         if command == "p1Initiate":
             sys.stdout.write(str(p1Initiate()))
         if command == "p2Respond":
-            sys.stdout.write(str(p2Respond()))
+            if len(args) > 2:
+               sys.stdout.write(str(p2Response(args[2])))
+            else:
+                print("enter ksGERGO as following arg")
     
 
 

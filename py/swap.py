@@ -69,7 +69,7 @@ def initiateSwap(self):
                 self.swap_tab_view = SwapTab(master=self.frame, width=600, height=600)
                 self.swap_tab_view.add(self.currentswapname)
                 self.swap_tab_view.label = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
-                    text="Click to copy Generated Pedersen Commitments: ")
+                    text="Click to copy generated Pedersen Commitments: ")
                 self.swap_tab_view.label.grid(row=0, column=0, padx=10, pady=10)
                 self.swap_tab_view.newElGamalKeyButton = \
                         customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
@@ -80,7 +80,7 @@ def initiateSwap(self):
             else:
                 self.swap_tab_view.add(self.currentswapname)
                 self.swap_tab_view.label = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
-                    text="Click to copy Generated Pedersen Commitments: ")
+                    text="Click to copy generated Pedersen commitments: ")
                 self.swap_tab_view.label.grid(row=0, column=0, padx=10, pady=10)
                 self.swap_tab_view.newElGamalKeyButton = \
                         customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
@@ -107,6 +107,9 @@ def initiateSwap(self):
             f.write(self.ElGamalPublicKey)
             f.close()
         elif self.isInitiator == False:
+            def copyResponse():
+                pyperclip.copy(open(self.swap_tab_view.get() + "/ENC_response_commitment.atomicswap", "r").read())
+            #make sure active tab functions get swap name from current open tab
             self.currentswapname = determineSwapName()
             if self.swapTabSet == False:
                 self.swap_tab_view = SwapTab(master=self.frame, width=600, height=600)
@@ -115,10 +118,38 @@ def initiateSwap(self):
                 self.swapTabSet = True
             else:
                 self.swap_tab_view.add(self.currentswapname)
-            f = open(self.currentswapname + "/initiation.atomicswap", "w")
-            f.write(self.initiatorCommitment.get())
-            f.close()
-            decryptElGamal = \
-                    "./ElGamal decryptFromPubKey " + self.currentswapname + "/initiaton.atomicswap " + \
-                    self.currentReceiver + ' ' + self.ElGamalKeyFileName
-            print(decryptElGamal)
+            if self.initiatorCommitment.get() != "":
+                f = open(self.currentswapname + "/initiation.atomicswap", "w")
+                f.write(self.initiatorCommitment.get())
+                f.close()
+                decryptElGamal = \
+                        "./ElGamal decryptFromPubKey " + self.currentswapname + "/initiation.atomicswap " + \
+                        self.currentReceiver + ' ' + self.ElGamalKeyFileName
+                decryption = os.popen(decryptElGamal).read()
+                f = open(self.currentswapname + "/DEC_initiation.atomicswap", "w")
+                f.write(decryption)
+                f.close()
+                j = json.loads(decryption)
+                ksG = j["ksG"]
+                response = os.popen("python3 -u AtomicMultiSigECC/py/deploy.py p2Respond " + "'" + ksG + "'").read() 
+                f = open(self.currentswapname + "/response_commitment.atomicswap", "w")
+                f.write(response)
+                f.close()
+                j = json.loads(response)
+                print("you must lock the swap offer to " + j["xG"])
+                runElGamal = "./ElGamal encryptToPubKey " + \
+                    self.currentReceiver + ' ' + \
+                    self.ElGamalKeyFileName + ' ' + \
+                    "\'" + response + "\' " + \
+                    self.currentswapname + "/ENC_response_commitment.atomicswap "
+                encryption = os.popen(runElGamal).read()
+                self.swap_tab_view.label = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+                    text="Click to copy generated response commitments: ")
+                self.swap_tab_view.label.grid(row=0, column=0, padx=10, pady=10)
+                self.swap_tab_view.copyResponseButton = \
+                        customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
+                        text="Copy", command=copyResponse)
+                self.swap_tab_view.copyResponseButton.grid(row=1, column=0, padx=10, pady=10)
+            else:
+                print("paste in the encrypted initiator commitment")
+
