@@ -87,7 +87,7 @@ def initiateSwap(self):
                         text="Copy", command=copyENCInit)
                 self.swap_tab_view.newElGamalKeyButton.grid(row=1, column=0, padx=10, pady=10) #ElGamal KeyGen Button
 
-            initiation = os.popen("python3 -u AtomicMultiSigECC/py/deploy.py p1Initiate").read() #run wit -u for unbuffered stream
+            initiation = os.popen("python3 -u AtomicMultiSigECC/py/deploy.py  p1Initiate").read() #run wit -u for unbuffered stream
             #to get stuff from plaintext swapfiles use json LOADS, then select by key
             runElGamal = "./ElGamal encryptToPubKey " + \
                     self.currentReceiver + ' ' + \
