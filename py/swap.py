@@ -1,4 +1,4 @@
-from chain import setChainPubkey
+from chain import setChainPubkey, setSenderChain
 import tkinter, customtkinter, os, json, time, subprocess, sys, io, pyperclip
 
 class SwapTab(customtkinter.CTkTabview):
@@ -7,11 +7,12 @@ class SwapTab(customtkinter.CTkTabview):
 
 def setInitiator(self):
     if self.isInitiator == True:
-        print("isInitiator = False")
         if hasattr(self, 'swap_tab_view'):
             self.swap_tab_view.pack_forget()
         self.initiateButton.pack_forget()
         self.isInitiator = False
+        setSenderChain(self, self.fromChain.get())
+        print("isInitiator = ", self.isInitiator)
         self.initiatorCommitLabel.pack()
         self.initiatorCommitment.pack()
         self.responseCommitLabel.pack()
@@ -19,10 +20,11 @@ def setInitiator(self):
         if hasattr(self, 'swap_tab_view'):
             self.swap_tab_view.pack()
     else:
-        print("isInitiator = True")
         if hasattr(self, 'swap_tab_view'):
             self.swap_tab_view.pack_forget()
         self.isInitiator = True
+        print("isInitiator = ", self.isInitiator)
+        setSenderChain(self, self.fromChain.get())
         self.initiateButton.pack()
         self.respondButton.pack_forget()
         self.initiatorCommitLabel.pack_forget()
@@ -51,8 +53,6 @@ def determineSwapName():
     return swapname
 
 def initiateSwap(self):
-    if self.chainPubkey == "":
-        setChainPubkey(self)
     def copyENCInit():
             pyperclip.copy(open(self.swap_tab_view.get() + "/ENC_initiation.atomicswap", "r").read()) 
             #make sure active tab functions get swap name from current open tab
@@ -69,6 +69,8 @@ def initiateSwap(self):
         elif any(c.isalpha() for c in self.currentReceiver):
             print("detected alphabetical characters, hexadecimal keys not implemented yet")
         elif self.isInitiator == True:
+            if self.chainPubkey == "":
+                setChainPubkey(self)
             self.currentswapname = determineSwapName()
             if self.swapTabSet == False:
                 self.swap_tab_view = SwapTab(master=self.frame, width=600, height=600)
