@@ -74,8 +74,11 @@ def setSenderChain(self, choice):
         self.toChainLabel.pack(pady=2, padx=2)
         self.toChain.pack(pady=2, padx=2)
         self.initiatorCheckbox.pack(pady=2, padx=2)
-        self.initiateButton.pack(pady=2, padx=2)
         self.initiatorCheckbox.pack(pady=2, padx=2)
+        self.initiatorCommitLabel.pack(pady=2, padx=2)
+        self.initiatorCommitment.pack(pady=2, padx=2)
+        self.responseCommitLabel.pack(pady=2, padx=2)
+        self.respondButton.pack(pady=2, padx=2)
 def setReceiverChain(self, choice):
     self.receiverChain = choice
     print(self.receiverChain)
