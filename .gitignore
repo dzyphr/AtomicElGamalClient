@@ -11,3 +11,6 @@ lib64
 /swap*
 Key*
 pyvenv.cfg
+ergpy/*
+SwapKeyManager/py/__pycache__/*
+*.class

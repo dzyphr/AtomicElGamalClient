@@ -33,7 +33,10 @@ def main(args):
     sha256 = hashlib.sha256()
 
 
-    def p1Initiate():
+    def p1Initiate(chainPubkey):
+        if chainPubkey == "":
+            print("enter chainPubkey as arg")
+            exit(1)
         rs = random.randrange(0, n)
         rs = rs % n
         rs = rs % javaBigIntegerMAX
@@ -47,6 +50,7 @@ def main(args):
         ksGERGO = dlogGroup().generator().multiply(ksERGO).normalize()
         #return a JSON for easy cross lang/client parsing!
         p1InitiateOBJECT =  {
+            "chainPubkey": chainPubkey,
             "rsG": "(" + str(rsGERGO.getXCoord().toBigInteger()) + ", " + str(rsGERGO.getYCoord().toBigInteger()) + ")",
             "ksG": "(" + str(ksGERGO.getXCoord().toBigInteger()) + ", " + str(ksGERGO.getYCoord().toBigInteger()) + ")"
         }
@@ -123,7 +127,10 @@ def main(args):
     if len(args) > 1:
         command = args[1]
         if command == "p1Initiate":
-            sys.stdout.write(str(p1Initiate()))
+            if len(args) > 2:
+                sys.stdout.write(str(p1Initiate(args[2])))
+            else:
+                print("enter chainPubkey as following arg")
         if command == "p2Respond":
             if len(args) > 2:
                sys.stdout.write(str(p2Response(args[2])))
