@@ -17,22 +17,22 @@ def setSenderChain(self, choice):
         self.responseCommitLabel.pack_forget()
         self.respondButton.pack_forget()
 
-        self.chainPubkeyLabel.pack(pady=12, padx=10)
-        self.chainPubkeyEntry.pack(pady=12, padx=10)
-        self.setChainPubkey.pack(pady=12, padx=10)
+        self.chainPubkeyLabel.pack(pady=2, padx=2)
+        self.chainPubkeyEntry.pack(pady=2, padx=2)
+        self.setChainPubkey.pack(pady=2, padx=2)
 
-        self.fromChainLabel.pack()
-        self.fromChain.pack() #repack
-        self.toChainLabel.pack()
-        self.toChain.pack()
-        self.initiatorCheckbox.pack()
-        self.initiateButton.pack()
-        self.initiatorCheckbox.pack()
+        self.fromChainLabel.pack(pady=2, padx=2)
+        self.fromChain.pack(pady=2, padx=2) #repack
+        self.toChainLabel.pack(pady=2, padx=2)
+        self.toChain.pack(pady=2, padx=2)
+        self.initiatorCheckbox.pack(pady=2, padx=2)
+        self.initiateButton.pack(pady=2, padx=2)
+        self.initiatorCheckbox.pack(pady=2, padx=2)
         if self.isInitiator == False:
-            self.initiatorCommitLabel.pack()
-            self.initiatorCommitment.pack()
-            self.responseCommitLabel.pack()
-            self.respondButton.pack()
+            self.initiatorCommitLabel.pack(pady=2, padx=2)
+            self.initiatorCommitment.pack(pady=2, padx=2)
+            self.responseCommitLabel.pack(pady=2, padx=2)
+            self.respondButton.pack(pady=2, padx=2)
 
     else:
         self.chainPubkeyLabel.pack_forget()
@@ -48,18 +48,18 @@ def setSenderChain(self, choice):
         self.initiatorCommitment.pack_forget()
         self.responseCommitLabel.pack_forget()
         self.respondButton.pack_forget()
-        self.fromChainLabel.pack()
-        self.fromChain.pack() #repack
-        self.toChainLabel.pack()
-        self.toChain.pack()
-        self.initiatorCheckbox.pack()
-        self.initiateButton.pack()
-        self.initiatorCheckbox.pack()
+        self.fromChainLabel.pack(pady=2, padx=2)
+        self.fromChain.pack(pady=2, padx=2) #repack
+        self.toChainLabel.pack(pady=2, padx=2)
+        self.toChain.pack(pady=2, padx=2)
+        self.initiatorCheckbox.pack(pady=2, padx=2)
+        self.initiateButton.pack(pady=2, padx=2)
+        self.initiatorCheckbox.pack(pady=2, padx=2)
         if self.isInitiator == False:
-            self.initiatorCommitLabel.pack()
-            self.initiatorCommitment.pack()
-            self.responseCommitLabel.pack()
-            self.respondButton.pack()
+            self.initiatorCommitLabel.pack(pady=2, padx=2)
+            self.initiatorCommitment.pack(pady=2, padx=2)
+            self.responseCommitLabel.pack(pady=2, padx=2)
+            self.respondButton.pack(pady=2, padx=2)
 
 def setReceiverChain(self, choice):
     self.receiverChain = choice

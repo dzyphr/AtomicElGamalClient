@@ -21,7 +21,7 @@ def main(contractName, ergo, wallet_mnemonic, mnemonic_password, senderAddress, 
             if len(args) > 2:
                getPubkey(int(args[2]))
             else:
-                print("enter pubkey index as argument [1 - 10 for now]")
+                print("enter pubkey index as argument [0 - 9 for now]")
         else:
             print(args[1])
             print("unknown arg")

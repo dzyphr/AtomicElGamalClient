@@ -1,3 +1,4 @@
+from chain import setChainPubkey
 import tkinter, customtkinter, os, json, time, subprocess, sys, io, pyperclip
 
 class SwapTab(customtkinter.CTkTabview):
@@ -6,6 +7,7 @@ class SwapTab(customtkinter.CTkTabview):
 
 def setInitiator(self):
     if self.isInitiator == True:
+        print("isInitiator = False")
         if hasattr(self, 'swap_tab_view'):
             self.swap_tab_view.pack_forget()
         self.initiateButton.pack_forget()
@@ -17,6 +19,7 @@ def setInitiator(self):
         if hasattr(self, 'swap_tab_view'):
             self.swap_tab_view.pack()
     else:
+        print("isInitiator = True")
         if hasattr(self, 'swap_tab_view'):
             self.swap_tab_view.pack_forget()
         self.isInitiator = True
@@ -48,6 +51,8 @@ def determineSwapName():
     return swapname
 
 def initiateSwap(self):
+    if self.chainPubkey == "":
+        setChainPubkey(self)
     def copyENCInit():
             pyperclip.copy(open(self.swap_tab_view.get() + "/ENC_initiation.atomicswap", "r").read()) 
             #make sure active tab functions get swap name from current open tab
@@ -129,6 +134,7 @@ def initiateSwap(self):
                 f.write(decryption)
                 f.close()
                 j = json.loads(decryption)
+                self.counterpartyChainPubkey = j["chainPubkey"]
                 ksG = j["ksG"]
                 response = os.popen("python3 -u AtomicMultiSigECC/py/deploy.py p2Respond " + "'" + ksG + "'").read() 
                 f = open(self.currentswapname + "/response_commitment.atomicswap", "w")
@@ -142,13 +148,16 @@ def initiateSwap(self):
                     "\'" + response + "\' " + \
                     self.currentswapname + "/ENC_response_commitment.atomicswap "
                 encryption = os.popen(runElGamal).read()
+                self.counterpartyChainPubkeyLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+                        text="Counterparty ChainPubkey: " + self.counterpartyChainPubkey)
+                self.counterpartyChainPubkeyLabel.grid(row=0, column=0, padx=10, pady=10)
                 self.swap_tab_view.label = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
                     text="Click to copy generated response commitments: ")
-                self.swap_tab_view.label.grid(row=0, column=0, padx=10, pady=10)
+                self.swap_tab_view.label.grid(row=1, column=0, padx=10, pady=10)
                 self.swap_tab_view.copyResponseButton = \
                         customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
                         text="Copy", command=copyResponse)
-                self.swap_tab_view.copyResponseButton.grid(row=1, column=0, padx=10, pady=10)
+                self.swap_tab_view.copyResponseButton.grid(row=2, column=0, padx=10, pady=10)
             else:
                 print("paste in the encrypted initiator commitment")
 

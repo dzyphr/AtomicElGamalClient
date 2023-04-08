@@ -14,3 +14,4 @@ pyvenv.cfg
 ergpy/*
 SwapKeyManager/py/__pycache__/*
 *.class
+*.swp
