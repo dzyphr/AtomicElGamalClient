@@ -20,7 +20,7 @@ def GUI_ReArrange_Chain_Based(self):
         self.respondButton.pack_forget()
 
         self.chainPubkeyLabel.pack(pady=2, padx=2)
-        self.chainPubkeyEntry.pack(pady=2, padx=2)
+        self.chainPubkeyEntry.pack(pady=2, padx=2) #introduce derived public key indexer for non account chains
         self.setChainPubkey.pack(pady=2, padx=2)
 
         self.fromChainLabel.pack(pady=2, padx=2)
@@ -39,7 +39,7 @@ def GUI_ReArrange_Chain_Based(self):
         self.fromChainLabel.pack_forget()
         self.fromChain.pack_forget() #unpack
         self.toChainLabel.pack_forget()
-        self.toChain.pack_forget()
+        self.toChain.pack_forget()                  #remove indexer for account chains
         self.initiateButton.pack_forget()
         self.initiatorCheckbox.pack_forget()
         self.initiatorCommitLabel.pack_forget()
@@ -73,5 +73,4 @@ def setChainPubkey(self):
         self.chainPubkey = os.popen("python3 -u SwapKeyManager/py/deploy.py getPubkey " + self.chainPubkeyEntry.get()).read()
     if self.receiverChain == "Goerli":
         self.chainPubkey = os.popen("python3 Atomicity/basic_framework/py/deploy.py getAccount").read()
-    print(self.chainPubkey)
 

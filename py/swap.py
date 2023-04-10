@@ -6,17 +6,22 @@ class SwapTab(customtkinter.CTkTabview):
         super().__init__(master, **kwargs)
 
 
-def GUI_Arrange_Swap_Based(self):
+def GUI_Arrange_Swap_Based(self): #here we are updating the GUI according to the CURRENT state of the isInitiator boolean
     if self.isInitiator == True:
+        if hasattr(self, 'swap_tab_view'):
+            self.swap_tab_view.pack_forget()
         self.initiatorCommitLabel.pack_forget()
         self.initiatorCommitment.pack_forget()
         self.responseCommitLabel.pack_forget()
         self.respondButton.pack_forget()
-        
+        self.initiateButton.pack()     
+        if hasattr(self, 'swap_tab_view'):
+            self.swap_tab_view.pack()
     else:
         if hasattr(self, 'swap_tab_view'):
             self.swap_tab_view.pack_forget()
-
+        
+        self.initiateButton.pack_forget()
         self.initiatorCommitLabel.pack()
         self.initiatorCommitment.pack()
         self.responseCommitLabel.pack()
@@ -25,33 +30,17 @@ def GUI_Arrange_Swap_Based(self):
         if hasattr(self, 'swap_tab_view'):
             self.swap_tab_view.pack()
 
-def setInitiator(self):
+def setInitiator(self): #here we are setting the initiator based on the PREVIOUS state of the isInitiator boolean
     if self.isInitiator == True:
-        if hasattr(self, 'swap_tab_view'):
-            self.swap_tab_view.pack_forget()
-        self.initiateButton.pack_forget()
         self.isInitiator = False
         setSenderChain(self, self.fromChain.get())
         print("isInitiator = ", self.isInitiator)
-        self.initiatorCommitLabel.pack()
-        self.initiatorCommitment.pack()
-        self.responseCommitLabel.pack()
-        self.respondButton.pack()
-        if hasattr(self, 'swap_tab_view'):
-            self.swap_tab_view.pack()
+        GUI_Arrange_Swap_Based(self)
     else:
-        if hasattr(self, 'swap_tab_view'):
-            self.swap_tab_view.pack_forget()
         self.isInitiator = True
         print("isInitiator = ", self.isInitiator)
         setSenderChain(self, self.fromChain.get())
-        self.initiateButton.pack()
-        self.respondButton.pack_forget()
-        self.initiatorCommitLabel.pack_forget()
-        self.initiatorCommitment.pack_forget()
-        self.responseCommitLabel.pack_forget()
-        if hasattr(self, 'swap_tab_view'):
-            self.swap_tab_view.pack()
+        GUI_Arrange_Swap_Based(self)
 
 def determineSwapName():
     swap = "swap"
