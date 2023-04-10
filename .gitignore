@@ -15,3 +15,6 @@ ergpy/*
 SwapKeyManager/py/__pycache__/*
 *.class
 *.swp
+solidity-flattener/*
+Atomicity/solidity-flattener/*
+Atomicity/AtomicMultiSigSecp256k1/.idea/*

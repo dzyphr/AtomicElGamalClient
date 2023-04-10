@@ -5,6 +5,20 @@ class SwapTab(customtkinter.CTkTabview):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
 
+
+def GUI_Arrange_Swap_Based(self):
+    if self.isInitiator == True:
+        self.initiatorCommitLabel.pack_forget()
+        self.initiatorCommitment.pack_forget()
+        self.responseCommitLabel.pack_forget()
+        self.respondButton.pack_forget()
+    else:
+        self.initiatorCommitLabel.pack()
+        self.initiatorCommitment.pack()
+        self.responseCommitLabel.pack()
+        self.respondButton.pack()
+
+
 def setInitiator(self):
     if self.isInitiator == True:
         if hasattr(self, 'swap_tab_view'):
@@ -143,7 +157,8 @@ def initiateSwap(self):
                 f.write(response)
                 f.close()
                 j = json.loads(response)
-                print("you must lock the swap offer to " + j["xG"])
+                print("you must lock the swap offer to:\n" + j["xG"] + "\nand chainPubkey:\n" + self.counterpartyChainPubkey)
+                #save this into the current tab 
                 runElGamal = "./ElGamal encryptToPubKey " + \
                     self.currentReceiver + ' ' + \
                     self.ElGamalKeyFileName + ' ' + \
