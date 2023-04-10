@@ -6,9 +6,23 @@ class SwapTab(customtkinter.CTkTabview):
         super().__init__(master, **kwargs)
 
 
+def unpackMainSwapGUI(self): #unpack and repack are bulk unpacking subroutines for GUI basic ordering
+    self.initiatorCommitLabel.pack_forget()
+    self.initiatorCommitment.pack_forget()
+    self.responseCommitLabel.pack_forget()
+    self.respondButton.pack_forget()
+    self.initiateButton.pack_forget()
+
+def repackMainSwapGUI(self):
+    self.initiatorCommitLabel.pack()
+    self.initiatorCommitment.pack()
+    self.responseCommitLabel.pack()
+    self.respondButton.pack()
+    self.initiateButton.pack()
+
 def GUI_Arrange_Swap_Based(self): #here we are updating the GUI according to the CURRENT state of the isInitiator boolean
-    if self.isInitiator == True:
-        if hasattr(self, 'swap_tab_view'):
+    if self.isInitiator == True:    #Swap based arrange is a specific ordering based on the state of the initiator
+        if hasattr(self, 'swap_tab_view'):          
             self.swap_tab_view.pack_forget()
         self.initiatorCommitLabel.pack_forget()
         self.initiatorCommitment.pack_forget()

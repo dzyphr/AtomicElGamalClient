@@ -7,52 +7,24 @@ chains = ["NotSelected", "Ergo", "Goerli"]
 
 
 def GUI_ReArrange_Chain_Based(self):
+    from GUI_manager import unpackMainGUI, repackMainGUI
     if self.senderChain == "Ergo" or self.receiverChain == "Ergo": #future make this all non account chains
-        self.fromChainLabel.pack_forget()
-        self.fromChain.pack_forget() #unpack
-        self.toChainLabel.pack_forget()
-        self.toChain.pack_forget()
-        self.initiateButton.pack_forget()
-        self.initiatorCheckbox.pack_forget()
-        self.initiatorCommitLabel.pack_forget()
-        self.initiatorCommitment.pack_forget()
-        self.responseCommitLabel.pack_forget()
-        self.respondButton.pack_forget()
-
+        unpackMainGUI(self)                                            #TODO: current issue is that this handles swap based GUI
+                                                    #coordinating accross is difficult, need to pick specific GUI order
         self.chainPubkeyLabel.pack(pady=2, padx=2)
         self.chainPubkeyEntry.pack(pady=2, padx=2) #introduce derived public key indexer for non account chains
         self.setChainPubkey.pack(pady=2, padx=2)
-
-        self.fromChainLabel.pack(pady=2, padx=2)
-        self.fromChain.pack(pady=2, padx=2) #repack
-        self.toChainLabel.pack(pady=2, padx=2)
-        self.toChain.pack(pady=2, padx=2)
-        self.initiatorCheckbox.pack(pady=2, padx=2)
-        self.initiateButton.pack(pady=2, padx=2)
-        self.initiatorCheckbox.pack(pady=2, padx=2)
+        
+        repackMainGUI(self)
         from swap import GUI_Arrange_Swap_Based
         GUI_Arrange_Swap_Based(self)
     else:
         self.chainPubkeyLabel.pack_forget()
         self.chainPubkeyEntry.pack_forget()
-        self.setChainPubkey.pack_forget()
-        self.fromChainLabel.pack_forget()
-        self.fromChain.pack_forget() #unpack
-        self.toChainLabel.pack_forget()
-        self.toChain.pack_forget()                  #remove indexer for account chains
-        self.initiateButton.pack_forget()
-        self.initiatorCheckbox.pack_forget()
-        self.initiatorCommitLabel.pack_forget()
-        self.initiatorCommitment.pack_forget()
-        self.responseCommitLabel.pack_forget()
-        self.respondButton.pack_forget()
-        self.fromChainLabel.pack(pady=2, padx=2)
-        self.fromChain.pack(pady=2, padx=2) #repack
-        self.toChainLabel.pack(pady=2, padx=2)
-        self.toChain.pack(pady=2, padx=2)
-        self.initiatorCheckbox.pack(pady=2, padx=2)
-        self.initiateButton.pack(pady=2, padx=2)
-        self.initiatorCheckbox.pack(pady=2, padx=2)
+        self.setChainPubkey.pack_forget() #remove indexer for account chains
+
+        unpackMainGUI(self)
+        repackMainGUI(self)
         from swap import GUI_Arrange_Swap_Based
         GUI_Arrange_Swap_Based(self)
 
