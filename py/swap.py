@@ -12,12 +12,18 @@ def GUI_Arrange_Swap_Based(self):
         self.initiatorCommitment.pack_forget()
         self.responseCommitLabel.pack_forget()
         self.respondButton.pack_forget()
+        
     else:
+        if hasattr(self, 'swap_tab_view'):
+            self.swap_tab_view.pack_forget()
+
         self.initiatorCommitLabel.pack()
         self.initiatorCommitment.pack()
         self.responseCommitLabel.pack()
         self.respondButton.pack()
 
+        if hasattr(self, 'swap_tab_view'):
+            self.swap_tab_view.pack()
 
 def setInitiator(self):
     if self.isInitiator == True:
