@@ -1,3 +1,4 @@
+import ast
 from GUI_manager import *
 from chain import setChainPubkey, setSenderChain
 import tkinter, customtkinter, os, json, time, subprocess, sys, io, pyperclip
@@ -129,6 +130,11 @@ def initiateSwap(self):
                 f.close()
                 j = json.loads(response)
                 print("you must lock the swap offer to:\n" + j["xG"] + "\nand chainPubkey:\n" + self.counterpartyChainPubkey)
+                cmd = "cd Atomicity && ./new_frame " + self.currentswapname  + \
+                        " -M -CA 3 " + "\\\"" + self.counterpartyChainPubkey + "\\\" " \
+                        + str(ast.literal_eval(j["xG"])[0])  + " " + str(ast.literal_eval(j["xG"])[1])
+                print(cmd)
+                new_frame = os.popen(cmd) 
                 #save this into the current tab 
                 runElGamal = "./ElGamal encryptToPubKey " + \
                     self.currentReceiver + ' ' + \
