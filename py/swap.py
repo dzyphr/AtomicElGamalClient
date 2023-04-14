@@ -134,7 +134,33 @@ def initiateSwap(self):
                         " -M -CA 3 " + "\\\"" + self.counterpartyChainPubkey + "\\\" " \
                         + str(ast.literal_eval(j["xG"])[0])  + " " + str(ast.literal_eval(j["xG"])[1])
                 print(cmd)
-                new_frame = os.popen(cmd) 
+                new_frame = os.popen(cmd)
+                time.sleep(2) #wait for file to be built
+                #
+                #copy in generic ECC timelock multisig contract for atomic swap
+                os.remove("Atomicity/" + self.currentswapname + "/contracts/" + self.currentswapname + ".sol")
+                contract_copy = \
+                        "cd Atomicity/" + self.currentswapname + "/contracts " + \
+                        "&& cp ../../AtomicMultiSigSecp256k1/contracts/AtomicMultiSigSecp256k1.sol " + self.currentswapname + ".sol" + \
+                        "&& cp ../../AtomicMultiSigSecp256k1/contracts/ReentrancyGuard.sol . " + \
+                        "&& cp ../../AtomicMultiSigSecp256k1/contracts/EllipticCurve.sol . "
+                cpy = os.popen(contract_copy).read()
+#                print(cpy)
+                time.sleep(1)
+                rename = str(open("Atomicity/" + self.currentswapname + "/contracts/" + self.currentswapname + ".sol", "r").read() )
+#                print(rename.replace('AtomicMultiSigSecp256k1', self.currentswapname))
+                rewrite = open("Atomicity/" + self.currentswapname + "/contracts/" + self.currentswapname + ".sol", "w")
+                rewrite.write(rename.replace('AtomicMultiSigSecp256k1', self.currentswapname))
+                specifyChain = os.popen("echo 'CurrentChain=\"" + self.fromChain.get() + "\"' >> Atomicity/" + \
+                        self.currentswapname + "/.env").read()
+                self.deployAtomicSwapContractLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+                        text="Click to deploy the atomic swap contract: ")
+                self.deployAtomicSwapContractLabel.grid(row=0, column=0, padx=10, pady=10)
+                def deployScalarSwapContract():
+                    print(os.popen("cd Atomicity/" + self.currentswapname + "/ && python3 py/deploy.py").read())
+                self.deployAtomicSwapButton = customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
+                        text="Deploy", command=deployScalarSwapContract)
+                self.deployAtomicSwapButton.grid(row=1, column=0, padx=10, pady=10)
                 #save this into the current tab 
                 runElGamal = "./ElGamal encryptToPubKey " + \
                     self.currentReceiver + ' ' + \
@@ -144,14 +170,14 @@ def initiateSwap(self):
                 encryption = os.popen(runElGamal).read()
                 self.counterpartyChainPubkeyLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
                         text="Counterparty ChainPubkey: " + self.counterpartyChainPubkey)
-                self.counterpartyChainPubkeyLabel.grid(row=0, column=0, padx=10, pady=10)
+                self.counterpartyChainPubkeyLabel.grid(row=2, column=0, padx=10, pady=10)
                 self.swap_tab_view.label = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
                     text="Click to copy generated response commitments: ")
-                self.swap_tab_view.label.grid(row=1, column=0, padx=10, pady=10)
+                self.swap_tab_view.label.grid(row=3, column=0, padx=10, pady=10)
                 self.swap_tab_view.copyResponseButton = \
                         customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
                         text="Copy", command=copyResponse)
-                self.swap_tab_view.copyResponseButton.grid(row=2, column=0, padx=10, pady=10)
+                self.swap_tab_view.copyResponseButton.grid(row=4, column=0, padx=10, pady=10)
             else:
                 print("paste in the encrypted initiator commitment")
 

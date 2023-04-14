@@ -1,3 +1,4 @@
+constructorParamVals = ["0xFe4cc19ea6472582028641B2633d3adBB7685C69",69185539472004657639438318632082842238567383911850335774954207083492588994491,6728324303547297943133068617677977708565341909676784154631845952408332882505]
 import pathlib
 from pathlib import Path
 import requests
@@ -31,6 +32,8 @@ chain = os.getenv('CurrentChain') #set the current chain in .env
 def getAccount():
     if chain == "Goerli":
         sys.stdout.write(os.getenv('GoerliSenderAddr'))
+    elif chain == "Sepolia":
+        sys.stdout.write(os.getenv("SepoliaSenderAddr"))
 
 
 args_n = len(sys.argv)
@@ -61,6 +64,7 @@ if os.getenv('MultiFile') == "True": #flatten based on multifile arg
     print(flatOutput)
     if "Success!" in flatOutput:
         print("flattened contract!")
+        flat = open("contracts/" + contractName + "_flat.sol", "r")
     else:
         print("failed to flatten multi-file contract, verification wont succeed automatically!")
         if verifyBlockExplorer == True:
@@ -139,6 +143,13 @@ if chain == "Goerli":
     senderAddr = os.getenv('GoerliSenderAddr')
     senderPrivKey = os.getenv('GoerliPrivKey')
     url = os.getenv('GoerliScan')
+elif chain == "Sepolia":
+    rpc = Web3(Web3.HTTPProvider(os.getenv('Sepolia')))
+    chain_id = int(os.getenv('SepoliaID'))
+    senderAddr = os.getenv('SepoliaSenderAddr')
+    senderPrivKey = os.getenv('SepoliaPrivKey')
+    url = os.getenv('SepoliaScan')
+
 
 InitContract = rpc.eth.contract(abi=abi, bytecode=bytecode)
 
@@ -190,7 +201,7 @@ match solcV: #match solidity compiler version to API accepted verification versi
 
 #verifying the code on a block explorer
 if verifyBlockExplorer == True: #https://docs.etherscan.io/tutorials/verifying-contracts-programmatically
-    time.sleep(40)#give the explorer some time to register the transaction
+    time.sleep(60)#give the explorer some time to register the transaction
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
     if constructorArgs == False:
         if os.getenv('MultiFile') == "True":
