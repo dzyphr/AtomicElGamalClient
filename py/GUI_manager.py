@@ -1,19 +1,19 @@
 #######MAIN#########
 def unpackMainGUI(self):
-    self.fromChainLabel.pack_forget()
-    self.fromChain.pack_forget() 
-    self.toChainLabel.pack_forget()
-    self.toChain.pack_forget()
+    self.initiatorChainLabel.pack_forget()
+    self.initiatorChainOption.pack_forget() 
+    self.responderChainLabel.pack_forget()
+    self.responderChainOption.pack_forget()
     self.initiateButton.pack_forget()
     self.initiatorCheckbox.pack_forget()
     from swap import unpackMainSwapGUI
     unpackMainSwapGUI(self)
 
 def repackMainGUI(self):
-    self.fromChainLabel.pack(pady=2, padx=2)
-    self.fromChain.pack(pady=2, padx=2) 
-    self.toChainLabel.pack(pady=2, padx=2)
-    self.toChain.pack(pady=2, padx=2)
+    self.initiatorChainLabel.pack(pady=2, padx=2)
+    self.initiatorChainOption.pack(pady=2, padx=2) 
+    self.responderChainLabel.pack(pady=2, padx=2)
+    self.responderChainOption.pack(pady=2, padx=2)
     self.initiatorCheckbox.pack(pady=2, padx=2)
     from swap import repackMainSwapGUI
     repackMainSwapGUI(self)
@@ -61,7 +61,7 @@ def GUI_Arrange_Swap_Based(self): #here we are updating the GUI according to the
 #######CHAIN#########
 def GUI_ReArrange_Chain_Based(self):
     from GUI_manager import unpackMainGUI, repackMainGUI
-    if self.senderChain == "Ergo" or self.receiverChain == "Ergo": #future make this all non account chains
+    if self.initiatorChain == "Ergo" or self.responderChain == "Ergo": #future make this all non account chains
         unpackMainGUI(self)                                            #TODO: current issue is that this handles swap based GUI
                                                     #coordinating accross is difficult, need to pick specific GUI order
         self.chainPubkeyLabel.pack(pady=2, padx=2)

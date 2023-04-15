@@ -1,6 +1,6 @@
 import ast
 from GUI_manager import *
-from chain import setChainPubkey, setSenderChain
+from chain import setLocalChainPubkey, setCrossChainPubkey
 import tkinter, customtkinter, os, json, time, subprocess, sys, io, pyperclip
 
 class SwapTab(customtkinter.CTkTabview):
@@ -10,13 +10,13 @@ class SwapTab(customtkinter.CTkTabview):
 def setInitiator(self): #here we are setting the initiator based on the PREVIOUS state of the isInitiator boolean
     if self.isInitiator == True:
         self.isInitiator = False
-        setSenderChain(self, self.fromChain.get())
+#        setSenderChain(self, self.initiatorChainOption.get())
         print("isInitiator = ", self.isInitiator)
         GUI_Arrange_Swap_Based(self)
     else:
         self.isInitiator = True
         print("isInitiator = ", self.isInitiator)
-        setSenderChain(self, self.fromChain.get())
+#        setSenderChain(self, self.initiatorChainOption.get())
         GUI_Arrange_Swap_Based(self)
 
 def determineSwapName():
@@ -42,9 +42,9 @@ def initiateSwap(self):
     def copyENCInit():
             pyperclip.copy(open(self.swap_tab_view.get() + "/ENC_initiation.atomicswap", "r").read()) 
             #make sure active tab functions get swap name from current open tab
-    if self.senderChain  == "NotSelected" or self.receiverChain == "NotSelected":
+    if self.initiatorChainOption  == "NotSelected" or self.responderChain == "NotSelected":
         print("at least one chain not selected!")
-    elif self.senderChain == self.receiverChain:
+    elif self.initiatorChainOption == self.responderChain:
         print("same chain selected for both sides of swap!")
     else:
         self.currentReceiver = self.CounterpartyElGamalKey.get()
@@ -56,7 +56,7 @@ def initiateSwap(self):
             print("detected alphabetical characters, hexadecimal keys not implemented yet")
         elif self.isInitiator == True:
             if self.chainPubkey == "":
-                setChainPubkey(self)
+                setCrossChainPubkey(self)
             self.currentswapname = determineSwapName()
             if self.swapTabSet == False:
                 self.swap_tab_view = SwapTab(master=self.frame, width=600, height=600)
@@ -79,8 +79,9 @@ def initiateSwap(self):
                         customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
                         text="Copy", command=copyENCInit)
                 self.swap_tab_view.newElGamalKeyButton.grid(row=1, column=0, padx=10, pady=10) #ElGamal KeyGen Button
-
-            initiation = os.popen("python3 -u AtomicMultiSigECC/py/deploy.py  p1Initiate " + self.chainPubkey).read() #run wit -u for unbuffered stream
+            init = "python3 -u AtomicMultiSigECC/py/deploy.py  p1Initiate " + self.chainPubkey
+            print(init)
+            initiation = os.popen(init).read() #run wit -u for unbuffered stream
             runElGamal = "./ElGamal encryptToPubKey " + \
                     self.currentReceiver + ' ' + \
                     self.ElGamalKeyFileName + ' ' + \
@@ -117,10 +118,13 @@ def initiateSwap(self):
                 decryptElGamal = \
                         "./ElGamal decryptFromPubKey " + self.currentswapname + "/initiation.atomicswap " + \
                         self.currentReceiver + ' ' + self.ElGamalKeyFileName
+                print(decryptElGamal)
                 decryption = os.popen(decryptElGamal).read()
                 f = open(self.currentswapname + "/DEC_initiation.atomicswap", "w")
                 f.write(decryption)
                 f.close()
+                print(decryption)
+                time.sleep(2)
                 j = json.loads(decryption)
                 self.counterpartyChainPubkey = j["chainPubkey"]
                 ksG = j["ksG"]
@@ -151,7 +155,7 @@ def initiateSwap(self):
 #                print(rename.replace('AtomicMultiSigSecp256k1', self.currentswapname))
                 rewrite = open("Atomicity/" + self.currentswapname + "/contracts/" + self.currentswapname + ".sol", "w")
                 rewrite.write(rename.replace('AtomicMultiSigSecp256k1', self.currentswapname))
-                specifyChain = os.popen("echo 'CurrentChain=\"" + self.fromChain.get() + "\"' >> Atomicity/" + \
+                specifyChain = os.popen("echo 'CurrentChain=\"" + self.responderChainOption.get() + "\"' >> Atomicity/" + \
                         self.currentswapname + "/.env").read()
                 self.deployAtomicSwapContractLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
                         text="Click to deploy the atomic swap contract: ")

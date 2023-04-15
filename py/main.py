@@ -24,7 +24,6 @@ class GUI(customtkinter.CTk):
         self.thisDir = os.listdir(".")
         if firstElGamalKey(self) == False:
             self.ElGamalKeyFileName = dirElGamalKeysGetLast(self)
-    
         
         self.ElGamalPub = customtkinter.CTkLabel( master=self.frame, \
                 text="ElGamal Key File: " + self.ElGamalKeyFileName,font=("Roboto", 12))
@@ -46,7 +45,6 @@ class GUI(customtkinter.CTk):
                 width=700, height=5)
         self.CounterpartyElGamalKey.pack(pady=2, padx=2)
        
-
         def goSetChainPubkey(): #TODO: we can replace all of this with deriving the pubkey from the private key based on the chain
             setChainPubkey(self)
         self.chainPubkey = ""
@@ -59,26 +57,28 @@ class GUI(customtkinter.CTk):
         self.setChainPubkey = customtkinter.CTkButton(master=self.frame, text="Set Chain Pubkey", command=goSetChainPubkey)
         self.setChainPubkey.pack(pady=2, padx=2)
         self.setChainPubkey.pack_forget()
-
-
+        
+        #Format is not convinient, need to set initiator and responder chain instead of sender and receiver to force correctness
+        #then when setting our current chain we can check if we are responder or initiator and choose chain based on this from
+        #fixed choices, makes testing and realtime easier
 
         #sender chain dropdown
-        self.senderChain = "NotSelected"
-        self.fromChainLabel = customtkinter.CTkLabel(master=self.frame, text="Select your chain:", font=("Roboto", 14))
-        self.fromChainLabel.pack(pady=2, padx=2)
-        def goSetSenderChain(choice):
-            setSenderChain(self, choice)
-        self.fromChain = customtkinter.CTkOptionMenu(master=self.frame, values=chains, command=goSetSenderChain)
-        self.fromChain.pack(pady=2, padx=2)
+        self.initiatorChain = "NotSelected"
+        self.initiatorChainLabel = customtkinter.CTkLabel(master=self.frame, text="Select initiator's chain:", font=("Roboto", 14))
+        self.initiatorChainLabel.pack(pady=2, padx=2)
+        def goSetInitiatorChain(choice):
+            setInitiatorChain(self, choice)
+        self.initiatorChainOption = customtkinter.CTkOptionMenu(master=self.frame, values=chains, command=goSetInitiatorChain)
+        self.initiatorChainOption.pack(pady=2, padx=2)
 
         #receiver chain dropdown
-        self.receiverChain = "NotSelected"
-        self.toChainLabel = customtkinter.CTkLabel(master=self.frame, text="Select P2's chain:", font=("Roboto", 14))
-        self.toChainLabel.pack(pady=2, padx=2)
-        def goSetReceiverChain(choice):
-            setReceiverChain(self, choice)
-        self.toChain = customtkinter.CTkOptionMenu(master=self.frame, values=chains, command=goSetReceiverChain)
-        self.toChain.pack(pady=2, padx=2)
+        self.responderChain = "NotSelected"
+        self.responderChainLabel = customtkinter.CTkLabel(master=self.frame, text="Select responder's chain:", font=("Roboto", 14))
+        self.responderChainLabel.pack(pady=2, padx=2)
+        def goSetResponderChain(choice):
+            setResponderChain(self, choice)
+        self.responderChainOption = customtkinter.CTkOptionMenu(master=self.frame, values=chains, command=goSetResponderChain)
+        self.responderChainOption.pack(pady=2, padx=2)
 
         def goInitiateSwap():
             initiateSwap(self)
@@ -106,7 +106,6 @@ class GUI(customtkinter.CTk):
         self.responseCommitLabel.pack(pady=2, padx=2)
         self.respondButton = customtkinter.CTkButton(master=self.frame, text="Respond to Swap", command=goInitiateSwap)
         self.respondButton.pack(pady=2, padx=2)
-
 
 
 

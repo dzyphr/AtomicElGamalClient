@@ -43,20 +43,6 @@ if args_n > 1:
         getAccount()
         exit()
 
-#PICK THE CHAIN HERE #fills all chain specific args with env variables
-if chain == "Goerli":
-    rpc = Web3(Web3.HTTPProvider(os.getenv('Goerli')))
-    chain_id = int(os.getenv('GoerliID')) #use int so it doesnt interpret env variable as string values
-    senderAddr = os.getenv('GoerliSenderAddr')
-    senderPrivKey = os.getenv('GoerliPrivKey')
-    url = os.getenv('GoerliScan')
-elif chain == "Sepolia":
-    rpc = Web3(Web3.HTTPProvider(os.getenv('Sepolia')))
-    chain_id = int(os.getenv('SepoliaID'))
-    senderAddr = os.getenv('SepoliaSenderAddr')
-    senderPrivKey = os.getenv('SepoliaPrivKey')
-    url = os.getenv('SepoliaScan')
-
 
 with open(contractDir + contractFile, "r") as file:
     contract = file.read()
@@ -151,6 +137,19 @@ else:
     with open(contractName + xabi + xjson, "w") as file:
         json.dump(abi, file)
 
+#PICK THE CHAIN HERE #fills all chain specific args with env variables
+if chain == "Goerli":
+    rpc = Web3(Web3.HTTPProvider(os.getenv('Goerli')))
+    chain_id = int(os.getenv('GoerliID')) #use int so it doesnt interpret env variable as string values
+    senderAddr = os.getenv('GoerliSenderAddr')
+    senderPrivKey = os.getenv('GoerliPrivKey')
+    url = os.getenv('GoerliScan')
+elif chain == "Sepolia":
+    rpc = Web3(Web3.HTTPProvider(os.getenv('Sepolia')))
+    chain_id = int(os.getenv('SepoliaID'))
+    senderAddr = os.getenv('SepoliaSenderAddr')
+    senderPrivKey = os.getenv('SepoliaPrivKey')
+    url = os.getenv('SepoliaScan')
 
 
 InitContract = rpc.eth.contract(abi=abi, bytecode=bytecode)
