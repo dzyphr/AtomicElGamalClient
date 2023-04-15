@@ -26,7 +26,7 @@ xbyte = "-bytecode"
 contractDir = "./contracts/"
 contractFile = contractName + xsol
 constructorArgs = bool(os.getenv('ConstructorArgs'))
-gasMod = 2
+gasMod = 1
 chain = os.getenv('CurrentChain') #set the current chain in .env
 
 
@@ -36,12 +36,57 @@ def getAccount():
     elif chain == "Sepolia":
         sys.stdout.write(os.getenv("SepoliaSenderAddr"))
 
+def sendAmount(amount, receiver):
+    if chain == "Goerli":
+        rpc = Web3(Web3.HTTPProvider(os.getenv('Goerli')))
+        chain_id = int(os.getenv('GoerliID')) #use int so it doesnt interpret env variable as string values
+        senderAddr = os.getenv('GoerliSenderAddr')
+        senderPrivKey = os.getenv('GoerliPrivKey')
+        url = os.getenv('GoerliScan')
+    elif chain == "Sepolia":
+        rpc = Web3(Web3.HTTPProvider(os.getenv('Sepolia')))
+        chain_id = int(os.getenv('SepoliaID'))
+        senderAddr = os.getenv('SepoliaSenderAddr')
+        senderPrivKey = os.getenv('SepoliaPrivKey')
+        url = os.getenv('SepoliaScan')
+    txdata  = {
+        'to': receiver,
+        'from': senderAddr,
+        'value': int(amount),
+        'gasPrice': rpc.eth.gas_price * gasMod,
+        'gas': 70000,
+        'nonce': rpc.eth.get_transaction_count(senderAddr)
+    }
+    signed = rpc.eth.account.sign_transaction(txdata, senderPrivKey)
+    rpc.eth.send_raw_transaction(signed.rawTransaction)
 
 args_n = len(sys.argv)
 if args_n > 1:
     if sys.argv[1] == "getAccount":
         getAccount()
         exit()
+    elif sys.argv[1] == "sendAmount":
+        if args_n > 3:
+            sendAmount(sys.argv[2], sys.argv[3])
+            exit()
+        else:
+            print("enter amount(in wei) and receiver evm pubkey as followup arguments to sendAmount")
+            exit()
+
+#PICK THE CHAIN HERE #fills all chain specific args with env variables
+if chain == "Goerli":
+    rpc = Web3(Web3.HTTPProvider(os.getenv('Goerli')))
+    chain_id = int(os.getenv('GoerliID')) #use int so it doesnt interpret env variable as string values
+    senderAddr = os.getenv('GoerliSenderAddr')
+    senderPrivKey = os.getenv('GoerliPrivKey')
+    url = os.getenv('GoerliScan')
+elif chain == "Sepolia":
+    rpc = Web3(Web3.HTTPProvider(os.getenv('Sepolia')))
+    chain_id = int(os.getenv('SepoliaID'))
+    senderAddr = os.getenv('SepoliaSenderAddr')
+    senderPrivKey = os.getenv('SepoliaPrivKey')
+    url = os.getenv('SepoliaScan')
+
 
 
 with open(contractDir + contractFile, "r") as file:
@@ -60,14 +105,14 @@ if os.getenv('MultiFile') == "True": #flatten based on multifile arg
                 contractName  + ".sol\",\"outputDir\": \"../" + \
                 contractName  + "/contracts/\"}\' > ../solidity-flattener/config.json"
     c = os.popen(change_conf).read()
-    print(c)
+#    print(c)
     flatOutput = os.popen("cd ../solidity-flattener/ && npm start").read()
-    print(flatOutput)
+#    print(flatOutput)
     if "Success!" in flatOutput:
-        print("flattened contract!")
+#        print("flattened contract!")
         flat = open("contracts/" + contractName + "_flat.sol", "r")
     else:
-        print("failed to flatten multi-file contract, verification wont succeed automatically!")
+#        print("failed to flatten multi-file contract, verification wont succeed automatically!")
         if verifyBlockExplorer == True:
             exit(1)
 
@@ -137,24 +182,11 @@ else:
     with open(contractName + xabi + xjson, "w") as file:
         json.dump(abi, file)
 
-#PICK THE CHAIN HERE #fills all chain specific args with env variables
-if chain == "Goerli":
-    rpc = Web3(Web3.HTTPProvider(os.getenv('Goerli')))
-    chain_id = int(os.getenv('GoerliID')) #use int so it doesnt interpret env variable as string values
-    senderAddr = os.getenv('GoerliSenderAddr')
-    senderPrivKey = os.getenv('GoerliPrivKey')
-    url = os.getenv('GoerliScan')
-elif chain == "Sepolia":
-    rpc = Web3(Web3.HTTPProvider(os.getenv('Sepolia')))
-    chain_id = int(os.getenv('SepoliaID'))
-    senderAddr = os.getenv('SepoliaSenderAddr')
-    senderPrivKey = os.getenv('SepoliaPrivKey')
-    url = os.getenv('SepoliaScan')
 
 
 InitContract = rpc.eth.contract(abi=abi, bytecode=bytecode)
 
-print("current gas price :", rpc.eth.gas_price );
+#print("current gas price :", rpc.eth.gas_price );
 
 if constructorArgs == True:
 
@@ -175,12 +207,12 @@ else:
             "gasPrice": rpc.eth.gas_price * gasMod
         }
     )
-
 signedTx = rpc.eth.account.sign_transaction(tx, private_key=senderPrivKey)
 
 tx_hash = rpc.eth.send_raw_transaction(signedTx.rawTransaction)
 tx_receipt = rpc.eth.wait_for_transaction_receipt(tx_hash)
-print(contractName, "Deployed!\n")
+#print(contractName, "Deployed!\n")
+print(tx_receipt.contractAddress)
 uploadedContract = rpc.eth.contract(address=tx_receipt.contractAddress, abi=abi)
 
 APIsolcV = "v0.8.18-nightly.2023.1.25+commit.fd9ac9ab" #latest nightly as default
@@ -256,4 +288,4 @@ if verifyBlockExplorer == True: #https://docs.etherscan.io/tutorials/verifying-c
                 'licenseType': 5 #GPL 3
         }
     response = requests.post(url, headers=headers, data=content) #not sure how to properly check for response working though
-    print(response.text)
+#    print(response.text)
