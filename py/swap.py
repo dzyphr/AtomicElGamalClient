@@ -100,8 +100,30 @@ def initiateSwap(self):
             f.write(self.ElGamalPublicKey)
             f.close()
         elif self.isInitiator == False:
-            def copyResponse():
-                pyperclip.copy(open(self.swap_tab_view.get() + "/ENC_response_commitment.atomicswap", "r").read())
+            def copyResponse(): #Left off here
+                if os.path.isfile(self.currentswapname + "/responderContractAddress"):
+                    addr = open(self.currentswapname + "/responderContractAddress", "r").read()
+                    response = open(self.swap_tab_view.get() + "/response_commitment.atomicswap", "r").read() 
+                    response.replace(\
+                            "}", \
+                            "\t\"contractAddr\": " + '"' + addr + "\",\n" \
+                            "\t\"chain\": " + '"' + self.responderChain + "\"\n \
+                            }"
+                    ) 
+                    runElGamal = "./ElGamal encryptToPubKey " + \
+                        self.currentReceiver + ' ' + \
+                        self.ElGamalKeyFileName + ' ' + \
+                        "\'" + response + "\' " + \
+                        self.currentswapname + "/ENC_response_commitment.atomicswap"
+                    os.popen(runElGamal).read()
+                    f = open(self.currentswapname + "/response_commitment.atomicswap", "w")
+                    f.write(response)
+                    f.close()
+                    time.sleep(1)
+                    f = open(self.currentswapname + "/ENC_response_commitment.atomicswap", "r")
+                    enc_response = f.read()
+                    f.close()
+                    pyperclip.copy(enc_response)
             #make sure active tab functions get swap name from current open tab
             self.currentswapname = determineSwapName()
             if self.swapTabSet == False:
@@ -167,6 +189,7 @@ def initiateSwap(self):
                     addrfile = open(self.currentswapname + "/responderContractAddress", "w")
                     addrfile.write(addr)
                     addrfile.close()
+
                 self.deployAtomicSwapButton = customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
                         text="Deploy", command=deployScalarSwapContract)
                 self.deployAtomicSwapButton.grid(row=1, column=0, padx=10, pady=10)
@@ -180,6 +203,7 @@ def initiateSwap(self):
                 self.counterpartyChainPubkeyLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
                         text="Counterparty ChainPubkey: " + self.counterpartyChainPubkey)
                 self.counterpartyChainPubkeyLabel.grid(row=2, column=0, padx=10, pady=10)
+                '''
                 self.swap_tab_view.labelresponse = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
                     text="Click to copy generated response commitments: ")
                 self.swap_tab_view.labelresponse.grid(row=3, column=0, padx=10, pady=10)
@@ -187,6 +211,7 @@ def initiateSwap(self):
                         customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
                         text="Copy", command=copyResponse)
                 self.swap_tab_view.copyResponseButton.grid(row=4, column=0, padx=10, pady=10)
+                '''
                 #TODO: WARN USER about sending funds!!
                 #TODO: make value entry based on chain aka wei or sats
                 def goFund():
@@ -208,6 +233,13 @@ def initiateSwap(self):
                 self.swap_tab_view.fundButton = customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
                     text="Fund", command=goFund)
                 self.swap_tab_view.fundButton.grid(row=6, column=1, padx=10, pady=10)
+                self.swap_tab_view.labelresponse = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+                    text="Click to copy generated response commitments: ")
+                self.swap_tab_view.labelresponse.grid(row=3, column=0, padx=10, pady=10)
+                self.swap_tab_view.copyResponseButton = \
+                        customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
+                        text="Copy", command=copyResponse)
+                self.swap_tab_view.copyResponseButton.grid(row=4, column=0, padx=10, pady=10)
             else:
                 print("paste in the encrypted initiator commitment")
 
