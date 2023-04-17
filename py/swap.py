@@ -191,10 +191,11 @@ def initiateSwap(self):
                 #TODO: make value entry based on chain aka wei or sats
                 def goFund():
                     if os.path.isfile(self.currentswapname + "/responderContractAddress"):
-                        cmd = "cd Atomicity/" \
-                                self.responderChain + " && ./deploy.sh sendAmount " + \
-                                self.swap_tab_view.valueToSpendEntry.get()  + open(self.currentswapname + \
-                                "/responderContractAddress", "r").read()
+                        addr = open(self.currentswapname + "/responderContractAddress", "r").read().rstrip()
+                        cmd = "cd Atomicity/" + \
+                                self.currentswapname + " && ./deploy.sh sendAmount " + \
+                                self.swap_tab_view.valueToSpendEntry.get()  + ' '+ addr
+                        print(cmd)
                         os.popen(cmd).read()          
                     else:
                         print("responders contract not found! not deployed yet or recieved")
