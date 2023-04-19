@@ -60,24 +60,25 @@ def initiateSwap(self):
             if self.swapTabSet == False:
                 self.swap_tab_view = SwapTab(master=self.frame, width=600, height=600)
                 self.swap_tab_view.add(self.currentswapname)
-                self.swap_tab_view.label = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+                self.swap_tab_view.copylabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
                     text="Click to copy generated Pedersen commitments: ")
-                self.swap_tab_view.label.grid(row=0, column=0, padx=10, pady=10)
-                self.swap_tab_view.newElGamalKeyButton = \
+                self.swap_tab_view.copylabel.grid(row=0, column=0, padx=10, pady=10)
+                self.swap_tab_view.copyButton = \
                         customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
                         text="Copy", command=copyENCInit)
-                self.swap_tab_view.newElGamalKeyButton.grid(row=1, column=0, padx=10, pady=10) #ElGamal KeyGen Button
+                self.swap_tab_view.copyButton.grid(row=1, column=0, padx=10, pady=10) #ElGamal KeyGen Button
                 self.swap_tab_view.pack()
                 self.swapTabSet = True
             else:
                 self.swap_tab_view.add(self.currentswapname)
-                self.swap_tab_view.label = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+                self.swap_tab_view.copylabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
                     text="Click to copy generated Pedersen commitments: ")
-                self.swap_tab_view.label.grid(row=0, column=0, padx=10, pady=10)
-                self.swap_tab_view.newElGamalKeyButton = \
+                self.swap_tab_view.copylabel.grid(row=0, column=0, padx=10, pady=10)
+                self.swap_tab_view.copyButton = \
                         customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
                         text="Copy", command=copyENCInit)
-                self.swap_tab_view.newElGamalKeyButton.grid(row=1, column=0, padx=10, pady=10) #ElGamal KeyGen Button
+                self.swap_tab_view.copyButton.grid(row=1, column=0, padx=10, pady=10) #ElGamal KeyGen Button
+                
             init = "python3 -u AtomicMultiSigECC/py/deploy.py  p1Initiate " + self.chainPubkey
             print(init)
             initiation = os.popen(init).read() #run wit -u for unbuffered stream
