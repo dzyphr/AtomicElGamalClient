@@ -123,7 +123,7 @@ def initiateSwap(self):
                         text="Decrypt", command=decryptResponse)
                 self.swap_tab_view.decryptResponderCommitmentButton.grid(row=5, column=0, padx=10, pady=10)
                 
-            init = "python3 -u AtomicMultiSigECC/py/deploy.py  p1Initiate " + self.chainPubkey
+            init = "python3 -u AtomicMultiSigECC/py/deploy.py  p1Initiate " + self.chainPubkey + " " + self.initiatorChain
             print(init)
             initiation = os.popen(init).read() #run wit -u for unbuffered stream
             runElGamal = "./ElGamal encryptToPubKey " + \
@@ -208,6 +208,7 @@ def initiateSwap(self):
                         "./ElGamal decryptFromPubKey " + self.currentswapname + "/initiation.atomicswap " + \
                         self.currentReceiver + ' ' + self.ElGamalKeyFileName
                 decryption = os.popen(decryptElGamal).read()
+                print(decryption)
                 f = open(self.currentswapname + "/DEC_initiation.atomicswap", "w")
                 f.write(decryption)
                 f.close()
@@ -215,6 +216,7 @@ def initiateSwap(self):
                 j = json.loads(decryption)
                 self.counterpartyChainPubkey = j["chainPubkey"]
                 ksG = j["ksG"]
+                crossChain = j["localChain"]
                 response = os.popen("python3 -u AtomicMultiSigECC/py/deploy.py p2Respond " + "'" + ksG + "'").read() 
                 f = open(self.currentswapname + "/response_commitment.atomicswap", "w")
                 f.write(response)
