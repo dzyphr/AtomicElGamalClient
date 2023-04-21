@@ -12,10 +12,12 @@ def setInitiator(self): #here we are setting the initiator based on the PREVIOUS
         self.isInitiator = False
         print("isInitiator = ", self.isInitiator)
         GUI_Arrange_Swap_Based(self)
+        GUI_ReArrange_Chain_Based(self)
     else:
         self.isInitiator = True
         print("isInitiator = ", self.isInitiator)
         GUI_Arrange_Swap_Based(self)
+        GUI_ReArrange_Chain_Based(self)
 
 def determineSwapName():
     swap = "swap"
@@ -52,8 +54,10 @@ def initiateSwap(self):
                             self.currentReceiver + ' ' + self.ElGamalKeyFileName
                 decrypt = os.popen(decryptElGamal).read()
                 print(decrypt)
-    if self.initiatorChainOption  == "NotSelected" or self.responderChain == "NotSelected":
-        print("at least one chain not selected!")
+    if self.isInitiator == True and self.initiatorChainOption  == "NotSelected" or self.responderChain == "NotSelected":
+        print("at least one chain not selected! initiator must select both chains")
+    elif self.isInitiator == False and self.responderChainOption  == "NotSelected":
+        print("select the chain you are on!")
     elif self.initiatorChainOption == self.responderChain:
         print("same chain selected for both sides of swap!")
     else:
@@ -216,7 +220,7 @@ def initiateSwap(self):
                 j = json.loads(decryption)
                 self.counterpartyChainPubkey = j["chainPubkey"]
                 ksG = j["ksG"]
-                crossChain = j["localChain"]
+                crossChain = j["localChain"] #When responder sending chainpubkey to counterparty, get key from this chain
                 response = os.popen("python3 -u AtomicMultiSigECC/py/deploy.py p2Respond " + "'" + ksG + "'").read() 
                 f = open(self.currentswapname + "/response_commitment.atomicswap", "w")
                 f.write(response)

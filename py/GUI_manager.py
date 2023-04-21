@@ -6,8 +6,10 @@ def unpackMainGUI(self):
     self.responderChainOption.pack_forget()
     self.initiateButton.pack_forget()
     self.initiatorCheckbox.pack_forget()
-    from swap import unpackMainSwapGUI
-    unpackMainSwapGUI(self)
+    self.initiatorCommitLabel.pack_forget()
+    self.initiatorCommitment.pack_forget()
+    self.responseCommitLabel.pack_forget()
+    self.respondButton.pack_forget()
 
 def repackMainGUI(self):
     self.initiatorChainLabel.pack(pady=2, padx=2)
@@ -15,8 +17,14 @@ def repackMainGUI(self):
     self.responderChainLabel.pack(pady=2, padx=2)
     self.responderChainOption.pack(pady=2, padx=2)
     self.initiatorCheckbox.pack(pady=2, padx=2)
-    from swap import repackMainSwapGUI
-    repackMainSwapGUI(self)
+    if self.isInitiator == False:
+        self.initiatorChainLabel.pack_forget()
+        self.initiatorChainOption.pack_forget()
+        self.initiatorCommitment.pack_forget()
+        self.initiatorCommitLabel.pack_forget()
+        self.responseCommitLabel.pack(pady=2, padx=2)
+        self.respondButton.pack(pady=2, padx=2)
+
 
 
 #######SWAP#########
@@ -28,11 +36,11 @@ def unpackMainSwapGUI(self): #unpack and repack are bulk unpacking subroutines f
     self.initiateButton.pack_forget()
 
 def repackMainSwapGUI(self):
-    self.initiatorCommitLabel.pack()
-    self.initiatorCommitment.pack()
-    self.responseCommitLabel.pack()
-    self.respondButton.pack()
-    self.initiateButton.pack()
+    self.initiatorCommitLabel.pack(pady=2, padx=2)
+    self.initiatorCommitment.pack(pady=2, padx=2)
+    self.responseCommitLabel.pack(pady=2, padx=2)
+    self.respondButton.pack(pady=2, padx=2)
+    self.initiateButton.pack(pady=2, padx=2)
 
 def GUI_Arrange_Swap_Based(self): #here we are updating the GUI according to the CURRENT state of the isInitiator boolean
     if self.isInitiator == True:    #Swap based arrange is a specific ordering based on the state of the initiator
@@ -42,7 +50,10 @@ def GUI_Arrange_Swap_Based(self): #here we are updating the GUI according to the
         self.initiatorCommitment.pack_forget()
         self.responseCommitLabel.pack_forget()
         self.respondButton.pack_forget()
-        self.initiateButton.pack()
+        self.initiatorChainLabel.pack(pady=2, padx=2)
+        self.initiatorChainOption.pack(pady=2, padx=2)
+        self.initiateButton.pack(pady=2, padx=2)
+
         if hasattr(self, 'swap_tab_view'):
             self.swap_tab_view.pack()
     else:
@@ -50,10 +61,12 @@ def GUI_Arrange_Swap_Based(self): #here we are updating the GUI according to the
             self.swap_tab_view.pack_forget()
 
         self.initiateButton.pack_forget()
-        self.initiatorCommitLabel.pack()
-        self.initiatorCommitment.pack()
-        self.responseCommitLabel.pack()
-        self.respondButton.pack()
+        self.initiatorChainLabel.pack_forget()
+        self.initiatorChainOption.pack_forget()
+        self.initiatorCommitLabel.pack(pady=2, padx=2)
+        self.initiatorCommitment.pack(pady=2, padx=2)
+        self.responseCommitLabel.pack(pady=2, padx=2)
+        self.respondButton.pack(pady=2, padx=2)
 
         if hasattr(self, 'swap_tab_view'):
             self.swap_tab_view.pack()
@@ -66,7 +79,6 @@ def GUI_ReArrange_Chain_Based(self):
                                                     #coordinating accross is difficult, need to pick specific GUI order
         self.chainPubkeyLabel.pack(pady=2, padx=2)
         self.chainPubkeyEntry.pack(pady=2, padx=2) #introduce derived public key indexer for non account chains
-        self.setChainPubkey.pack(pady=2, padx=2)
 
         repackMainGUI(self)
         from swap import GUI_Arrange_Swap_Based
@@ -74,7 +86,6 @@ def GUI_ReArrange_Chain_Based(self):
     else:
         self.chainPubkeyLabel.pack_forget()
         self.chainPubkeyEntry.pack_forget()
-        self.setChainPubkey.pack_forget() #remove indexer for account chains
 
         unpackMainGUI(self)
         repackMainGUI(self)

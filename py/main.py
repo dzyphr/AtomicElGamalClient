@@ -45,8 +45,8 @@ class GUI(customtkinter.CTk):
                 width=700, height=5)
         self.CounterpartyElGamalKey.pack(pady=2, padx=2)
        
-        def goSetChainPubkey(): #TODO: we can replace all of this with deriving the pubkey from the private key based on the chain
-            setChainPubkey(self)
+#        def goSetChainPubkey(): #TODO: we can replace all of this with deriving the pubkey from the private key based on the chain
+#            setChainPubkey(self)
         self.chainPubkey = ""
         self.chainPubkeyLabel =  customtkinter.CTkLabel(master=self.frame, text="Your Chain Pubkey Index:", font=("Roboto", 14))
         self.chainPubkeyLabel.pack(pady=2, padx=2)
@@ -54,9 +54,6 @@ class GUI(customtkinter.CTk):
         self.chainPubkeyEntry = customtkinter.CTkEntry(master=self.frame, width=20, height=5)
         self.chainPubkeyEntry.pack(pady=2, padx=2)
         self.chainPubkeyEntry.pack_forget()
-        self.setChainPubkey = customtkinter.CTkButton(master=self.frame, text="Set Chain Pubkey", command=goSetChainPubkey)
-        self.setChainPubkey.pack(pady=2, padx=2)
-        self.setChainPubkey.pack_forget()
         
         #Format is not convinient, need to set initiator and responder chain instead of sender and receiver to force correctness
         #then when setting our current chain we can check if we are responder or initiator and choose chain based on this from
@@ -64,16 +61,18 @@ class GUI(customtkinter.CTk):
 
         #sender chain dropdown
         self.initiatorChain = "NotSelected"
-        self.initiatorChainLabel = customtkinter.CTkLabel(master=self.frame, text="Select initiator's chain:", font=("Roboto", 14))
+        self.initiatorChainLabel = customtkinter.CTkLabel(master=self.frame, text="Select initiation chain:", font=("Roboto", 14))
         self.initiatorChainLabel.pack(pady=2, padx=2)
         def goSetInitiatorChain(choice):
             setInitiatorChain(self, choice)
         self.initiatorChainOption = customtkinter.CTkOptionMenu(master=self.frame, values=chains, command=goSetInitiatorChain)
         self.initiatorChainOption.pack(pady=2, padx=2)
+        self.initiatorChainLabel.pack_forget()
+        self.initiatorChainOption.pack_forget()
 
         #receiver chain dropdown
         self.responderChain = "NotSelected"
-        self.responderChainLabel = customtkinter.CTkLabel(master=self.frame, text="Select responder's chain:", font=("Roboto", 14))
+        self.responderChainLabel = customtkinter.CTkLabel(master=self.frame, text="Select response chain:", font=("Roboto", 14))
         self.responderChainLabel.pack(pady=2, padx=2)
         def goSetResponderChain(choice):
             setResponderChain(self, choice)
