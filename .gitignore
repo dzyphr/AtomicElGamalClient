@@ -3,6 +3,7 @@
 /bin
 /__pycache__
 */__pycache__
+__pycache__
 AtomicMultiSigECC/py/__pycache__/
 p1Initiate 
 ElGamal

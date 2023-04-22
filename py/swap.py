@@ -54,7 +54,7 @@ def initiateSwap(self):
                             self.currentReceiver + ' ' + self.ElGamalKeyFileName
                 decrypt = os.popen(decryptElGamal).read()
                 print(decrypt)
-    if self.isInitiator == True and self.initiatorChainOption  == "NotSelected" or self.responderChain == "NotSelected":
+    if self.isInitiator == True and (self.initiatorChain  == "NotSelected" or self.responderChain == "NotSelected"):
         print("at least one chain not selected! initiator must select both chains")
     elif self.isInitiator == False and self.responderChainOption  == "NotSelected":
         print("select the chain you are on!")
@@ -69,9 +69,9 @@ def initiateSwap(self):
         elif any(c.isalpha() for c in self.currentReceiver):
             print("detected alphabetical characters, hexadecimal keys not implemented yet")
         elif self.isInitiator == True:
+            self.currentswapname = determineSwapName()
             if self.chainPubkey == "":
                 setCrossChainPubkeyManual(self)
-            self.currentswapname = determineSwapName()
             if self.swapTabSet == False:
                 self.swap_tab_view = SwapTab(master=self.frame, width=600, height=600)
                 self.swap_tab_view.add(self.currentswapname)
@@ -127,7 +127,7 @@ def initiateSwap(self):
                         text="Decrypt", command=decryptResponse)
                 self.swap_tab_view.decryptResponderCommitmentButton.grid(row=5, column=0, padx=10, pady=10)
                 
-            init = "python3 -u AtomicMultiSigECC/py/deploy.py  p1Initiate " + self.chainPubkey + " " + self.initiatorChain
+            init = "python3 -u SigmaParticle/AtomicMultiSigECC/py/deploy.py  p1Initiate " + self.chainPubkey + " " + self.initiatorChain
             print(init)
             initiation = os.popen(init).read() #run wit -u for unbuffered stream
             runElGamal = "./ElGamal encryptToPubKey " + \
@@ -236,7 +236,7 @@ def initiateSwap(self):
                 self.crossChain = j["localChain"] #When responder sending chainpubkey to counterparty, get key from this chain
                 setCrossChainPubkeyDerived(self)
                 GUI_ReArrange_Chain_Based(self)
-                response = os.popen("python3 -u AtomicMultiSigECC/py/deploy.py p2Respond " + "'" + ksG + "'").read() 
+                response = os.popen("python3 -u SigmaParticle/AtomicMultiSigECC/py/deploy.py p2Respond " + "'" + ksG + "'").read() 
                 f = open(self.currentswapname + "/response_commitment.atomicswap", "w")
                 f.write(response)
                 f.close()
