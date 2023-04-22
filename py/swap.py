@@ -153,14 +153,14 @@ def initiateSwap(self):
                     if os.path.isfile(self.swap_tab_view.get() + "/response_commitment.atomicswap"):
                         addr = open(self.currentswapname + "/responderContractAddress", "r").read().rstrip()
                         response = open(self.swap_tab_view.get() + "/response_commitment.atomicswap", "r").read() 
-                        if "chain" not in response or "enter pubkey index as argument [0 - 9 for now]" in response:
+                        if "chain" not in response :
                             f = open(self.currentswapname + "/response_commitment.atomicswap", "w")
                             init = open(self.currentswapname + "/DEC_initiation.atomicswap", "r").read()
                             j = json.loads(init)
                             self.counterpartyChainPubkey = j["chainPubkey"]
                             self.crossChain = j["localChain"] 
                             if self.crossChain == "Ergo": #TODO: any non account chain
-                                if self.chainPubkeyEntry.get == "":
+                                if self.chainPubkeyEntry.get() == "":
                                     self.chainPubkeyEntry.insert(0, "0")
                                     print("pubkey index not specified using 0")
                             setCrossChainPubkeyDerived(self)
@@ -169,7 +169,7 @@ def initiateSwap(self):
                                     "}", \
                                     "    \"contractAddr\": " + "\"" + addr.rstrip() + "\"" + ",\n"  + \
                                     "    \"chain\": " + "\"" + self.responderChain.rstrip() + "\"" + ",\n" + \
-                                    "    \"Ergo_chainPubkey: " + "\"" + self.chainPubkey.rstrip() + "\"" + "\n" + \
+                                    "    \"" + self.crossChain  + "_chainPubkey: " + "\"" + self.chainPubkey.rstrip() + "\"" + "\n" + \
                                     "}")
                             f.write(edit)
                             print(edit)

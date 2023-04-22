@@ -53,6 +53,8 @@ def setCrossChainPubkeyManual(self):
 
 def setCrossChainPubkeyDerived(self):
     if self.crossChain == "Ergo":
+        if self.chainPubkeyEntry.get() == "":
+            self.chainPubkeyEntry.insert(0, "0")
         self.chainPubkey = os.popen("python3 -u SwapKeyManager/py/deploy.py getPubkey " + self.chainPubkeyEntry.get()).read()
     elif self.crossChain == "Goerli":
         self.chainPubkey = os.popen("python3 Atomicity/Goerli/py/deploy.py getAccount").read()

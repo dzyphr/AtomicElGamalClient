@@ -52,7 +52,8 @@ class GUI(customtkinter.CTk):
         self.chainPubkeyLabel.pack(pady=2, padx=2)
         self.chainPubkeyLabel.pack_forget()
         self.chainPubkeyEntry = customtkinter.CTkEntry(master=self.frame, width=20, height=5)
-        self.chainPubkeyEntry.insert(0, "0")
+        if self.chainPubkeyEntry.get() == "":
+            self.chainPubkeyEntry.insert(0, "0")
         self.chainPubkeyEntry.pack(pady=2, padx=2)
         self.chainPubkeyEntry.configure(textvariable="0")
         self.chainPubkeyEntry.pack_forget()
