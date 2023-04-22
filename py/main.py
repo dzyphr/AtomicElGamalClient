@@ -52,7 +52,9 @@ class GUI(customtkinter.CTk):
         self.chainPubkeyLabel.pack(pady=2, padx=2)
         self.chainPubkeyLabel.pack_forget()
         self.chainPubkeyEntry = customtkinter.CTkEntry(master=self.frame, width=20, height=5)
+        self.chainPubkeyEntry.insert(0, "0")
         self.chainPubkeyEntry.pack(pady=2, padx=2)
+        self.chainPubkeyEntry.configure(textvariable="0")
         self.chainPubkeyEntry.pack_forget()
         
         #Format is not convinient, need to set initiator and responder chain instead of sender and receiver to force correctness
@@ -106,7 +108,7 @@ class GUI(customtkinter.CTk):
         self.respondButton = customtkinter.CTkButton(master=self.frame, text="Respond to Swap", command=goInitiateSwap)
         self.respondButton.pack(pady=2, padx=2)
 
-
+        self.crossChain = ""
 
         root.mainloop()     
 

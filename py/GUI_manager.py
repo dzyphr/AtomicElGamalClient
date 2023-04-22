@@ -62,10 +62,13 @@ def GUI_Arrange_Swap_Based(self): #here we are updating the GUI according to the
 #######CHAIN#########
 def GUI_ReArrange_Chain_Based(self):
     from GUI_manager import unpackMainGUI, repackMainGUI
-    if self.initiatorChain == "Ergo" or self.responderChain == "Ergo": #future make this all non account chains
+    if self.initiatorChain == "Ergo" or self.responderChain == "Ergo" or self.crossChain == "Ergo": 
+        #future make this all non account chains
         unpackMainGUI(self)                                            #TODO: current issue is that this handles swap based GUI
         self.chainPubkeyLabel.pack(pady=2, padx=2)
         self.chainPubkeyEntry.pack(pady=2, padx=2) #introduce derived public key indexer for non account chains
+        if self.chainPubkeyEntry.get() == "":
+            self.chainPubkeyEntry.insert(0, "0")
         repackMainGUI(self)
         from swap import GUI_Arrange_Swap_Based
         GUI_Arrange_Swap_Based(self)

@@ -18,7 +18,7 @@ def setResponderChain(self, choice):
     GUI_ReArrange_Chain_Based(self)
 
 
-def setLocalChainPubkey(self):
+def setLocalChainPubkeyManual(self):
     if self.isInitiator == False:
         if self.responderChain == "Ergo":
             self.chainPubkey = os.popen("python3 -u SwapKeyManager/py/deploy.py getPubkey " + self.chainPubkeyEntry.get()).read()
@@ -33,8 +33,9 @@ def setLocalChainPubkey(self):
             self.chainPubkey = os.popen("python3 Atomicity/Goerli/py/deploy.py getAccount").read()
         elif self.initiatorChain == "Sepolia":
             self.chainPubkey = os.popen("python3 Atomicity/Sepolia/py/deploy.py getAccount").read()
+
 #TODO: merklize chainpubkey into local and cross chainpubkey vars
-def setCrossChainPubkey(self):
+def setCrossChainPubkeyManual(self):
     if self.isInitiator == True:
         if self.responderChain == "Ergo":
             self.chainPubkey = os.popen("python3 -u SwapKeyManager/py/deploy.py getPubkey " + self.chainPubkeyEntry.get()).read()
@@ -49,4 +50,12 @@ def setCrossChainPubkey(self):
             self.chainPubkey = os.popen("python3 Atomicity/Goerli/py/deploy.py getAccount").read()
         elif self.initiatorChain == "Sepolia":
             self.chainPubkey = os.popen("python3 Atomicity/Sepolia/py/deploy.py getAccount").read()
+
+def setCrossChainPubkeyDerived(self):
+    if self.crossChain == "Ergo":
+        self.chainPubkey = os.popen("python3 -u SwapKeyManager/py/deploy.py getPubkey " + self.chainPubkeyEntry.get()).read()
+    elif self.crossChain == "Goerli":
+        self.chainPubkey = os.popen("python3 Atomicity/Goerli/py/deploy.py getAccount").read()
+    elif self.crossChain == "Sepolia":
+        self.chainPubkey = os.popen("python3 Atomicity/Sepolia/py/deploy.py getAccount").read()
 

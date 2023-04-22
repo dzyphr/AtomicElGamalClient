@@ -1,6 +1,6 @@
 import ast
 from GUI_manager import *
-from chain import setLocalChainPubkey, setCrossChainPubkey
+from chain import setLocalChainPubkeyManual, setCrossChainPubkeyManual, setCrossChainPubkeyDerived
 import tkinter, customtkinter, os, json, time, subprocess, sys, io, pyperclip
 
 class SwapTab(customtkinter.CTkTabview):
@@ -70,7 +70,7 @@ def initiateSwap(self):
             print("detected alphabetical characters, hexadecimal keys not implemented yet")
         elif self.isInitiator == True:
             if self.chainPubkey == "":
-                setCrossChainPubkey(self)
+                setCrossChainPubkeyManual(self)
             self.currentswapname = determineSwapName()
             if self.swapTabSet == False:
                 self.swap_tab_view = SwapTab(master=self.frame, width=600, height=600)
@@ -153,12 +153,23 @@ def initiateSwap(self):
                     if os.path.isfile(self.swap_tab_view.get() + "/response_commitment.atomicswap"):
                         addr = open(self.currentswapname + "/responderContractAddress", "r").read().rstrip()
                         response = open(self.swap_tab_view.get() + "/response_commitment.atomicswap", "r").read() 
-                        if "chain" not in response:
+                        if "chain" not in response or "enter pubkey index as argument [0 - 9 for now]" in response:
                             f = open(self.currentswapname + "/response_commitment.atomicswap", "w")
+                            init = open(self.currentswapname + "/DEC_initiation.atomicswap", "r").read()
+                            j = json.loads(init)
+                            self.counterpartyChainPubkey = j["chainPubkey"]
+                            self.crossChain = j["localChain"] 
+                            if self.crossChain == "Ergo": #TODO: any non account chain
+                                if self.chainPubkeyEntry.get == "":
+                                    self.chainPubkeyEntry.insert(0, "0")
+                                    print("pubkey index not specified using 0")
+                            setCrossChainPubkeyDerived(self)
+                            GUI_ReArrange_Chain_Based(self)
                             edit = response.replace(\
                                     "}", \
                                     "    \"contractAddr\": " + "\"" + addr.rstrip() + "\"" + ",\n"  + \
-                                    "    \"chain\": " + "\"" + self.responderChain.rstrip()+ "\"" + "\n" + \
+                                    "    \"chain\": " + "\"" + self.responderChain.rstrip() + "\"" + ",\n" + \
+                                    "    \"Ergo_chainPubkey: " + "\"" + self.chainPubkey.rstrip() + "\"" + "\n" + \
                                     "}")
                             f.write(edit)
                             print(edit)
@@ -176,6 +187,8 @@ def initiateSwap(self):
                             enc_response = f.read()
                             f.close()
                             pyperclip.copy(enc_response)
+                else:
+                    print("swap contract not deployed yet!")
 
             def deployScalarSwapContract():
                     addr = os.popen("cd Atomicity/" + self.currentswapname + "/ && python3 py/deploy.py").read()
@@ -220,7 +233,9 @@ def initiateSwap(self):
                 j = json.loads(decryption)
                 self.counterpartyChainPubkey = j["chainPubkey"]
                 ksG = j["ksG"]
-                crossChain = j["localChain"] #When responder sending chainpubkey to counterparty, get key from this chain
+                self.crossChain = j["localChain"] #When responder sending chainpubkey to counterparty, get key from this chain
+                setCrossChainPubkeyDerived(self)
+                GUI_ReArrange_Chain_Based(self)
                 response = os.popen("python3 -u AtomicMultiSigECC/py/deploy.py p2Respond " + "'" + ksG + "'").read() 
                 f = open(self.currentswapname + "/response_commitment.atomicswap", "w")
                 f.write(response)
