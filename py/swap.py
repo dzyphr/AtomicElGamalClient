@@ -39,9 +39,11 @@ def determineSwapName():
     return swapname
 
 def initiateSwap(self):
+
     def copyENCInit():
             pyperclip.copy(open(self.swap_tab_view.get() + "/ENC_initiation.atomicswap", "r").read()) 
             #make sure active tab functions get swap name from current open tab
+    
     def decryptResponse():
         if os.path.isfile(self.currentswapname + "/response.atomicswap"):
             print("response commitment already collected for ", self.currentswapname)
@@ -54,6 +56,34 @@ def initiateSwap(self):
                             self.currentReceiver + ' ' + self.ElGamalKeyFileName
                 decrypt = os.popen(decryptElGamal).read()
                 print(decrypt)
+    def setSwapTab():
+        self.swap_tab_view = SwapTab(master=self.frame, width=600, height=600)
+        self.swap_tab_view.add(self.currentswapname)
+        self.swap_tab_view.copylabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+                text="Click to copy generated Pedersen commitments: ")
+        self.swap_tab_view.copylabel.grid(row=0, column=0, padx=10, pady=10)
+        self.swap_tab_view.copyButton = \
+                customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
+                text="Copy", command=copyENCInit)
+        self.swap_tab_view.copyButton.grid(row=1, column=0, padx=10, pady=10)
+        self.swap_tab_view.responderPasteLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+                text="Paste responders commitment: ")
+        self.swap_tab_view.responderPasteLabel.grid(row=2, column=0, padx=10, pady=10)
+        self.swap_tab_view.responderCommitment = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname),\
+                placeholder_text="Responder's Commitments", \
+                width=700, height=5)
+        self.swap_tab_view.responderCommitment.grid(row=3, column=0, padx=10, pady=10)
+        self.swap_tab_view.decryptResponderCommitmentLabel =  \
+                customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+                text="Decrypt responders commitment: ")
+        self.swap_tab_view.decryptResponderCommitmentLabel.grid(row=4, column=0, padx=10, pady=10)
+        self.swap_tab_view.decryptResponderCommitmentButton = \
+                customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
+                text="Decrypt", command=decryptResponse)
+        self.swap_tab_view.decryptResponderCommitmentButton.grid(row=5, column=0, padx=10, pady=10)
+        self.swap_tab_view.pack()
+        self.swapTabSet = True
+
     if self.isInitiator == True and (self.initiatorChain  == "NotSelected" or self.responderChain == "NotSelected"):
         print("at least one chain not selected! initiator must select both chains")
     elif self.isInitiator == False and self.responderChainOption  == "NotSelected":
@@ -73,6 +103,7 @@ def initiateSwap(self):
             if self.chainPubkey == "":
                 setCrossChainPubkeyManual(self)
             if self.swapTabSet == False:
+                '''
                 self.swap_tab_view = SwapTab(master=self.frame, width=600, height=600)
                 self.swap_tab_view.add(self.currentswapname)
                 self.swap_tab_view.copylabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
@@ -97,11 +128,10 @@ def initiateSwap(self):
                         customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
                         text="Decrypt", command=decryptResponse)
                 self.swap_tab_view.decryptResponderCommitmentButton.grid(row=5, column=0, padx=10, pady=10)
-
-
-
                 self.swap_tab_view.pack()
                 self.swapTabSet = True
+                '''
+                setSwapTab()
             else:
                 self.swap_tab_view.add(self.currentswapname)
                 self.swap_tab_view.copylabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
