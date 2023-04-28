@@ -7,6 +7,24 @@ class SwapTab(customtkinter.CTkTabview):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
 
+def updateDataBasedOnOpenTab(self):
+    openTabSwapName = self.swap_tab_view.get()
+
+
+def saveRole(self):
+    if self.isInitiator == True:
+        f = open(self.currentswapname + "/roleData.json", "w")
+        f.write("{\n" + 
+                "    \"role\": \"initiator\"\n" +
+                "}")
+        f.close()
+    else:
+        f = open(self.currentswapname + "/roleData.json", "w")
+        f.write("{\n" +
+                "    \"role\": \"responder\"\n" +
+                "}")
+        f.close()
+
 def setInitiator(self): #here we are setting the initiator based on the PREVIOUS state of the isInitiator boolean
     if self.isInitiator == True:
         self.isInitiator = False
@@ -86,6 +104,8 @@ def initiatorStart(self):
         setSwapTab(self, True)
     else:
         setSwapTab(self, False)
+
+
 
 def copyResponse(self):
     if os.path.isfile(self.currentswapname + "/responderContractAddress"):
@@ -221,6 +241,7 @@ def initiateSwap(self):
             print("detected alphabetical characters, hexadecimal keys not implemented yet")
         elif self.isInitiator == True:
             initiatorStart(self)
+            saveRole(self)
         elif self.isInitiator == False:
             #make sure active tab functions get swap name from current open tab
             self.currentswapname = determineSwapName()
@@ -236,6 +257,7 @@ def initiateSwap(self):
                 commitResponse(self)
                 AtomicityScalarContractOperation(self)
                 SwapResponderGUI(self)
+                saveRole(self)
             else:
                 print("paste in the encrypted initiator commitment")
 
