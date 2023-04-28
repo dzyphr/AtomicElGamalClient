@@ -166,6 +166,36 @@ def decryptInitiation(self):
     self.ksG = j["ksG"]
     self.crossChain = j["localChain"] #When responder sending chainpubkey to counterparty, get key from this chain
 
+def commitResponse(self):
+    self.response = os.popen("python3 -u SigmaParticle/AtomicMultiSigECC/py/deploy.py p2Respond " + "'" + self.ksG + "'").read()
+    f = open(self.currentswapname + "/response_commitment.atomicswap", "w")
+    f.write(self.response)
+    f.close()
+    j = json.loads(self.response)
+    self.xG = j["xG"]
+
+def AtomicityScalarContractOperation(self):
+    cmd = "cd Atomicity && ./new_frame " + self.currentswapname  + \
+        " -M -CA 3 " + "\\\"" + self.counterpartyChainPubkey + "\\\" " + \
+        str(ast.literal_eval(self.xG)[0])  + " " + str(ast.literal_eval(self.xG)[1])
+    new_frame = os.popen(cmd)
+    time.sleep(1) #wait for file to be built
+    #copy in generic ECC timelock multisig contract for atomic swap
+    os.remove("Atomicity/" + self.currentswapname + "/contracts/" + self.currentswapname + ".sol")
+    contract_copy = \
+            "cd Atomicity/" + self.currentswapname + "/contracts " + \
+            "&& cp ../../AtomicMultiSigSecp256k1/contracts/AtomicMultiSigSecp256k1.sol " + self.currentswapname + ".sol" + \
+            "&& cp ../../AtomicMultiSigSecp256k1/contracts/ReentrancyGuard.sol . " + \
+            "&& cp ../../AtomicMultiSigSecp256k1/contracts/EllipticCurve.sol . "
+    cpy = os.popen(contract_copy).read()
+    time.sleep(1)
+    rename = str(open("Atomicity/" + self.currentswapname + "/contracts/" + self.currentswapname + ".sol", "r").read() )
+    rewrite = open("Atomicity/" + self.currentswapname + "/contracts/" + self.currentswapname + ".sol", "w")
+    rewrite.write(rename.replace('AtomicMultiSigSecp256k1', self.currentswapname))
+    rewrite.close()
+    specifyChain = os.popen("echo 'CurrentChain=\"" + self.responderChainOption.get() + "\"' >> Atomicity/" + \
+            self.currentswapname + "/.env").read()
+
 def initiateSwap(self):
     if self.isInitiator == True and (self.initiatorChain  == "NotSelected" or self.responderChain == "NotSelected"):
         print("at least one chain not selected! initiator must select both chains")
@@ -190,7 +220,6 @@ def initiateSwap(self):
                 deployScalarSwapContract(self)
             def goFundScalarContract():
                 fundScalarContract(self)
-            
             #make sure active tab functions get swap name from current open tab
             self.currentswapname = determineSwapName()
             if self.swapTabSet == False:
@@ -198,39 +227,12 @@ def initiateSwap(self):
             else:
                 setSwapTab(self, False)
             if self.initiatorCommitment.get() != "":
-
                 writeInitiation(self)
-
                 decryptInitiation(self)
                 setCrossChainPubkeyDerived(self)
                 GUI_ReArrange_Chain_Based(self)
-                response = os.popen("python3 -u SigmaParticle/AtomicMultiSigECC/py/deploy.py p2Respond " + "'" + self.ksG + "'").read() 
-                f = open(self.currentswapname + "/response_commitment.atomicswap", "w")
-                f.write(response)
-                f.close()
-                j = json.loads(response)
-            #    print("you must lock the swap offer to:\n" + j["xG"] + "\nand chainPubkey:\n" + self.counterpartyChainPubkey)
-                cmd = "cd Atomicity && ./new_frame " + self.currentswapname  + \
-                        " -M -CA 3 " + "\\\"" + self.counterpartyChainPubkey + "\\\" " \
-                        + str(ast.literal_eval(j["xG"])[0])  + " " + str(ast.literal_eval(j["xG"])[1])
-                new_frame = os.popen(cmd)
-                time.sleep(1) #wait for file to be built
-                #
-                #copy in generic ECC timelock multisig contract for atomic swap
-                os.remove("Atomicity/" + self.currentswapname + "/contracts/" + self.currentswapname + ".sol")
-                contract_copy = \
-                        "cd Atomicity/" + self.currentswapname + "/contracts " + \
-                        "&& cp ../../AtomicMultiSigSecp256k1/contracts/AtomicMultiSigSecp256k1.sol " + self.currentswapname + ".sol" + \
-                        "&& cp ../../AtomicMultiSigSecp256k1/contracts/ReentrancyGuard.sol . " + \
-                        "&& cp ../../AtomicMultiSigSecp256k1/contracts/EllipticCurve.sol . "
-                cpy = os.popen(contract_copy).read()
-                time.sleep(1)
-                rename = str(open("Atomicity/" + self.currentswapname + "/contracts/" + self.currentswapname + ".sol", "r").read() )
-                rewrite = open("Atomicity/" + self.currentswapname + "/contracts/" + self.currentswapname + ".sol", "w")
-                rewrite.write(rename.replace('AtomicMultiSigSecp256k1', self.currentswapname))
-                rewrite.close()
-                specifyChain = os.popen("echo 'CurrentChain=\"" + self.responderChainOption.get() + "\"' >> Atomicity/" + \
-                        self.currentswapname + "/.env").read()
+                commitResponse(self)
+                AtomicityScalarContractOperation(self)
                 self.deployAtomicSwapContractLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
                         text="Click to deploy the atomic swap contract: ")
                 self.deployAtomicSwapContractLabel.grid(row=0, column=0, padx=10, pady=10)
@@ -241,7 +243,7 @@ def initiateSwap(self):
                 runElGamal = "./ElGamal encryptToPubKey " + \
                     self.currentReceiver + ' ' + \
                     self.ElGamalKeyFileName + ' ' + \
-                    "\'" + response + "\' " + \
+                    "\'" + self.response + "\' " + \
                     self.currentswapname + "/ENC_response_commitment.atomicswap "
                 encryption = os.popen(runElGamal).read()
                 self.counterpartyChainPubkeyLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
