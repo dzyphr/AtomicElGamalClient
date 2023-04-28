@@ -6,7 +6,6 @@ from threading import *
 
 def dirElGamalKeysGetLast(self):
     Keys = []
- 
     for file in self.thisDir:
         if file.endswith('.ElGamalKey'):
             f = open(file, "r")

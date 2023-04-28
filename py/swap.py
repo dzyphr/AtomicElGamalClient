@@ -173,6 +173,13 @@ def commitResponse(self):
     f.close()
     j = json.loads(self.response)
     self.xG = j["xG"]
+    runElGamal = "./ElGamal encryptToPubKey " + \
+        self.currentReceiver + ' ' + \
+        self.ElGamalKeyFileName + ' ' + \
+        "\'" + self.response + "\' " + \
+        self.currentswapname + "/ENC_response_commitment.atomicswap "
+    self.encryption = os.popen(runElGamal).read()
+
 
 def AtomicityScalarContractOperation(self):
     cmd = "cd Atomicity && ./new_frame " + self.currentswapname  + \
@@ -196,6 +203,43 @@ def AtomicityScalarContractOperation(self):
     specifyChain = os.popen("echo 'CurrentChain=\"" + self.responderChainOption.get() + "\"' >> Atomicity/" + \
             self.currentswapname + "/.env").read()
 
+
+def SwapResponderGUI(self):
+    def goCopyResponse():
+        copyResponse(self)
+    def goDeployScalarSwapContract():
+        deployScalarSwapContract(self)
+    def goFundScalarContract():
+        fundScalarContract(self)
+    self.deployAtomicSwapContractLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+            text="Click to deploy the atomic swap contract: ")
+    self.deployAtomicSwapContractLabel.grid(row=0, column=0, padx=10, pady=10)
+    self.deployAtomicSwapButton = customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
+            text="Deploy", command=goDeployScalarSwapContract)
+    self.deployAtomicSwapButton.grid(row=1, column=0, padx=10, pady=10)
+    self.counterpartyChainPubkeyLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+            text="Counterparty ChainPubkey: " + self.counterpartyChainPubkey)
+    self.counterpartyChainPubkeyLabel.grid(row=2, column=0, padx=10, pady=10)
+
+    #TODO: WARN USER about sending funds!!
+    #TODO: make value entry based on chain aka wei or sats
+    self.swap_tab_view.valueLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+        text="Amount to spend in wei:")
+    self.swap_tab_view.valueLabel.grid(row=5, column=0, padx=10, pady=10)
+    self.swap_tab_view.valueToSpendEntry = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname), \
+        placeholder_text="coin amount in wei")
+    self.swap_tab_view.valueToSpendEntry.grid(row=6, column=0, padx=10, pady=10)
+    self.swap_tab_view.fundButton = customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
+        text="Fund", command=goFundScalarContract)
+    self.swap_tab_view.fundButton.grid(row=6, column=1, padx=10, pady=10)
+    self.swap_tab_view.labelresponse = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+        text="Click to copy generated response commitments: ")
+    self.swap_tab_view.labelresponse.grid(row=3, column=0, padx=10, pady=10)
+    self.swap_tab_view.copyResponseButton = \
+            customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
+            text="Copy", command=goCopyResponse)
+    self.swap_tab_view.copyResponseButton.grid(row=4, column=0, padx=10, pady=10)
+
 def initiateSwap(self):
     if self.isInitiator == True and (self.initiatorChain  == "NotSelected" or self.responderChain == "NotSelected"):
         print("at least one chain not selected! initiator must select both chains")
@@ -214,12 +258,6 @@ def initiateSwap(self):
         elif self.isInitiator == True:
             initiatorStart(self)
         elif self.isInitiator == False:
-            def goCopyResponse():
-                copyResponse(self)
-            def goDeployScalarSwapContract():
-                deployScalarSwapContract(self)
-            def goFundScalarContract():
-                fundScalarContract(self)
             #make sure active tab functions get swap name from current open tab
             self.currentswapname = determineSwapName()
             if self.swapTabSet == False:
@@ -233,41 +271,7 @@ def initiateSwap(self):
                 GUI_ReArrange_Chain_Based(self)
                 commitResponse(self)
                 AtomicityScalarContractOperation(self)
-                self.deployAtomicSwapContractLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
-                        text="Click to deploy the atomic swap contract: ")
-                self.deployAtomicSwapContractLabel.grid(row=0, column=0, padx=10, pady=10)
-                self.deployAtomicSwapButton = customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-                        text="Deploy", command=goDeployScalarSwapContract)
-                self.deployAtomicSwapButton.grid(row=1, column=0, padx=10, pady=10)
-                #save this into the current tab 
-                runElGamal = "./ElGamal encryptToPubKey " + \
-                    self.currentReceiver + ' ' + \
-                    self.ElGamalKeyFileName + ' ' + \
-                    "\'" + self.response + "\' " + \
-                    self.currentswapname + "/ENC_response_commitment.atomicswap "
-                encryption = os.popen(runElGamal).read()
-                self.counterpartyChainPubkeyLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
-                        text="Counterparty ChainPubkey: " + self.counterpartyChainPubkey)
-                self.counterpartyChainPubkeyLabel.grid(row=2, column=0, padx=10, pady=10)
-
-                #TODO: WARN USER about sending funds!!
-                #TODO: make value entry based on chain aka wei or sats
-                self.swap_tab_view.valueLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
-                    text="Amount to spend in wei:")
-                self.swap_tab_view.valueLabel.grid(row=5, column=0, padx=10, pady=10)
-                self.swap_tab_view.valueToSpendEntry = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname), \
-                    placeholder_text="coin amount in wei")
-                self.swap_tab_view.valueToSpendEntry.grid(row=6, column=0, padx=10, pady=10)
-                self.swap_tab_view.fundButton = customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-                    text="Fund", command=goFundScalarContract)
-                self.swap_tab_view.fundButton.grid(row=6, column=1, padx=10, pady=10)
-                self.swap_tab_view.labelresponse = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
-                    text="Click to copy generated response commitments: ")
-                self.swap_tab_view.labelresponse.grid(row=3, column=0, padx=10, pady=10)
-                self.swap_tab_view.copyResponseButton = \
-                        customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-                        text="Copy", command=goCopyResponse)
-                self.swap_tab_view.copyResponseButton.grid(row=4, column=0, padx=10, pady=10)
+                SwapResponderGUI(self)
             else:
                 print("paste in the encrypted initiator commitment")
 
