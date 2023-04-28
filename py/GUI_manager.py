@@ -67,57 +67,67 @@ def setSwapTab(self, first):
         copyENCInit(self)
     def goDecryptResponse():
         decryptResponse(self)
-    if first == True:
-        self.swap_tab_view = SwapTab(master=self.frame, width=600, height=600)
-        self.swap_tab_view.add(self.currentswapname)
-        self.swap_tab_view.copylabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
-                text="Click to copy generated Pedersen commitments: ")
-        self.swap_tab_view.copylabel.grid(row=0, column=0, padx=10, pady=10)
-        self.swap_tab_view.copyButton = \
-                customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-                text="Copy", command=goCopyENCInit)
-        self.swap_tab_view.copyButton.grid(row=1, column=0, padx=10, pady=10)
-        self.swap_tab_view.responderPasteLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
-                text="Paste responders commitment: ")
-        self.swap_tab_view.responderPasteLabel.grid(row=2, column=0, padx=10, pady=10)
-        self.swap_tab_view.responderCommitment = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname),\
-                placeholder_text="Responder's Commitments", \
-                width=700, height=5)
-        self.swap_tab_view.responderCommitment.grid(row=3, column=0, padx=10, pady=10)
-        self.swap_tab_view.decryptResponderCommitmentLabel =  \
-                customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
-                text="Decrypt responders commitment: ")
-        self.swap_tab_view.decryptResponderCommitmentLabel.grid(row=4, column=0, padx=10, pady=10)
-        self.swap_tab_view.decryptResponderCommitmentButton = \
-                customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-                text="Decrypt", command=goDecryptResponse)
-        self.swap_tab_view.decryptResponderCommitmentButton.grid(row=5, column=0, padx=10, pady=10)
-        self.swap_tab_view.pack()
-        self.swapTabSet = True
+    if self.isInitiator == True:
+        if first == True:
+            self.swap_tab_view = SwapTab(master=self.frame, width=600, height=600)
+            self.swap_tab_view.add(self.currentswapname)
+            self.swap_tab_view.copylabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+                    text="Click to copy generated Pedersen commitments: ")
+            self.swap_tab_view.copylabel.grid(row=0, column=0, padx=10, pady=10)
+            self.swap_tab_view.copyButton = \
+                    customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
+                    text="Copy", command=goCopyENCInit)
+            self.swap_tab_view.copyButton.grid(row=1, column=0, padx=10, pady=10)
+            self.swap_tab_view.responderPasteLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+                    text="Paste responders commitment: ")
+            self.swap_tab_view.responderPasteLabel.grid(row=2, column=0, padx=10, pady=10)
+            self.swap_tab_view.responderCommitment = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname),\
+                    placeholder_text="Responder's Commitments", \
+                    width=700, height=5)
+            self.swap_tab_view.responderCommitment.grid(row=3, column=0, padx=10, pady=10)
+            self.swap_tab_view.decryptResponderCommitmentLabel =  \
+                    customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+                    text="Decrypt responders commitment: ")
+            self.swap_tab_view.decryptResponderCommitmentLabel.grid(row=4, column=0, padx=10, pady=10)
+            self.swap_tab_view.decryptResponderCommitmentButton = \
+                    customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
+                    text="Decrypt", command=goDecryptResponse)
+            self.swap_tab_view.decryptResponderCommitmentButton.grid(row=5, column=0, padx=10, pady=10)
+            self.swap_tab_view.pack()
+            self.swapTabSet = True
+        else:
+            self.swap_tab_view.add(self.currentswapname)
+            self.swap_tab_view.copylabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+                    text="Click to copy generated Pedersen commitments: ")
+            self.swap_tab_view.copylabel.grid(row=0, column=0, padx=10, pady=10)
+            self.swap_tab_view.copyButton = \
+                    customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
+                    text="Copy", command=goCpyENCInit)
+            self.swap_tab_view.copyButton.grid(row=1, column=0, padx=10, pady=10)
+            self.swap_tab_view.responderPasteLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+                    text="Paste responders commitment: ")
+            self.swap_tab_view.responderPasteLabel.grid(row=2, column=0, padx=10, pady=10)
+            self.swap_tab_view.responderCommitment = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname), \
+                    placeholder_text="Responder's Commitments", \
+                    width=700, height=5)
+            self.swap_tab_view.responderCommitment.grid(row=3, column=0, padx=10, pady=10)
+            self.swap_tab_view.decryptResponderCommitmentLabel =  \
+                    customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+                    text="Decrypt responders commitment: ")
+            self.swap_tab_view.decryptResponderCommitmentLabel.grid(row=4, column=0, padx=10, pady=10)
+            self.swap_tab_view.decryptResponderCommitmentButton = \
+                    customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
+                    text="Decrypt", command=goSecryptResponse)
+            self.swap_tab_view.decryptResponderCommitmentButton.grid(row=5, column=0, padx=10, pady=10)
     else:
-        self.swap_tab_view.add(self.currentswapname)
-        self.swap_tab_view.copylabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
-                text="Click to copy generated Pedersen commitments: ")
-        self.swap_tab_view.copylabel.grid(row=0, column=0, padx=10, pady=10)
-        self.swap_tab_view.copyButton = \
-                customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-                text="Copy", command=goCpyENCInit)
-        self.swap_tab_view.copyButton.grid(row=1, column=0, padx=10, pady=10)
-        self.swap_tab_view.responderPasteLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
-                text="Paste responders commitment: ")
-        self.swap_tab_view.responderPasteLabel.grid(row=2, column=0, padx=10, pady=10)
-        self.swap_tab_view.responderCommitment = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname), \
-                placeholder_text="Responder's Commitments", \
-                width=700, height=5)
-        self.swap_tab_view.responderCommitment.grid(row=3, column=0, padx=10, pady=10)
-        self.swap_tab_view.decryptResponderCommitmentLabel =  \
-                customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
-                text="Decrypt responders commitment: ")
-        self.swap_tab_view.decryptResponderCommitmentLabel.grid(row=4, column=0, padx=10, pady=10)
-        self.swap_tab_view.decryptResponderCommitmentButton = \
-                customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-                text="Decrypt", command=goSecryptResponse)
-        self.swap_tab_view.decryptResponderCommitmentButton.grid(row=5, column=0, padx=10, pady=10)
+        if first == True:
+            self.swap_tab_view = SwapTab(master=self.frame, width=600, height=600)
+            self.swap_tab_view.add(self.currentswapname)
+            self.swap_tab_view.pack()
+            self.swapTabSet = True
+        else:
+            self.swap_tab_view.add(self.currentswapname)
+
 
 #######CHAIN#########
 def GUI_ReArrange_Chain_Based(self):
