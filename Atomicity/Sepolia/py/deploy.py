@@ -36,6 +36,16 @@ def getAccount():
     elif chain == "Sepolia":
         sys.stdout.write(os.getenv("SepoliaSenderAddr"))
 
+def getBalance(address):
+    if chain == "Goerli":
+        rpc = Web3(Web3.HTTPProvider(os.getenv('Goerli')))
+        bal = str(rpc.eth.get_balance(address))
+        sys.stdout.write(bal)
+    elif chain == "Sepolia":
+        rpc = Web3(Web3.HTTPProvider(os.getenv('Sepolia')))
+        bal = str(rpc.eth.get_balance(address))
+        sys.stdout.write(bal)
+
 def sendAmount(amount, receiver):
     if chain == "Goerli":
         rpc = Web3(Web3.HTTPProvider(os.getenv('Goerli')))
@@ -61,6 +71,8 @@ def sendAmount(amount, receiver):
     rpc.eth.send_raw_transaction(signed.rawTransaction)
 
 args_n = len(sys.argv)
+
+#make sure to exit after calling these as they are meant to be independant functions from command line
 if args_n > 1:
     if sys.argv[1] == "getAccount":
         getAccount()
@@ -71,6 +83,13 @@ if args_n > 1:
             exit()
         else:
             print("enter amount(in wei) and receiver evm pubkey as followup arguments to sendAmount")
+            exit()
+    elif sys.argv[1] == "getBalance":
+        if args_n > 2:
+            getBalance(sys.argv[2])
+            exit()
+        else:
+            print("enter address to get balance from as followup argument")
             exit()
 
 #PICK THE CHAIN HERE #fills all chain specific args with env variables

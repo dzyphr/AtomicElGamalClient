@@ -1,3 +1,4 @@
+from datetime import datetime
 import ast
 from GUI_manager import *
 from chain import setLocalChainPubkeyManual, setCrossChainPubkeyManual, setCrossChainPubkeyDerived
@@ -70,6 +71,11 @@ def determineSwapName():
 def copyENCInit(self):
     pyperclip.copy(open(self.swap_tab_view.get() + "/ENC_initiation.atomicswap", "r").read())
     #make sure active tab functions get swap name from current open tab
+
+
+#def draftFinalSignature(self): #create the final sig ss and pub value sG 
+
+def inspectScalarLockContract(self):
 
 
 def decryptResponse(self):
@@ -149,7 +155,7 @@ def copyResponse(self):
                 f = open(self.currentswapname + "/ENC_response_commitment.atomicswap", "r")
                 enc_response = f.read()
                 f.close()
-                pyperclip.copy(enc_response)
+                pyperclip.copy(enc_response) #if the response wont paste into GUI entry encryption is too large
     else:
         print("swap contract not deployed yet!")
 
@@ -196,7 +202,7 @@ def decryptInitiation(self):
     self.crossChain = j["localChain"] #When responder sending chainpubkey to counterparty, get key from this chain
 
 def commitResponse(self):
-    self.response = os.popen("python3 -u SigmaParticle/AtomicMultiSigECC/py/deploy.py p2Respond " + "'" + self.ksG + "'").read()
+    self.response = os.popen("python3 -u SigmaParticle/AtomicMultiSigECC/py/deploy.py p2Respond " + "'" + self.ksG + "' " + str(datetime.now())).read()
     f = open(self.currentswapname + "/response_commitment.atomicswap", "w")
     f.write(self.response)
     f.close()
@@ -242,8 +248,10 @@ def initiateSwap(self):
         self.currentReceiver = self.CounterpartyElGamalKey.get()
         if self.currentReceiver == "":
             print("receiver ElGamal Key not specified!")
-        elif len(self.currentReceiver) < 616:
-            print("receiver ElGamal Key is less than 2048 bit")
+        #elif len(self.currentReceiver) < 616:
+        #    print("receiver ElGamal Key is less than 2048 bit")
+        elif len(self.currentReceiver) < 405:
+            print("receiver ElGamal Key is less than 1346 bit")
         elif any(c.isalpha() for c in self.currentReceiver):
             print("detected alphabetical characters, hexadecimal keys not implemented yet")
         elif self.isInitiator == True:
