@@ -109,7 +109,9 @@ def checkMultiFile():
     #    print(flatOutput)
         if "Success!" in flatOutput:
     #        print("flattened contract!")
-            flat = open("contracts/" + contractName + "_flat.sol", "r")
+            f = open("contracts/" + contractName + "_flat.sol", "r")
+            flat = f.read()
+            f.close()
             return flat
         else:
     #        print("failed to flatten multi-file contract, verification wont succeed automatically!")
@@ -259,7 +261,7 @@ def verify(flat, contractAddr, APIsolcV, url, fresh):
                     'codeformat': 'solidity-single-file',
                     'contractname': contractName,
                     'compilerversion': APIsolcV,
-                    'optimizationUsed': 1, #0 or 1
+                    'optimizationUsed': 0, #0 or 1
                     'runs': 200,
                     'evmversion': '',
                     'licenseType': 5 #GPL 3
@@ -280,6 +282,7 @@ def verify(flat, contractAddr, APIsolcV, url, fresh):
                     val = strlist
                 cmd = cmd + " " + str(val)
             encoding = os.popen(cmd).read()
+
             if os.getenv('MultiFile') == "True":
                 contract = flat
     #        print(encoding.replace(" ", "").replace("\n", "")) if auto-verify fails you can print the encoding and manually verify
@@ -292,15 +295,33 @@ def verify(flat, contractAddr, APIsolcV, url, fresh):
                     'codeformat': 'solidity-single-file',
                     'contractname': contractName,
                     'compilerversion': APIsolcV,
-                    'optimizationUsed': 1, #0 or 1
-                    'runs': 200,
+                    'optimizationUsed': 0, #0 or 1
+                    'runs': 200,            #must spell Arguments wrong (Arguements) to actually pass lol...
                     'constructorArguements': encoding.replace(" ", "").replace("\n", ""), #popen leaves empty space remove w replace()
                     'evmversion': '',
                     'licenseType': 5 #GPL 3
             }
         response = requests.post(url, headers=headers, data=content).content #not sure how to properly check for response working though
+
         if fresh == False:
-            print(response)
+            print(response.decode("utf-8"))
+        j = json.loads(response.decode("utf-8"))
+        guid = j["result"]
+        return guid
+
+def checkVerifStatus(guid,  url, fresh):
+    data = {
+            'apikey': os.getenv('EtherscanAPIKey'),
+            'guid': guid,
+            'module': "contract",
+            'action': "checkverifystatus"
+    }
+    response = requests.get(url, data=data).content
+    if fresh == False:
+        print(response.decode("utf-8"))
+        #TODO:automate check for failure case save reason to file
+
+
 
 
 def grabExistingContractAddr():
@@ -337,7 +358,9 @@ if args_n > 1:
         flat = checkMultiFile()
         contractAddr = grabExistingContractAddr()
         APISolcV = getSOLCVersion()
-        verify(flat, contractAddr, APISolcV, url, False)
+        guid = verify(flat, contractAddr, APISolcV, url, False)
+        time.sleep(30)
+        checkVerifStatus(guid,  url, False)
         exit()
 else:
     rpc, chain_id, senderAddr, senderPrivKey, url = pickChain()
