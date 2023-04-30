@@ -75,7 +75,23 @@ def copyENCInit(self):
 
 #def draftFinalSignature(self): #create the final sig ss and pub value sG 
 
+
+
 def inspectScalarLockContract(self):
+    decryptResponse(self)
+    f = open(self.currentswapname + "/DEC_response.atomicswap", "r")
+    j = json.loads(f.read())
+    f.close()
+    chain = j["chain"]
+    contractAddr = j["contractAddr"]
+    if chain == "Goerli":
+        self.scalarContractFundingAmount = os.popen("cd Atomicity/Goerli && ./deploy.sh getBalance " + contractAddr).read()
+    elif chain == "Sepolia":
+        self.scalarContractFundingAmount = os.popen("cd Atomicity/Sepolia && ./deploy.sh getBalance " + contractAddr).read()
+    self.swap_tab_view.responderContractValueLabel.configure(text= "Responder Contract Value: " +\
+            self.scalarContractFundingAmount + " wei")
+    print(self.scalarContractFundingAmount)
+
 
 
 def decryptResponse(self):
@@ -89,6 +105,9 @@ def decryptResponse(self):
                         "./ElGamal decryptFromPubKey " + self.currentswapname + "/response.atomicswap " + \
                         self.currentReceiver + ' ' + self.ElGamalKeyFileName
             decrypt = os.popen(decryptElGamal).read()
+            f = open(self.currentswapname + "/DEC_response.atomicswap", "w")
+            f.write(decrypt)
+            f.close()
             print(decrypt)
         else:
             print("enter the commitment from responder!")
@@ -138,10 +157,11 @@ def copyResponse(self):
                 setCrossChainPubkeyDerived(self)
                 GUI_ReArrange_Chain_Based(self)
                 edit = response.replace(\
-                        "}", \
+                        "\n}", \
+                        ",\n" + 
                         "    \"contractAddr\": " + "\"" + addr.rstrip() + "\"" + ",\n"  + \
                         "    \"chain\": " + "\"" + self.responderChain.rstrip() + "\"" + ",\n" + \
-                        "    \"" + self.crossChain  + "_chainPubkey: " + "\"" + self.chainPubkey.rstrip() + "\"" + "\n" + \
+                        "    \"" + self.crossChain  + "_chainPubkey\": " + "\"" + self.chainPubkey.rstrip() + "\"" + "\n" + \
                         "}")
                 f.write(edit)
                 f.close()

@@ -62,11 +62,13 @@ def GUI_Arrange_Swap_Based(self): #here we are updating the GUI according to the
 
 
 def setSwapTab(self, first):
-    from swap import SwapTab, copyENCInit, decryptResponse
+    from swap import SwapTab, copyENCInit, inspectScalarLockContract
     def goCopyENCInit():
         copyENCInit(self)
-    def goDecryptResponse():
-        decryptResponse(self)
+    def goInspectScalarLockContract():
+        inspectScalarLockContract(self)
+#    def goDecryptResponse():
+#        decryptResponse(self)
     if self.isInitiator == True:
         if first == True:
             self.swap_tab_view = SwapTab(master=self.frame, width=600, height=600)
@@ -87,12 +89,17 @@ def setSwapTab(self, first):
             self.swap_tab_view.responderCommitment.grid(row=3, column=0, padx=10, pady=10)
             self.swap_tab_view.decryptResponderCommitmentLabel =  \
                     customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
-                    text="Decrypt responders commitment: ")
+                    text="Check responders commitment: ")
             self.swap_tab_view.decryptResponderCommitmentLabel.grid(row=4, column=0, padx=10, pady=10)
             self.swap_tab_view.decryptResponderCommitmentButton = \
                     customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-                    text="Decrypt", command=goDecryptResponse)
+                    text="Check", command=goInspectScalarLockContract)
             self.swap_tab_view.decryptResponderCommitmentButton.grid(row=5, column=0, padx=10, pady=10)
+            self.swap_tab_view.responderContractValueLabel = \
+                    customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+                    text="Responder Commitment not collected yet")
+            self.swap_tab_view.responderContractValueLabel.grid(row=6, column=0, padx=10, pady=10)
+
             self.swap_tab_view.pack()
             self.swapTabSet = True
         else:
@@ -113,12 +120,16 @@ def setSwapTab(self, first):
             self.swap_tab_view.responderCommitment.grid(row=3, column=0, padx=10, pady=10)
             self.swap_tab_view.decryptResponderCommitmentLabel =  \
                     customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
-                    text="Decrypt responders commitment: ")
+                    text="Check responders commitment: ")
             self.swap_tab_view.decryptResponderCommitmentLabel.grid(row=4, column=0, padx=10, pady=10)
             self.swap_tab_view.decryptResponderCommitmentButton = \
                     customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-                    text="Decrypt", command=goSecryptResponse)
+                    text="Check", command=goInspectScalarLockContract)
             self.swap_tab_view.decryptResponderCommitmentButton.grid(row=5, column=0, padx=10, pady=10)
+            self.swap_tab_view.responderContractValueLabel = \
+                    customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+                    text="Responder Commitment not collected yet")
+            self.swap_tab_view.responderContractValueLabel.grid(row=6, column=0, padx=10, pady=10)
     else:
         if first == True:
             self.swap_tab_view = SwapTab(master=self.frame, width=600, height=600)
