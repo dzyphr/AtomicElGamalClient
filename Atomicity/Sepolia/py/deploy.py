@@ -34,6 +34,27 @@ if bool(os.getenv('VerifyBlockExplorer')) == True:
 else:
     verifyBlockExplorer = False
 
+def checkCoords(addr):  #TODO: check curve constants against expected as well as receiver pubkey against specified pubkey
+    f = open("../AtomicMultisig_ABI_0.0.1.json")
+    abi = f.read()
+    f.close()
+    if chain == "Goerli":
+        rpc = Web3(Web3.HTTPProvider(os.getenv('Goerli')))
+    elif chain == "Sepolia":
+        rpc = Web3(Web3.HTTPProvider(os.getenv('Sepolia')))
+    contract = rpc.eth.contract(address=addr, abi=abi)
+    x = contract.functions.gxX().call()
+    y = contract.functions.gxY().call()
+    onCurve = contract.functions.onCurve(x, y).call()
+    assert(onCurve == True)
+    if onCurve == True:
+        sys.stdout.write( "(" + str(contract.functions.gxX().call()) + ", " +  str(contract.functions.gxY().call()) + ")" )
+    else:
+        sys.stdout.write("Coordinates are not on the curve! Do not fulfil the swap!")
+        #technically this should be checked in the contract's constructor given we are using the same contract coordinated by the
+        #contract abi hash, however ultimately its good practice for the counterparty to check curve validity
+
+
 def getAccount():
     if chain == "Goerli":
         sys.stdout.write(os.getenv('GoerliSenderAddr'))
@@ -353,6 +374,12 @@ if args_n > 1:
         else:
             print("enter address to get balance from as followup argument")
             exit()
+    elif sys.argv[1] == "checkCoords":
+        if args_n > 2:
+            checkCoords(sys.argv[2])
+            exit()
+        else:
+            print("enter the address to check as followup argument")
     elif sys.argv[1] == "verify":
         rpc, chain_id, senderAddr, senderPrivKey, url = pickChain()
         flat = checkMultiFile()
