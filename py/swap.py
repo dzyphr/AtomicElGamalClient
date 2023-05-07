@@ -9,7 +9,9 @@ class SwapTab(customtkinter.CTkTabview):
         super().__init__(master, **kwargs)
 
 def updateDataBasedOnOpenTab(self):
-    openTabSwapName = self.swap_tab_view.get()
+    if hasattr(self, "swap_tab_view"):
+        self.currentswapname = self.swap_tab_view.get()
+    '''
     if os.isdir(openTabSwapName) == True:
         #roledata
         f = open(openTabSwapName + "/roleData.json", "r")
@@ -22,6 +24,7 @@ def updateDataBasedOnOpenTab(self):
         #swapname
         self.currentswapname = openTabSwapName
         #chainpubkey
+    '''
 
 def saveRole(self):
     if self.isInitiator == True:
@@ -74,6 +77,7 @@ def copyENCInit(self):
 
 
 def draftFinalSignature(self): #create the final sig ss and pub value sG 
+    updateDataBasedOnOpenTab(self)
     f = open(self.currentswapname + "/DEC_response.atomicswap", "r")
     j = json.loads(f.read())
     f.close()
@@ -81,13 +85,21 @@ def draftFinalSignature(self): #create the final sig ss and pub value sG
     xG = j["xG"]
     srG = j["srG"]
     e = j["e"]
-    cmd = "cd SigmaParticle/AtomicMultiSigECC/ && ./deploy.sh p1Finalize " + "\"" + sr_ + "\"" + " \"" + xG + "\" \"" + srG + "\" \"" + e + "\""
+    f = open(self.currentswapname + "/PRIV_initiation.atomicswap", "r")
+    j = json.loads(f.read())
+    f.close()
+    ks = j["ks"]
+    rs = j["rs"]
+    cmd = "cd SigmaParticle/AtomicMultiSigECC/ && python3 -u py/deploy.py p1Finalize " + \
+            "\"" + str(sr_) + "\"" + " \"" + xG.replace(" ", "") + "\" \"" + srG.replace(" ", "") + "\" \"" + str(e) + "\" " + \
+            "\"" + str(ks) + "\"" + " \"" + str(rs) + "\""
     print(cmd)
     finalSigJson = os.popen(cmd).read()
-    print(finalSigJson)
+    print(os.popen(cmd).read())
 
 
 def inspectScalarLockContract(self):
+    updateDataBasedOnOpenTab(self)
     decryptResponse(self)
     f = open(self.currentswapname + "/DEC_response.atomicswap", "r")
     j = json.loads(f.read())
@@ -95,9 +107,9 @@ def inspectScalarLockContract(self):
     chain = j["chain"]
     contractAddr = j["contractAddr"]
     if chain == "Goerli":
-        self.scalarContractFundingAmount = os.popen("cd Atomicity/Goerli && ./deploy.sh getBalance " + contractAddr).read()
+        self.scalarContractFundingAmount = os.popen("cd Atomicity/Goerli && python3 -u py/deploy.py " + contractAddr).read()
     elif chain == "Sepolia":
-        self.scalarContractFundingAmount = os.popen("cd Atomicity/Sepolia && ./deploy.sh getBalance " + contractAddr).read()
+        self.scalarContractFundingAmount = os.popen("cd Atomicity/Sepolia && python3 -u py/deploy.py getBalance " + contractAddr).read()
     self.swap_tab_view.responderContractValueLabel.configure(text= "Responder Contract Value: " +\
             self.scalarContractFundingAmount + " wei")
     print(self.scalarContractFundingAmount)
@@ -123,6 +135,7 @@ def decryptResponse(self):
             print("enter the commitment from responder!")
 
 def initiatorStart(self):
+    updateDataBasedOnOpenTab(self)
     self.currentswapname = determineSwapName()
     if self.chainPubkey == "":
         setCrossChainPubkeyManual(self)

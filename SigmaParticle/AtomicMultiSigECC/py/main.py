@@ -127,11 +127,14 @@ def main(args):
         }
         return json.dumps(p2RespondOBJECT, indent=4)
 
-    def p1Finalize(sr_, xG, srG,  e, ks):
+    def p1Finalize(sr_, xG, srG,  e, ks, rs):
         sr_ = int(sr_)
         e = int(e)
+        rs = int(rs)
+        ks = int(ks)
         xG = ast.literal_eval(xG)
         srG = ast.literal_eval(srG)
+
         check = add_points(srG, xG) #P1 CHECKS WITH ECC
         sr_G = scalar_mult(sr_, g)
         #print("\np1 checks that srG + xG == sr_G", check, "==", sr_G, "and that xG are locking funds in contract")
@@ -185,7 +188,7 @@ def main(args):
                 print("enter ksGERGO as following arg")
         if command == "p1Finalize":
             if len(args) > 4:
-                sys.stdout.write(str(p1Finalize(args[2], args[3], args[4], args[5])))
+                sys.stdout.write(str(p1Finalize(args[2], args[3], args[4], args[5], args[6], args[7])))
             else:
                 print("enter:\n sr_, xG, srG, e \nas followup arguments")
     
