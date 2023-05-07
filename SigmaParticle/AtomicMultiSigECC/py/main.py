@@ -53,7 +53,9 @@ def main(args):
             "chainPubkey": chainPubkey,
             "localChain": localChain,
             "rsG": "(" + str(rsGERGO.getXCoord().toBigInteger()) + ", " + str(rsGERGO.getYCoord().toBigInteger()) + ")",
-            "ksG": "(" + str(ksGERGO.getXCoord().toBigInteger()) + ", " + str(ksGERGO.getYCoord().toBigInteger()) + ")"
+            "ksG": "(" + str(ksGERGO.getXCoord().toBigInteger()) + ", " + str(ksGERGO.getYCoord().toBigInteger()) + ")",
+            "ks": ks, #must be stripped by client so it is not shared!
+            "rs": rs #!!
         }
         return json.dumps(p1InitiateOBJECT, indent=4)
 
@@ -119,16 +121,21 @@ def main(args):
                 "sr_": str(sr_),
                 "xG": str(xG),
                 "srG": "(" + str(srGERGO.getXCoord().toBigInteger()) + ", " + str(srGERGO.getYCoord().toBigInteger()) + ")",
-                "e": str(e) #TODO:figure out of Ergo specific e is necessary above
+                "krG": "(" + str(krGERGO.getXCoord().toBigInteger())  + ", " + str(krGERGO.getYCoord().toBigInteger()) + ")",
+                "e": str(e) #TODO:figure out if Ergo specific e is necessary above
                 #TODO: make chain specific
         }
         return json.dumps(p2RespondOBJECT, indent=4)
 
-    def p1Finalize(sr_, xG, srG,  e):
+    def p1Finalize(sr_, xG, srG,  e, ks):
+        sr_ = int(sr_)
+        e = int(e)
+        xG = ast.literal_eval(xG)
+        srG = ast.literal_eval(srG)
         check = add_points(srG, xG) #P1 CHECKS WITH ECC
         sr_G = scalar_mult(sr_, g)
         #print("\np1 checks that srG + xG == sr_G", check, "==", sr_G, "and that xG are locking funds in contract")
-        assert(check == sr_G, "check != sr_G")
+        assert(check == sr_G)
         #print("\np1 locks funds to contract that checks that the inputed sr and ss are == to srG and ssG as well as include krG and ksG in the second half of the conditions")
         ss = ks + e * rs
         ss = ss % n
@@ -177,7 +184,7 @@ def main(args):
             else:
                 print("enter ksGERGO as following arg")
         if command == "p1Finalize":
-            if len(args) > 5:
+            if len(args) > 4:
                 sys.stdout.write(str(p1Finalize(args[2], args[3], args[4], args[5])))
             else:
                 print("enter:\n sr_, xG, srG, e \nas followup arguments")

@@ -62,11 +62,14 @@ def GUI_Arrange_Swap_Based(self): #here we are updating the GUI according to the
 
 
 def setSwapTab(self, first):
-    from swap import SwapTab, copyENCInit, inspectScalarLockContract
+    from swap import SwapTab, copyENCInit, inspectScalarLockContract, draftFinalSignature
     def goCopyENCInit():
         copyENCInit(self)
     def goInspectScalarLockContract():
         inspectScalarLockContract(self)
+    def goDraftFinalSignature():
+        draftFinalSignature(self)
+
 #    def goDecryptResponse():
 #        decryptResponse(self)
     if self.isInitiator == True:
@@ -99,6 +102,10 @@ def setSwapTab(self, first):
                     customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
                     text="Responder Commitment not collected yet")
             self.swap_tab_view.responderContractValueLabel.grid(row=6, column=0, padx=10, pady=10)
+            self.swap_tab_view.finalizeSwapButton = \
+                    customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
+                    text="Final signature", command=goDraftFinalSignature)
+            self.swap_tab_view.finalizeSwapButton.grid(row=7, column=0, padx=10, pady=10)
 
             self.swap_tab_view.pack()
             self.swapTabSet = True
@@ -130,6 +137,11 @@ def setSwapTab(self, first):
                     customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
                     text="Responder Commitment not collected yet")
             self.swap_tab_view.responderContractValueLabel.grid(row=6, column=0, padx=10, pady=10)
+            self.swap_tab_view.finalizeSwapButton = \
+                    customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
+                    text="Final signature", command=goDraftFinalSignature)
+            self.swap_tab_view.finalizeSwapButton.grid(row=7, column=0, padx=10, pady=10)
+
     else:
         if first == True:
             self.swap_tab_view = SwapTab(master=self.frame, width=600, height=600)

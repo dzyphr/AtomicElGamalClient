@@ -73,8 +73,18 @@ def copyENCInit(self):
     #make sure active tab functions get swap name from current open tab
 
 
-#def draftFinalSignature(self): #create the final sig ss and pub value sG 
-
+def draftFinalSignature(self): #create the final sig ss and pub value sG 
+    f = open(self.currentswapname + "/DEC_response.atomicswap", "r")
+    j = json.loads(f.read())
+    f.close()
+    sr_ = j["sr_"]
+    xG = j["xG"]
+    srG = j["srG"]
+    e = j["e"]
+    cmd = "cd SigmaParticle/AtomicMultiSigECC/ && ./deploy.sh p1Finalize " + "\"" + sr_ + "\"" + " \"" + xG + "\" \"" + srG + "\" \"" + e + "\""
+    print(cmd)
+    finalSigJson = os.popen(cmd).read()
+    print(finalSigJson)
 
 
 def inspectScalarLockContract(self):
@@ -118,14 +128,37 @@ def initiatorStart(self):
         setCrossChainPubkeyManual(self)
     init = "python3 -u SigmaParticle/AtomicMultiSigECC/py/deploy.py  p1Initiate " + self.chainPubkey + " " + self.initiatorChain
     initiation = os.popen(init).read() #run wit -u for unbuffered stream
+    j = json.loads(initiation)
+    ks = j["ks"]
+    rs = j["rs"]
+    strippedInitiation = initiation.replace("\"ks\": " + str(ks) + ",", "")
+    strippedInitiation1 = strippedInitiation.replace("\"rs\": " + str(rs) , "")
+    #extra redundant cases: (if json order changes)
+    strippedInitiation2 = strippedInitiation1.replace("\"rs\": " + str(rs) + ",", "") 
+    strippedInitiation3 = strippedInitiation2.replace("\"ks\": " + str(ks), "")
+    #redundant cases implemented in case of json protocol change prevents secret leakage
+    ksG = j["ksG"]
+    #get rid of last comma and newlines
+    strippedInitiation4 = strippedInitiation3.replace("\"ksG\": \"" + str(ksG) + "\",", "\"ksG\": \"" + str(ksG) + "\"")
+    strippedInitiation5 = strippedInitiation4.replace("}", "")
+    strippedInitiation5.rstrip()
+    strippedInitiation6 = strippedInitiation5.replace("\"ksG\": \"" + str(ksG) + "\"", "\"ksG\": \"" + str(ksG) + "\"\n}")
+#    print(strippedInitiation6)
+    #STRIP ks AND rs !!!!
+    #save non stripped version to PRIVATE labeled file
+    #proceed normally with stripped version
+    #obviously strip BEFORE encryption
     runElGamal = "./ElGamal encryptToPubKey " + \
             self.currentReceiver + ' ' + \
             self.ElGamalKeyFileName + ' ' + \
             "\'" + initiation + "\' " + \
             self.currentswapname + "/ENC_initiation.atomicswap "
     encryption = os.popen(runElGamal).read()
-    f = open(self.currentswapname + "/initiation.atomicswap", "w")
+    f = open(self.currentswapname + "/PRIV_initiation.atomicswap", "w")
     f.write(initiation)
+    f.close()
+    f = open(self.currentswapname + "/initiation.atomicswap", "w")
+    f.write(strippedInitiation6)
     f.close()
     f = open(self.currentswapname + "/Receiver.ElGamalPub", "w")
     f.write(self.currentReceiver)
