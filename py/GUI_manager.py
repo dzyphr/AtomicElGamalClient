@@ -104,7 +104,7 @@ def setSwapTab(self, first):
             self.swap_tab_view.responderContractValueLabel.grid(row=6, column=0, padx=10, pady=10)
             self.swap_tab_view.finalizeSwapButton = \
                     customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-                    text="Final signature", command=goDraftFinalSignature)
+                    text="Copy Final Signature", command=goDraftFinalSignature)
             self.swap_tab_view.finalizeSwapButton.grid(row=7, column=0, padx=10, pady=10)
 
             self.swap_tab_view.pack()
@@ -139,7 +139,7 @@ def setSwapTab(self, first):
             self.swap_tab_view.responderContractValueLabel.grid(row=6, column=0, padx=10, pady=10)
             self.swap_tab_view.finalizeSwapButton = \
                     customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-                    text="Final signature", command=goDraftFinalSignature)
+                    text="Copy Final Signature", command=goDraftFinalSignature)
             self.swap_tab_view.finalizeSwapButton.grid(row=7, column=0, padx=10, pady=10)
 
     else:

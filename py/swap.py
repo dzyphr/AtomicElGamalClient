@@ -93,9 +93,21 @@ def draftFinalSignature(self): #create the final sig ss and pub value sG
     cmd = "cd SigmaParticle/AtomicMultiSigECC/ && python3 -u py/deploy.py p1Finalize " + \
             "\"" + str(sr_) + "\"" + " \"" + xG.replace(" ", "") + "\" \"" + srG.replace(" ", "") + "\" \"" + str(e) + "\" " + \
             "\"" + str(ks) + "\"" + " \"" + str(rs) + "\""
-    print(cmd)
+#    print(cmd)
     finalSigJson = os.popen(cmd).read()
-    print(os.popen(cmd).read())
+#    print(os.popen(cmd).read())
+    f = open(self.currentswapname + "/finalize.atomicswap", "w")
+    f.write(finalSigJson)
+    f.close()
+    cmd = \
+        "./ElGamal encryptToPubKey " + \
+        self.currentReceiver + ' ' + \
+        self.ElGamalKeyFileName + ' ' + \
+        "\'" + finalSigJson + "\' " + \
+        self.currentswapname + "/ENC_finalize.atomicswap "
+    encryption = os.popen(cmd).read()
+    #now upload ergoscript contract
+#    pyperclip.copy(encryption)
 
 
 def inspectScalarLockContract(self):
