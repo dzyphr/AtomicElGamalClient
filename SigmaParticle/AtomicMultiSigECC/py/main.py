@@ -147,7 +147,7 @@ def main(args):
         ssGERGO = dlogGroup().generator().multiply(ssERGO).normalize()
         finalSignatureObject = {
                 "ss":  str(ssERGO),
-                "ssG": str(ssGERGO)
+                "ssG": "(" + str(ssGERGO.getXCoord().toBigInteger())  + ", " + str(ssGERGO.getYCoord().toBigInteger()) + ")"
         }
         return json.dumps(finalSignatureObject, indent=4)
         #print("create ergo script locked to ", srGERGO, ssGERGO, krGERGO, ksGERGO)

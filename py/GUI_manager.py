@@ -102,10 +102,20 @@ def setSwapTab(self, first):
                     customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
                     text="Responder Commitment not collected yet")
             self.swap_tab_view.responderContractValueLabel.grid(row=6, column=0, padx=10, pady=10)
+
+            self.swap_tab_view.initiatorContractValueLabel = \
+                    customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+                    text="Amount of coin to fund contract with:")
+            self.swap_tab_view.initiatorContractValueLabel.grid(row=7, column=0, padx=10, pady=10)
+            self.swap_tab_view.initiatorContractValueEntry = \
+                    customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname),\
+                    placeholder_text="Amount", \
+                    width=700, height=5)
+            self.swap_tab_view.initiatorContractValueEntry.grid(row=8, column=0, padx=10, pady=10)
             self.swap_tab_view.finalizeSwapButton = \
                     customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
                     text="Copy Final Signature", command=goDraftFinalSignature)
-            self.swap_tab_view.finalizeSwapButton.grid(row=7, column=0, padx=10, pady=10)
+            self.swap_tab_view.finalizeSwapButton.grid(row=9, column=0, padx=10, pady=10)
 
             self.swap_tab_view.pack()
             self.swapTabSet = True
@@ -137,10 +147,19 @@ def setSwapTab(self, first):
                     customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
                     text="Responder Commitment not collected yet")
             self.swap_tab_view.responderContractValueLabel.grid(row=6, column=0, padx=10, pady=10)
+            self.swap_tab_view.initiatorContractValueLabel = \
+                    customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+                    text="Amount of coin to fund contract with:")
+            self.swap_tab_view.initiatorContractValueLabel.grid(row=7, column=0, padx=10, pady=10)
+            self.swap_tab_view.initiatorContractValueEntry = \
+                    customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname),\
+                    placeholder_text="Amount", \
+                    width=700, height=5)
+            self.swap_tab_view.initiatorContractValueEntry.grid(row=8, column=0, padx=10, pady=10)
             self.swap_tab_view.finalizeSwapButton = \
                     customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
                     text="Copy Final Signature", command=goDraftFinalSignature)
-            self.swap_tab_view.finalizeSwapButton.grid(row=7, column=0, padx=10, pady=10)
+            self.swap_tab_view.finalizeSwapButton.grid(row=9, column=0, padx=10, pady=10)
 
     else:
         if first == True:

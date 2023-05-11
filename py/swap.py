@@ -76,6 +76,38 @@ def copyENCInit(self):
     #make sure active tab functions get swap name from current open tab
 
 
+def SigmaParticleAtomicSchnorr(self):
+    f = open(self.currentswapname + "/DEC_response.atomicswap", "r")
+    response = f.read()
+    f.close()
+    j = json.loads(response)
+    krG = ast.literal_eval(j["krG"])
+    srG = ast.literal_eval(j["srG"])
+    f = open(self.currentswapname + "/finalize.atomicswap", "r")
+    finalize = f.read()
+    f.close()
+    j = json.loads(finalize)
+    ssG = ast.literal_eval(j["ssG"])
+    f = open(self.currentswapname + "/initiation.atomicswap", "r")
+    j = json.loads(f.read())
+    ksG = ast.literal_eval(j["ksG"])
+    cmd = "cd SigmaParticle && ./new_frame " + self.currentswapname + \
+            " && cd " + self.currentswapname + " && echo " + \
+            "'" + "senderEIP3Secret=" + self.chainPubkeyEntry.get()  + "\n" + \
+            "ergoAmount=" + self.swap_tab_view.initiatorContractValueEntry.get() + "\n" +\
+            "krGX=" + str(krG[0]) + "\n" +\
+            "krGY=" + str(krG[1]) + "\n" +\
+            "ksGX=" + str(ksG[0]) + "\n" +\
+            "ksGY=" + str(ksG[1]) + "\n" +\
+            "srGX=" + str(srG[0]) + "\n" +\
+            "srGY=" + str(srG[1]) + "\n" +\
+            "ssGX=" + str(ssG[0]) + "\n" +\
+            "ssGY=" + str(ssG[1]) + "\n" +\
+            "'" + \
+            " >> .env"
+    createContractFolder = os.popen(cmd).read()
+
+
 def draftFinalSignature(self): #create the final sig ss and pub value sG 
     updateDataBasedOnOpenTab(self)
     f = open(self.currentswapname + "/DEC_response.atomicswap", "r")
@@ -106,6 +138,7 @@ def draftFinalSignature(self): #create the final sig ss and pub value sG
         "\'" + finalSigJson + "\' " + \
         self.currentswapname + "/ENC_finalize.atomicswap "
     encryption = os.popen(cmd).read()
+    SigmaParticleAtomicSchnorr(self)
     #now upload ergoscript contract
 #    pyperclip.copy(encryption)
 
