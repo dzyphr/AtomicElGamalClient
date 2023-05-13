@@ -76,6 +76,8 @@ def copyENCInit(self):
     #make sure active tab functions get swap name from current open tab
 
 
+def deploySigmaParticleAtomicSchorr(self):
+
 def SigmaParticleAtomicSchnorr(self):
     f = open(self.currentswapname + "/DEC_response.atomicswap", "r")
     response = f.read()
@@ -91,9 +93,15 @@ def SigmaParticleAtomicSchnorr(self):
     f = open(self.currentswapname + "/initiation.atomicswap", "r")
     j = json.loads(f.read())
     ksG = ast.literal_eval(j["ksG"])
+    f = open(self.currentswapname + "/DEC_response.atomicswap", "r")
+    j = json.loads(f.read())
+    f.close()
+    receiver = j[self.initiatorChain + "_chainPubkey"]
     cmd = "cd SigmaParticle && ./new_frame " + self.currentswapname + \
             " && cd " + self.currentswapname + " && echo " + \
-            "'" + "senderEIP3Secret=" + self.chainPubkeyEntry.get()  + "\n" + \
+            "'" + \
+            "senderEIP3Secret=" + self.chainPubkeyEntry.get()  + "\n" + \
+            "receiverAddr=\"" + receiver + "\"\n" + \
             "ergoAmount=" + self.swap_tab_view.initiatorContractValueEntry.get() + "\n" +\
             "krGX=" + str(krG[0]) + "\n" +\
             "krGY=" + str(krG[1]) + "\n" +\
@@ -106,6 +114,8 @@ def SigmaParticleAtomicSchnorr(self):
             "'" + \
             " >> .env"
     createContractFolder = os.popen(cmd).read()
+    copyScriptsCommand = "cp SigmaParticle/AtomicMultiSig/py/main.py SigmaParticle/" + self.currentswapname + "/py/main.py"
+    copyScripts = os.popen(copyScriptsCommand).read()
 
 
 def draftFinalSignature(self): #create the final sig ss and pub value sG 
