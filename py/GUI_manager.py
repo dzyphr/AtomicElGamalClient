@@ -114,7 +114,7 @@ def setSwapTab(self, first):
             self.swap_tab_view.initiatorContractValueEntry.grid(row=8, column=0, padx=10, pady=10)
             self.swap_tab_view.finalizeSwapButton = \
                     customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-                    text="Copy Final Signature", command=goDraftFinalSignature)
+                    text="Deploy Contract & Copy Commitment", command=goDraftFinalSignature)
             self.swap_tab_view.finalizeSwapButton.grid(row=9, column=0, padx=10, pady=10)
 
             self.swap_tab_view.pack()
@@ -158,7 +158,7 @@ def setSwapTab(self, first):
             self.swap_tab_view.initiatorContractValueEntry.grid(row=8, column=0, padx=10, pady=10)
             self.swap_tab_view.finalizeSwapButton = \
                     customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-                    text="Copy Final Signature", command=goDraftFinalSignature)
+                    text="Deploy Contract & Copy Commitment", command=goDraftFinalSignature)
             self.swap_tab_view.finalizeSwapButton.grid(row=9, column=0, padx=10, pady=10)
 
     else:
@@ -171,11 +171,13 @@ def setSwapTab(self, first):
             self.swap_tab_view.add(self.currentswapname)
 
 def SwapResponderGUI(self):
-    from swap import copyResponse, deployAndFundScalarSwapContract
+    from swap import copyResponse, deployAndFundScalarSwapContract, receiverClaim
     def goCopyResponse():
         copyResponse(self)
     def goDeployAndFundScalarSwapContract():
         deployAndFundScalarSwapContract(self)
+    def goReceiverClaim():
+        receiverClaim(self)
     self.swap_tab_view.valueLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
         text="Amount to spend in wei:")
     self.swap_tab_view.valueLabel.grid(row=0, column=0, padx=10, pady=10)
@@ -202,6 +204,16 @@ def SwapResponderGUI(self):
             customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
             text="Copy", command=goCopyResponse)
     self.swap_tab_view.copyResponseButton.grid(row=6, column=0, padx=10, pady=10)
+    self.swap_tab_view.labelFinalize = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+        text="Paste Finalization Commitment: ")
+    self.swap_tab_view.labelFinalize.grid(row=7, column=0, padx=10, pady=10)
+    self.swap_tab_view.finalizeEntry = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname), \
+        placeholder_text="Finalization", width=700, height=5)
+    self.swap_tab_view.finalizeEntry.grid(row=8, column=0, padx=10, pady=10)
+    self.swap_tab_view.claimButton = \
+            customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
+            text="Claim", command=goReceiverClaim) 
+    self.swap_tab_view.claimButton.grid(row=9, column=0, padx=10, pady=10)
 
 
 #######CHAIN#########

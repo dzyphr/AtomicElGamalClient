@@ -1,4 +1,6 @@
 import os
+import json
+import sys
 import time
 import random
 import jpype
@@ -93,9 +95,11 @@ def main(contractName, ergo, wallet_mnemonic, mnemonic_password, senderAddress, 
             sender_address=castedSender\
         )
         signedTx = senderProver.sign(unsignedTx)
-        print(ergo.txId(signedTx)) #DEPOSIT
+        ergo.txId(signedTx) #DEPOSIT
         signedTxJSON = senderProver.sign(unsignedTx).toJson(True)
-        print(signedTxJSON)
+#        sys.stdout.write(str(signedTxJSON))
+        j = json.loads(str(signedTxJSON))
+        print(j["outputs"][0]["boxId"])
 
     def atomicReceiverClaim():
         receiver = senderAddress[0]
@@ -132,9 +136,9 @@ def main(contractName, ergo, wallet_mnemonic, mnemonic_password, senderAddress, 
             sender_address=castedReceiver\
         )
         signedTx = receiverProver.sign(unsignedTx)
-        print(ergo.txId(signedTx)) #CLAIM
+        ergo.txId(signedTx) #CLAIM
         signedTxJSON = receiverProver.sign(unsignedTx).toJson(True)
-        print(signedTxJSON)
+        sys.stdout.write(str(signedTxJSON))
 
     def atomicSenderRefund():
         sender = senderAddress[0]
@@ -161,9 +165,9 @@ def main(contractName, ergo, wallet_mnemonic, mnemonic_password, senderAddress, 
             sender_address=castedSender\
         )
         signedTx = senderProver.sign(unsignedTx)
-        print(ergo.txId(signedTx)) #REFUND (after timelock height)
+        ergo.txId(signedTx) #REFUND (after timelock height)
         signedTxJSON = senderProver.sign(unsignedTx).toJson(True)
-        print(signedTxJSON)
+        sys.stdout.write(str(signedTxJSON))
 
 
         

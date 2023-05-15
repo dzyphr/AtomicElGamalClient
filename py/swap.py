@@ -77,6 +77,10 @@ def copyENCInit(self):
 
 
 def deploySigmaParticleAtomicSchorr(self):
+    command = "cd SigmaParticle/" + self.currentswapname + " && ./deploy.sh deposit"
+    print(os.popen(command).read())
+    #response should already be a json minus initial "Running ..." Statement
+
 
 def SigmaParticleAtomicSchnorr(self):
     f = open(self.currentswapname + "/DEC_response.atomicswap", "r")
@@ -116,7 +120,12 @@ def SigmaParticleAtomicSchnorr(self):
     createContractFolder = os.popen(cmd).read()
     copyScriptsCommand = "cp SigmaParticle/AtomicMultiSig/py/main.py SigmaParticle/" + self.currentswapname + "/py/main.py"
     copyScripts = os.popen(copyScriptsCommand).read()
+    deploySigmaParticleAtomicSchorr(self)
 
+
+def receiverClaim(self):
+    if self.swap_tab_view.finalizeEntry.get() == "":
+        print("paste in the finalization to claim!")
 
 def draftFinalSignature(self): #create the final sig ss and pub value sG 
     updateDataBasedOnOpenTab(self)
@@ -146,11 +155,14 @@ def draftFinalSignature(self): #create the final sig ss and pub value sG
         self.currentReceiver + ' ' + \
         self.ElGamalKeyFileName + ' ' + \
         "\'" + finalSigJson + "\' " + \
-        self.currentswapname + "/ENC_finalize.atomicswap "
-    encryption = os.popen(cmd).read()
+        self.currentswapname + "/ENC_finalize.atomicswap"
+    encrypt = os.popen(cmd).read()
+    f = open(self.currentswapname + "/ENC_finalize.atomicswap", "r")
+    encryption = f.read()
+    f.close()
     SigmaParticleAtomicSchnorr(self)
     #now upload ergoscript contract
-#    pyperclip.copy(encryption)
+    pyperclip.copy(encryption)
 
 
 def inspectScalarLockContract(self):
