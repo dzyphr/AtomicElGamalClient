@@ -100,6 +100,9 @@ def main(contractName, ergo, wallet_mnemonic, mnemonic_password, senderAddress, 
 #        sys.stdout.write(str(signedTxJSON))
         j = json.loads(str(signedTxJSON))
         print(j["outputs"][0]["boxId"])
+        f = open("boxId", "w")
+        f.write(j["outputs"][0]["boxId"]) 
+        f.close()
 
     def atomicReceiverClaim():
         receiver = senderAddress[0]

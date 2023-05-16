@@ -110,7 +110,7 @@ def setSwapTab(self, first):
             self.swap_tab_view.initiatorContractValueEntry = \
                     customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname),\
                     placeholder_text="Amount", \
-                    width=700, height=5)
+                    width=70, height=5)
             self.swap_tab_view.initiatorContractValueEntry.grid(row=8, column=0, padx=10, pady=10)
             self.swap_tab_view.finalizeSwapButton = \
                     customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
@@ -154,7 +154,7 @@ def setSwapTab(self, first):
             self.swap_tab_view.initiatorContractValueEntry = \
                     customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname),\
                     placeholder_text="Amount", \
-                    width=700, height=5)
+                    width=70, height=5)
             self.swap_tab_view.initiatorContractValueEntry.grid(row=8, column=0, padx=10, pady=10)
             self.swap_tab_view.finalizeSwapButton = \
                     customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
@@ -171,13 +171,13 @@ def setSwapTab(self, first):
             self.swap_tab_view.add(self.currentswapname)
 
 def SwapResponderGUI(self):
-    from swap import copyResponse, deployAndFundScalarSwapContract, receiverClaim
+    from swap import copyResponse, deployAndFundScalarSwapContract, receiverCheck
     def goCopyResponse():
         copyResponse(self)
     def goDeployAndFundScalarSwapContract():
         deployAndFundScalarSwapContract(self)
-    def goReceiverClaim():
-        receiverClaim(self)
+    def goReceiverCheck():
+        receiverCheck(self)
     self.swap_tab_view.valueLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
         text="Amount to spend in wei:")
     self.swap_tab_view.valueLabel.grid(row=0, column=0, padx=10, pady=10)
@@ -210,10 +210,13 @@ def SwapResponderGUI(self):
     self.swap_tab_view.finalizeEntry = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname), \
         placeholder_text="Finalization", width=700, height=5)
     self.swap_tab_view.finalizeEntry.grid(row=8, column=0, padx=10, pady=10)
-    self.swap_tab_view.claimButton = \
+    self.swap_tab_view.checkButton = \
             customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-            text="Claim", command=goReceiverClaim) 
-    self.swap_tab_view.claimButton.grid(row=9, column=0, padx=10, pady=10)
+            text="Check", command=goReceiverCheck) 
+    self.swap_tab_view.checkButton.grid(row=9, column=0, padx=10, pady=10)
+    self.swap_tab_view.labelContractAmount = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+        text="Contract amount: not checked yet")
+    self.swap_tab_view.labelContractAmount.grid(row=10, column=0, padx=10, pady=10)
 
 
 #######CHAIN#########

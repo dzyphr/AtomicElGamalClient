@@ -78,7 +78,8 @@ def copyENCInit(self):
 
 def deploySigmaParticleAtomicSchorr(self):
     command = "cd SigmaParticle/" + self.currentswapname + " && ./deploy.sh deposit"
-    print(os.popen(command).read())
+    response = os.popen(command).read()
+    print(response)
     #response should already be a json minus initial "Running ..." Statement
 
 
@@ -123,9 +124,31 @@ def SigmaParticleAtomicSchnorr(self):
     deploySigmaParticleAtomicSchorr(self)
 
 
-def receiverClaim(self):
+def receiverCheck(self):
     if self.swap_tab_view.finalizeEntry.get() == "":
         print("paste in the finalization to claim!")
+    else:
+        ENCFin = self.swap_tab_view.finalizeEntry.get()
+        f = open(self.currentswapname + "/ENC_Finalization.atomicswap", "w")
+        f.write(ENCFin)
+        f.close()
+        decryptElGamal = \
+            "./ElGamal decryptFromPubKey " + self.currentswapname + "/ENC_Finalization.atomicswap " + \
+            self.currentReceiver + ' ' + self.ElGamalKeyFileName
+        decryption = os.popen(decryptElGamal).read()
+        j = json.loads(decryption)
+        boxValCheck = "cd SigmaParticle/boxValue && ./deploy.sh " + j["boxId"] + " ../" + self.currentswapname + "/InitiatorContractValue"
+        os.popen(boxValCheck).read()
+        f = open("SigmaParticle/" + self.currentswapname + "/InitiatorContractValue")
+        nanoErgs = f.read()
+        f.close()
+        self.swap_tab_view.labelContractAmount.configure(text= "Contract Value: " +\
+            nanoErgs + " nΣ")
+
+
+
+
+
 
 def draftFinalSignature(self): #create the final sig ss and pub value sG 
     updateDataBasedOnOpenTab(self)
@@ -150,17 +173,26 @@ def draftFinalSignature(self): #create the final sig ss and pub value sG
     f = open(self.currentswapname + "/finalize.atomicswap", "w")
     f.write(finalSigJson)
     f.close()
+    SigmaParticleAtomicSchnorr(self)
+    f = open(self.currentswapname + "/finalize.atomicswap", "w")
+    f2 = open("SigmaParticle/" + self.currentswapname + "/boxId", "r") #TODO chain specific
+    boxId = f2.read()
+    f2.close()
+    mod = finalSigJson
+    modified = mod.replace("\"\n}", "\",\n    \"boxId\": \"" + boxId + "\"\n}")
+    print(modified)
+    f.write(modified)
+    f.close()
     cmd = \
         "./ElGamal encryptToPubKey " + \
         self.currentReceiver + ' ' + \
         self.ElGamalKeyFileName + ' ' + \
-        "\'" + finalSigJson + "\' " + \
+        "\'" + modified + "\' " + \
         self.currentswapname + "/ENC_finalize.atomicswap"
     encrypt = os.popen(cmd).read()
     f = open(self.currentswapname + "/ENC_finalize.atomicswap", "r")
     encryption = f.read()
     f.close()
-    SigmaParticleAtomicSchnorr(self)
     #now upload ergoscript contract
     pyperclip.copy(encryption)
 
