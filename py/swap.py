@@ -150,51 +150,56 @@ def receiverCheck(self):
 
 
 
-def draftFinalSignature(self): #create the final sig ss and pub value sG 
-    updateDataBasedOnOpenTab(self)
-    f = open(self.currentswapname + "/DEC_response.atomicswap", "r")
-    j = json.loads(f.read())
-    f.close()
-    sr_ = j["sr_"]
-    xG = j["xG"]
-    srG = j["srG"]
-    e = j["e"]
-    f = open(self.currentswapname + "/PRIV_initiation.atomicswap", "r")
-    j = json.loads(f.read())
-    f.close()
-    ks = j["ks"]
-    rs = j["rs"]
-    cmd = "cd SigmaParticle/AtomicMultiSigECC/ && python3 -u py/deploy.py p1Finalize " + \
-            "\"" + str(sr_) + "\"" + " \"" + xG.replace(" ", "") + "\" \"" + srG.replace(" ", "") + "\" \"" + str(e) + "\" " + \
-            "\"" + str(ks) + "\"" + " \"" + str(rs) + "\""
-#    print(cmd)
-    finalSigJson = os.popen(cmd).read()
-#    print(os.popen(cmd).read())
-    f = open(self.currentswapname + "/finalize.atomicswap", "w")
-    f.write(finalSigJson)
-    f.close()
-    SigmaParticleAtomicSchnorr(self)
-    f = open(self.currentswapname + "/finalize.atomicswap", "w")
-    f2 = open("SigmaParticle/" + self.currentswapname + "/boxId", "r") #TODO chain specific
-    boxId = f2.read()
-    f2.close()
-    mod = finalSigJson
-    modified = mod.replace("\"\n}", "\",\n    \"boxId\": \"" + boxId + "\"\n}")
-    print(modified)
-    f.write(modified)
-    f.close()
-    cmd = \
-        "./ElGamal encryptToPubKey " + \
-        self.currentReceiver + ' ' + \
-        self.ElGamalKeyFileName + ' ' + \
-        "\'" + modified + "\' " + \
-        self.currentswapname + "/ENC_finalize.atomicswap"
-    encrypt = os.popen(cmd).read()
-    f = open(self.currentswapname + "/ENC_finalize.atomicswap", "r")
-    encryption = f.read()
-    f.close()
-    #now upload ergoscript contract
-    pyperclip.copy(encryption)
+def draftFinalSignature(self): #create the final sig ss and pub value sG
+    if os.path.isfile(self.currentswapname + "/finalize.atomicswap", "w") == False:
+        updateDataBasedOnOpenTab(self)
+        f = open(self.currentswapname + "/DEC_response.atomicswap", "r")
+        j = json.loads(f.read())
+        f.close()
+        sr_ = j["sr_"]
+        xG = j["xG"]
+        srG = j["srG"]
+        e = j["e"]
+        f = open(self.currentswapname + "/PRIV_initiation.atomicswap", "r")
+        j = json.loads(f.read())
+        f.close()
+        ks = j["ks"]
+        rs = j["rs"]
+        cmd = "cd SigmaParticle/AtomicMultiSigECC/ && python3 -u py/deploy.py p1Finalize " + \
+                "\"" + str(sr_) + "\"" + " \"" + xG.replace(" ", "") + "\" \"" + srG.replace(" ", "") + "\" \"" + str(e) + "\" " + \
+                "\"" + str(ks) + "\"" + " \"" + str(rs) + "\""
+        finalSigJson = os.popen(cmd).read()
+        f = open(self.currentswapname + "/finalize.atomicswap", "w")
+        f.write(finalSigJson)
+        f.close()
+        SigmaParticleAtomicSchnorr(self)
+        f = open(self.currentswapname + "/finalize.atomicswap", "w")
+        f2 = open("SigmaParticle/" + self.currentswapname + "/boxId", "r") #TODO chain specific
+        boxId = f2.read()
+        f2.close()
+        mod = finalSigJson
+        modified = mod.replace("\"\n}", "\",\n    \"boxId\": \"" + boxId + "\"\n}")
+        print(modified)
+        f.write(modified)
+        f.close()
+        cmd = \
+            "./ElGamal encryptToPubKey " + \
+            self.currentReceiver + ' ' + \
+            self.ElGamalKeyFileName + ' ' + \
+            "\'" + modified + "\' " + \
+            self.currentswapname + "/ENC_finalize.atomicswap"
+        encrypt = os.popen(cmd).read()
+        f = open(self.currentswapname + "/ENC_finalize.atomicswap", "r")
+        encryption = f.read()
+        f.close()
+        #now upload ergoscript contract
+        pyperclip.copy(encryption)
+    else: #if we already have the finalize file that means we already uploaded so just return a copy of the encryption
+        f = open(self.currentswapname + "/ENC_finalize.atomicswap", "r")
+        encryption = f.read()
+        f.close()
+        #now upload ergoscript contract
+        pyperclip.copy(encryption)
 
 
 def inspectScalarLockContract(self):
