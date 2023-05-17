@@ -59,7 +59,7 @@ def main(args):
         }
         return json.dumps(p1InitiateOBJECT, indent=4)
 
-    def p2Response(ksGERGO, message):
+    def p2Response(ksGERGO, message, srFilePath):
         ksGERGO = ast.literal_eval(ksGERGO)
         ksGERGO_X = ksGERGO[0]
         ksGERGO_Y = ksGERGO[1]        
@@ -100,6 +100,9 @@ def main(args):
             return sr 
         sr = gen_sr(kr, e, rr)
         srERGO = BigInteger(str(sr))
+        f = open(srFilePath, "w")
+        f.write(srERGO)
+        f.close()
       #  print("\np2 creates their multisig value sr:", sr)
         x = secrets.randbits(256)
         x = x % n
@@ -183,9 +186,9 @@ def main(args):
                 print("enter chainPubkey as following arg")
         if command == "p2Respond":
             if len(args) > 2:
-               sys.stdout.write(str(p2Response(args[2], args[3])))
+               sys.stdout.write(str(p2Response(args[2], args[3], args[4])))
             else:
-                print("enter ksGERGO as following arg")
+                print("enter ksG Message and srFilePath as following args")
         if command == "p1Finalize":
             if len(args) > 4:
                 sys.stdout.write(str(p1Finalize(args[2], args[3], args[4], args[5], args[6], args[7])))

@@ -124,6 +124,27 @@ def SigmaParticleAtomicSchnorr(self):
     deploySigmaParticleAtomicSchorr(self)
 
 
+def receiverClaim(self):
+    if os.dir.isfile(self.currentswapname + "/ENC_Finalization.atomicswap") == False:
+        print("finalization not found! paste in finalization and check contract value first!")
+    else:
+        newContractCmd = "cd SigmaParticle && ./new_frame " + self.currentswapname
+        print(os.popen(newContractCmd).read())
+        copyBoilerplateCmd = "cp SigmaParticle/AtomicMultiSig/py/main.py SigmaParticle/" + self.currentswapname  + "/py/main.py"
+        print(os.popen(copyBoilerplateCmd).read())
+        f = open("SigmaParticle/" + self.currentswapname + "/sr")
+        sr = f.read()
+        f.close()
+        f = open(self.currentswapname + "/DEC_Finalization.atomicswap", "r")
+        j = json.loads(f.read())
+        f.close()
+        ss = j["ss"]
+        echoVariablesCMD = \
+                "echo \"sr=" + sr + "\n" +\
+                "ss=" + ss  + "\" >> SigmaParticle/" + self.currentswapname + "/.env"
+        print(os.popen(echoVariablesCMD).read())
+
+
 def receiverCheck(self):
     if self.swap_tab_view.finalizeEntry.get() == "":
         print("paste in the finalization to claim!")
@@ -136,6 +157,9 @@ def receiverCheck(self):
             "./ElGamal decryptFromPubKey " + self.currentswapname + "/ENC_Finalization.atomicswap " + \
             self.currentReceiver + ' ' + self.ElGamalKeyFileName
         decryption = os.popen(decryptElGamal).read()
+        f = open(self.currentswapname + "/DEC_Finalization.atomicswap", "w")
+        f.write(decryption)
+        f.close()
         j = json.loads(decryption)
         boxValCheck = "cd SigmaParticle/boxValue && ./deploy.sh " + j["boxId"] + " ../" + self.currentswapname + "/InitiatorContractValue"
         os.popen(boxValCheck).read()
@@ -372,7 +396,12 @@ def decryptInitiation(self):
     self.crossChain = j["localChain"] #When responder sending chainpubkey to counterparty, get key from this chain
 
 def commitResponse(self):
-    self.response = os.popen("python3 -u SigmaParticle/AtomicMultiSigECC/py/deploy.py p2Respond " + "'" + self.ksG + "' " + str(datetime.now())).read()
+    self.response = \
+        os.popen(\
+                "python3 -u SigmaParticle/AtomicMultiSigECC/py/deploy.py p2Respond " +\
+                "'" + self.ksG + "' " + str(datetime.now()) +\
+                " ../" + self.currentswapname + "/sr" \
+                ).read()
     f = open(self.currentswapname + "/response_commitment.atomicswap", "w")
     f.write(self.response)
     f.close()
