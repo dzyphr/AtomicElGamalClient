@@ -125,14 +125,14 @@ def SigmaParticleAtomicSchnorr(self):
 
 
 def receiverClaim(self):
-    if os.dir.isfile(self.currentswapname + "/ENC_Finalization.atomicswap") == False:
+    if os.path.isfile(self.currentswapname + "/ENC_Finalization.atomicswap") == False:
         print("finalization not found! paste in finalization and check contract value first!")
     else:
         newContractCmd = "cd SigmaParticle && ./new_frame " + self.currentswapname
         print(os.popen(newContractCmd).read())
         copyBoilerplateCmd = "cp SigmaParticle/AtomicMultiSig/py/main.py SigmaParticle/" + self.currentswapname  + "/py/main.py"
         print(os.popen(copyBoilerplateCmd).read())
-        f = open("SigmaParticle/" + self.currentswapname + "/sr")
+        f = open(self.currentswapname + "/sr")
         sr = f.read()
         f.close()
         f = open(self.currentswapname + "/DEC_Finalization.atomicswap", "r")
@@ -143,6 +143,9 @@ def receiverClaim(self):
                 "echo \"sr=" + sr + "\n" +\
                 "ss=" + ss  + "\" >> SigmaParticle/" + self.currentswapname + "/.env"
         print(os.popen(echoVariablesCMD).read())
+        claimCMD = \
+                "cd SigmaParticle/" + self.currentswapname + " && ./deploy.sh claim"
+        print(os.popen(claimCMD).read())
 
 
 def receiverCheck(self):
@@ -175,7 +178,7 @@ def receiverCheck(self):
 
 
 def draftFinalSignature(self): #create the final sig ss and pub value sG
-    if os.path.isfile(self.currentswapname + "/finalize.atomicswap", "w") == False:
+    if os.path.isfile(self.currentswapname + "/finalize.atomicswap") == False:
         updateDataBasedOnOpenTab(self)
         f = open(self.currentswapname + "/DEC_response.atomicswap", "r")
         j = json.loads(f.read())
@@ -400,7 +403,7 @@ def commitResponse(self):
         os.popen(\
                 "python3 -u SigmaParticle/AtomicMultiSigECC/py/deploy.py p2Respond " +\
                 "'" + self.ksG + "' " + str(datetime.now()) +\
-                " ../" + self.currentswapname + "/sr" \
+                self.currentswapname + "/sr" \
                 ).read()
     f = open(self.currentswapname + "/response_commitment.atomicswap", "w")
     f.write(self.response)

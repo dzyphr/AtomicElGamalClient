@@ -101,7 +101,7 @@ def main(args):
         sr = gen_sr(kr, e, rr)
         srERGO = BigInteger(str(sr))
         f = open(srFilePath, "w")
-        f.write(srERGO)
+        f.write(str(srERGO))
         f.close()
       #  print("\np2 creates their multisig value sr:", sr)
         x = secrets.randbits(256)
