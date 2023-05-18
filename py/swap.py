@@ -124,10 +124,14 @@ def SigmaParticleAtomicSchnorr(self):
     deploySigmaParticleAtomicSchorr(self)
 
 
+def nanoErgToErgo(nanoErgs):
+    return int(int(nanoErgs) / 1000000000)
+
 def receiverClaim(self):
     if os.path.isfile(self.currentswapname + "/ENC_Finalization.atomicswap") == False:
         print("finalization not found! paste in finalization and check contract value first!")
     else:
+        updateDataBasedOnOpenTab(self)
         newContractCmd = "cd SigmaParticle && ./new_frame " + self.currentswapname
         print(os.popen(newContractCmd).read())
         copyBoilerplateCmd = "cp SigmaParticle/AtomicMultiSig/py/main.py SigmaParticle/" + self.currentswapname  + "/py/main.py"
@@ -139,9 +143,29 @@ def receiverClaim(self):
         j = json.loads(f.read())
         f.close()
         ss = j["ss"]
+        f = open(self.currentswapname + "/DEC_initiation.atomicswap")
+        ksG = json.loads(f.read())["ksG"]
+        f.close()
+        f = open(self.currentswapname + "/response_commitment.atomicswap")
+        krG = json.loads(f.read())["krG"]
+        f = open(self.currentswapname + "/DEC_Finalization.atomicswap", "r")
+        j = json.loads(f.read())
+        f.close()
+        boxId = j["boxId"]
+        f = open(self.currentswapname + "/InitiatorContractValue")
+        nanoErgs = f.read()
+        f.close()
         echoVariablesCMD = \
-                "echo \"sr=" + sr + "\n" +\
-                "ss=" + ss  + "\" >> SigmaParticle/" + self.currentswapname + "/.env"
+                "echo \"" + \
+                "sr=" + sr + "\n" + \
+                "ss=" + ss + "\n" + \
+                "ksGX=" + str(ast.literal_eval(ksG)[0]) + "\n" + \
+                "ksGY=" + str(ast.literal_eval(ksG)[1]) + "\n" + \
+                "krGX=" + str(ast.literal_eval(krG)[0]) + "\n" + \
+                "krGY=" + str(ast.literal_eval(krG)[1]) + "\n" + \
+                "atomicBox=" + "\"" + boxId + "\"\n" + \
+                "ergoAmount=" + str(nanoErgToErgo(nanoErgs)) + "\n" + \
+                "\" >> SigmaParticle/" + self.currentswapname + "/.env"
         print(os.popen(echoVariablesCMD).read())
         claimCMD = \
                 "cd SigmaParticle/" + self.currentswapname + " && ./deploy.sh claim"
@@ -152,6 +176,7 @@ def receiverCheck(self):
     if self.swap_tab_view.finalizeEntry.get() == "":
         print("paste in the finalization to claim!")
     else:
+        updateDataBasedOnOpenTab(self)
         ENCFin = self.swap_tab_view.finalizeEntry.get()
         f = open(self.currentswapname + "/ENC_Finalization.atomicswap", "w")
         f.write(ENCFin)
@@ -164,9 +189,11 @@ def receiverCheck(self):
         f.write(decryption)
         f.close()
         j = json.loads(decryption)
-        boxValCheck = "cd SigmaParticle/boxValue && ./deploy.sh " + j["boxId"] + " ../" + self.currentswapname + "/InitiatorContractValue"
+        boxValCheck = "cd SigmaParticle/boxValue && ./deploy.sh " + j["boxId"] + " ../../" + self.currentswapname + "/InitiatorContractValue"
+        print(boxValCheck)
         os.popen(boxValCheck).read()
-        f = open("SigmaParticle/" + self.currentswapname + "/InitiatorContractValue")
+        time.sleep(1)
+        f = open(self.currentswapname + "/InitiatorContractValue")
         nanoErgs = f.read()
         f.close()
         self.swap_tab_view.labelContractAmount.configure(text= "Contract Value: " +\
@@ -295,7 +322,7 @@ def initiatorStart(self):
     runElGamal = "./ElGamal encryptToPubKey " + \
             self.currentReceiver + ' ' + \
             self.ElGamalKeyFileName + ' ' + \
-            "\'" + initiation + "\' " + \
+            "\'" + strippedInitiation6 + "\' " + \
             self.currentswapname + "/ENC_initiation.atomicswap "
     encryption = os.popen(runElGamal).read()
     f = open(self.currentswapname + "/PRIV_initiation.atomicswap", "w")
@@ -402,7 +429,7 @@ def commitResponse(self):
     self.response = \
         os.popen(\
                 "python3 -u SigmaParticle/AtomicMultiSigECC/py/deploy.py p2Respond " +\
-                "'" + self.ksG + "' " + str(datetime.now()) +\
+                "'" + self.ksG + "' " + "'" + str(datetime.now()) + "' " +\
                 self.currentswapname + "/sr" \
                 ).read()
     f = open(self.currentswapname + "/response_commitment.atomicswap", "w")
