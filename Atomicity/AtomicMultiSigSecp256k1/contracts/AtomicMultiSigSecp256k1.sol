@@ -13,7 +13,7 @@ contract AtomicMultiSigSecp256k1 is ReentrancyGuard
         uint private constant DURATION = 100;
         uint public lockHeight;
         uint256 public gxX;
-	    uint256 public gxY;
+	uint256 public gxY;
 
         receive() external payable
         {
@@ -23,12 +23,12 @@ contract AtomicMultiSigSecp256k1 is ReentrancyGuard
         constructor(address payable rec, uint256 gxX_, uint256 gxY_) payable
         {
                 require(rec != address(0), "reciever is a null addr");
-		        require(onCurve(gxX_, gxY_) == true);
+		require(onCurve(gxX_, gxY_) == true);
                 sender = payable(msg.sender);
                 receiver = rec;
                 lockHeight = block.timestamp + DURATION;
-		        gxX = gxX_;
-		        gxY = gxY_;
+		gxX = gxX_;
+		gxY = gxY_;
         }
 
         function receiverWithdraw(uint256 x) external  nonReentrant

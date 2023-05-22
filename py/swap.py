@@ -76,6 +76,9 @@ def copyENCInit(self):
     #make sure active tab functions get swap name from current open tab
 
 
+def checkTreeForFinalization(self):
+
+
 def deploySigmaParticleAtomicSchorr(self):
     command = "cd SigmaParticle/" + self.currentswapname + " && ./deploy.sh deposit"
     response = os.popen(command).read()
