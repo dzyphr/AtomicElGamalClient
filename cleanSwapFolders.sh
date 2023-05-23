@@ -1,1 +1,1 @@
-rm -r swap* Atomicity/swap*
+rm -r swap* Atomicity/swap* SigmaParticle/swap*

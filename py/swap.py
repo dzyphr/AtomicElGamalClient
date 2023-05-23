@@ -77,6 +77,31 @@ def copyENCInit(self):
 
 
 def checkTreeForFinalization(self):
+    updateDataBasedOnOpenTab(self)
+    f = open("SigmaParticle/" + self.currentswapname + "/ergoTree")
+    tree = f.read()
+    f.close()
+    f = open(self.currentswapname + "/finalize.atomicswap")
+    j = json.loads(f.read())
+    f.close()
+    boxId = j["boxId"]
+    treeToAddrCmd = \
+            "cd SigmaParticle/treeToAddr && ./deploy.sh " + tree
+    addr = json.loads(os.popen(treeToAddrCmd).read())["address"]
+    print("addr: ", addr)
+    boxFilterCmd =\
+            "cd SigmaParticle/boxFilter &&" +\
+            "./deploy.sh " + addr + " " + boxId + " ../../" + self.currentswapname + "/atomicClaim"
+    print(os.popen(boxFilterCmd).read())
+    if os.path.isfile(self.currentswapname + "/atomicClaim_tx1"):
+        f = open(self.currentswapname + "/atomicClaim_tx1")
+        print(f.read())
+        f.close()
+    else:
+        print("no atomic claim transactions found")
+
+            
+
 
 
 def deploySigmaParticleAtomicSchorr(self):
@@ -175,7 +200,7 @@ def receiverClaim(self):
         print(os.popen(claimCMD).read())
 
 
-def receiverCheck(self):
+def receiverCheck(self): #responder operation
     if self.swap_tab_view.finalizeEntry.get() == "":
         print("paste in the finalization to claim!")
     else:
@@ -207,7 +232,7 @@ def receiverCheck(self):
 
 
 
-def draftFinalSignature(self): #create the final sig ss and pub value sG
+def draftFinalSignature(self): #create the final sig ss and pub value sG #initiator operation
     if os.path.isfile(self.currentswapname + "/finalize.atomicswap") == False:
         updateDataBasedOnOpenTab(self)
         f = open(self.currentswapname + "/DEC_response.atomicswap", "r")
@@ -231,7 +256,7 @@ def draftFinalSignature(self): #create the final sig ss and pub value sG
         f.close()
         SigmaParticleAtomicSchnorr(self)
         f = open(self.currentswapname + "/finalize.atomicswap", "w")
-        f2 = open("SigmaParticle/" + self.currentswapname + "/boxId", "r") #TODO chain specific
+        f2 = open("SigmaParticle/" + self.currentswapname + "/boxId", "r") 
         boxId = f2.read()
         f2.close()
         mod = finalSigJson
@@ -259,7 +284,7 @@ def draftFinalSignature(self): #create the final sig ss and pub value sG
         pyperclip.copy(encryption)
 
 
-def inspectScalarLockContract(self):
+def inspectScalarLockContract(self): #initiator operation
     updateDataBasedOnOpenTab(self)
     decryptResponse(self)
     f = open(self.currentswapname + "/DEC_response.atomicswap", "r")
@@ -277,7 +302,7 @@ def inspectScalarLockContract(self):
 
 
 
-def decryptResponse(self):
+def decryptResponse(self): #initiator operation
     if os.path.isfile(self.currentswapname + "/response.atomicswap"):
         print("response commitment already collected for ", self.currentswapname)
     else:
@@ -295,7 +320,7 @@ def decryptResponse(self):
         else:
             print("enter the commitment from responder!")
 
-def initiatorStart(self):
+def initiatorStart(self): #initiator operation
     updateDataBasedOnOpenTab(self)
     self.currentswapname = determineSwapName()
     if self.chainPubkey == "":
@@ -346,7 +371,7 @@ def initiatorStart(self):
     else:
         setSwapTab(self, False)
 
-def copyResponse(self):
+def copyResponse(self): #esponder operation
     if os.path.isfile(self.currentswapname + "/responderContractAddress"):
         if os.path.isfile(self.swap_tab_view.get() + "/response_commitment.atomicswap"):
             addr = open(self.currentswapname + "/responderContractAddress", "r").read().rstrip()
@@ -386,7 +411,7 @@ def copyResponse(self):
     else:
         print("swap contract not deployed yet!")
 
-def deployAndFundScalarSwapContract(self):
+def deployAndFundScalarSwapContract(self): #responder operation
     if self.swap_tab_view.valueToSpendEntry.get() != "":
         addr = os.popen("cd Atomicity/" + self.currentswapname + "/ && python3 py/deploy.py").read()
         if addr.startswith("0x"):
@@ -399,7 +424,7 @@ def deployAndFundScalarSwapContract(self):
     else:
         print("enter value to spend to contract before deploying (to prevent manual overspending)")
 
-def fundScalarContract(self):
+def fundScalarContract(self): #responder operation
     if os.path.isfile(self.currentswapname + "/responderContractAddress"):
         addr = open(self.currentswapname + "/responderContractAddress", "r").read().rstrip()
         cmd = "cd Atomicity/" + \
@@ -409,12 +434,12 @@ def fundScalarContract(self):
     else:
         print("responders contract not found! not deployed yet or recieved")
 
-def writeInitiation(self):
+def writeInitiation(self): #responder operation
     f = open(self.currentswapname + "/initiation.atomicswap", "w")
     f.write(self.initiatorCommitment.get())
     f.close()
 
-def decryptInitiation(self):
+def decryptInitiation(self): #responder operation
     decryptElGamal = \
             "./ElGamal decryptFromPubKey " + self.currentswapname + "/initiation.atomicswap " + \
             self.currentReceiver + ' ' + self.ElGamalKeyFileName
@@ -428,7 +453,7 @@ def decryptInitiation(self):
     self.ksG = j["ksG"]
     self.crossChain = j["localChain"] #When responder sending chainpubkey to counterparty, get key from this chain
 
-def commitResponse(self):
+def commitResponse(self): #responder operation 
     self.response = \
         os.popen(\
                 "python3 -u SigmaParticle/AtomicMultiSigECC/py/deploy.py p2Respond " +\
@@ -447,7 +472,7 @@ def commitResponse(self):
         self.currentswapname + "/ENC_response_commitment.atomicswap "
     self.encryption = os.popen(runElGamal).read()
 
-def AtomicityScalarContractOperation(self):
+def AtomicityScalarContractOperation(self): #responder operation 
     cmd = "cd Atomicity && ./new_frame " + self.currentswapname  + \
         " -M -CA 3 " + "\\\"" + self.counterpartyChainPubkey + "\\\" " + \
         str(ast.literal_eval(self.xG)[0])  + " " + str(ast.literal_eval(self.xG)[1])
@@ -469,7 +494,7 @@ def AtomicityScalarContractOperation(self):
     specifyChain = os.popen("echo 'CurrentChain=\"" + self.responderChainOption.get() + "\"' >> Atomicity/" + \
             self.currentswapname + "/.env").read()
 
-def initiateSwap(self):
+def initiateSwap(self): #currently ambiguous as it facilitates initiator and responder swap start
     if self.isInitiator == True and (self.initiatorChain  == "NotSelected" or self.responderChain == "NotSelected"):
         print("at least one chain not selected! initiator must select both chains")
     elif self.isInitiator == False and self.responderChainOption  == "NotSelected":
