@@ -1,4 +1,4 @@
-import secrets 
+import secrets  
 from jpype import *
 import numpy as np
 import hashlib
@@ -184,20 +184,22 @@ def main(args):
 #       print(dir(sigmastate.serialization))
 #        print(dir(sigmastate.lang.SigmaBuilder))
 #        cs = sigmastate.serialization.ConstantSerializer(b)
-        serialization = sigmastate.serialization
-        ConstantSerializer = serialization.ConstantSerializer
+        SigmaDslBuilder = sigmastate.SigmaDslBuilder
+        dsl_builder = SigmaDslBuilder.mkBuilder()
+
+        # Get the SigmaBuilder instance
+        sigma_builder = dsl_builder.get()
+
+        # Import the ConstantSerializer class
+        serializer_class = sigmastate.serialization.ConstantSerializer
+
+        # Create an instance of the ConstantSerializer
+        constant_serializer = serializer_class(sigma_builder)
 
         # Deserialize the hex value to an integer
-        i = 0
-        while i < 68:
-            try:
-                int_value = ConstantSerializer.deserialize(byte_array, i)
-                print(i, " success!")
-                print(dir(int_value.value()))
-                print("int value:", int_value)
-            except Exception as err:
-                print("index:", i, "\nexception:", err)
-            i = i + 1
+        hex_value = "0e200fe3ac722831c0e09e54f55ec842654d70ab97557af2758b598acfb802b7a7a0"
+        int_value = constant_serializer.deserialize(hex_value)
+#        sigmastate.interpreter.Interpreter.deserializeMeasured(byte_array)
 
 
     if len(args) > 1:
