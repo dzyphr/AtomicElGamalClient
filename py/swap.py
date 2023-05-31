@@ -75,6 +75,34 @@ def copyENCInit(self):
     pyperclip.copy(open(self.swap_tab_view.get() + "/ENC_initiation.atomicswap", "r").read())
     #make sure active tab functions get swap name from current open tab
 
+def deduce_sr(self):
+    updateDataBasedOnOpenTab(self)
+    f = open(self.currentswapname + "/DEC_response.atomicswap", "r")
+    j = json.loads(f.read())
+    sr_ = j["sr_"]
+    contractAddr = j["contractAddr"]
+    chain = j["chain"]
+    f.close()
+    f = open(self.currentswapname + "/sr", "r")
+    sr = f.read()
+    f.close()
+    decodeCMD = \
+            "cd SigmaParticle/valFromHex && ./deploy.sh " + sr + " ../../" + self.currentswapname + "/decoded_sr"
+    decodeResponse = os.popen(decodeCMD).read()
+    f = open(self.currentswapname + "/decoded_sr", "r")
+    dec_sr = f.read()
+    f.close()
+    deduceCMD = \
+            "cd SigmaParticle/AtomicMultiSigECC && python3 -u py/deploy.py p1Deduce " + sr_ + " " + dec_sr
+    #note when we do python operations and want to capture the output as json we should not run the deploy.sh but call python3
+    response = os.popen(deduceCMD).read()
+    j = json.loads(response)
+    x = j["x"]
+    claimScript = \
+            "cd Atomicity/" + chain + " && ./deploy.sh claim " + contractAddr + " " + x 
+    print(os.popen(claimScript).read())
+
+
 
 def checkTreeForFinalization(self):
     updateDataBasedOnOpenTab(self)
@@ -94,8 +122,12 @@ def checkTreeForFinalization(self):
             "./deploy.sh " + addr + " " + boxId + " ../../" + self.currentswapname + "/atomicClaim"
     print(os.popen(boxFilterCmd).read())
     if os.path.isfile(self.currentswapname + "/atomicClaim_tx1"):
-        f = open(self.currentswapname + "/atomicClaim_tx1")
-        print(f.read())
+        f = open(self.currentswapname + "/atomicClaim_tx1", "r")
+        j = json.loads(f.read())
+        f.close()
+        R4 = j["outputs"][0]["additionalRegisters"]["R4"]
+        f = open(self.currentswapname + "/sr", "w")
+        f.write(R4)
         f.close()
     else:
         print("no atomic claim transactions found")
@@ -251,6 +283,7 @@ def draftFinalSignature(self): #create the final sig ss and pub value sG #initia
                 "\"" + str(sr_) + "\"" + " \"" + xG.replace(" ", "") + "\" \"" + srG.replace(" ", "") + "\" \"" + str(e) + "\" " + \
                 "\"" + str(ks) + "\"" + " \"" + str(rs) + "\""
         finalSigJson = os.popen(cmd).read()
+        print(finalSigJson)
         f = open(self.currentswapname + "/finalize.atomicswap", "w")
         f.write(finalSigJson)
         f.close()

@@ -177,28 +177,6 @@ def main(args):
         return json.dumps(xObj, indent=4)
         #print("p1 can now spend value locked to hash/public pair xG with x and their signature")
     
-    def test():
-        bytelist = scalaPipe.getBytes("0e200fe3ac722831c0e09e54f55ec842654d70ab97557af2758b598acfb802b7a7a0")
-        byte_array = JArray(JByte)(bytelist)
-#        print(dir(sigmastate))
-#       print(dir(sigmastate.serialization))
-#        print(dir(sigmastate.lang.SigmaBuilder))
-#        cs = sigmastate.serialization.ConstantSerializer(b)
-        serialization = sigmastate.serialization
-        ConstantSerializer = serialization.ConstantSerializer
-
-        # Deserialize the hex value to an integer
-        i = 0
-        while i < 68:
-            try:
-                int_value = ConstantSerializer.deserialize(byte_array, i)
-                print(i, " success!")
-                print(dir(int_value.value()))
-                print("int value:", int_value)
-            except Exception as err:
-                print("index:", i, "\nexception:", err)
-            i = i + 1
-
 
     if len(args) > 1:
         command = args[1]
@@ -225,8 +203,10 @@ def main(args):
                 sys.stdout.write(str(p1Deduce(args[2], args[3])))
             else:
                 print("enter sr_ and sr as followup arguments")
+        '''
         else:
             test()
+        '''
     
 
 

@@ -62,7 +62,7 @@ def GUI_Arrange_Swap_Based(self): #here we are updating the GUI according to the
 
 
 def setSwapTab(self, first):
-    from swap import SwapTab, copyENCInit, inspectScalarLockContract, draftFinalSignature, checkTreeForFinalization
+    from swap import SwapTab, copyENCInit, inspectScalarLockContract, draftFinalSignature, checkTreeForFinalization, deduce_sr
     def goCopyENCInit():
         copyENCInit(self)
     def goInspectScalarLockContract():
@@ -71,6 +71,8 @@ def setSwapTab(self, first):
         draftFinalSignature(self)
     def goCheckTreeForFinalization():
         checkTreeForFinalization(self)
+    def goDeduce_sr():
+        deduce_sr(self)
 
 #    def goDecryptResponse():
 #        decryptResponse(self)
@@ -122,6 +124,10 @@ def setSwapTab(self, first):
                     customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
                     text="Check tree for finalization", command=goCheckTreeForFinalization)
             self.swap_tab_view.finalizeCheck.grid(row=10, column=0, padx=10, pady=10)
+            self.swap_tab_view.claim = \
+                    customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
+                    text="Claim", command=goDeduce_sr)
+            self.swap_tab_view.claim.grid(row=11, column=0, padx=10, pady=10)
 
             self.swap_tab_view.pack()
             self.swapTabSet = True
@@ -170,6 +176,10 @@ def setSwapTab(self, first):
                     customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
                     text="Check tree for finalization", command=goCheckTreeForFinalization)
             self.swap_tab_view.finalizeCheck.grid(row=10, column=0, padx=10, pady=10)
+            self.swap_tab_view.claim = \
+                    customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
+                    text="Claim", command=goDeduce_sr)
+            self.swap_tab_view.claim.grid(row=11, column=0, padx=10, pady=10)
 
     else:
         if first == True:

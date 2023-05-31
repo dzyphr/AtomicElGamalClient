@@ -34,6 +34,20 @@ if bool(os.getenv('VerifyBlockExplorer')) == True:
 else:
     verifyBlockExplorer = False
 
+def claim(addr, x):
+    f = open("../AtomicMultisig_ABI_0.0.1.json")
+    abi = f.read()
+    f.close()
+    if chain == "Goerli":
+        rpc = Web3(Web3.HTTPProvider(os.getenv('Goerli')))
+    elif chain == "Sepolia":
+        rpc = Web3(Web3.HTTPProvider(os.getenv('Sepolia')))
+    contract = rpc.eth.contract(address=addr, abi=abi)
+    txhash = contract.functions.receiverWithdraw(int(x)).transact({'to':addr})
+    tx_receipt = w3.eth.get_transaction_receipt(tx_hash)
+    processed_logs = contract.events.myEvent().process_receipt(tx_receipt)
+    print(processed_logs)
+
 def checkCoords(addr):  #TODO: check curve constants against expected as well as receiver pubkey against specified pubkey
     f = open("../AtomicMultisig_ABI_0.0.1.json")
     abi = f.read()
@@ -84,6 +98,12 @@ def sendAmount(amount, receiver):
         senderAddr = os.getenv('SepoliaSenderAddr')
         senderPrivKey = os.getenv('SepoliaPrivKey')
         url = os.getenv('SepoliaScan')
+    nonce = rpc.eth.get_transaction_count(senderAddr)
+    gasprice = rpc.eth.gas_price * gasMod
+    startgas = 70000
+    to = receiver
+    value = int(amount)
+    data = ''
     txdata  = {
         'to': receiver,
         'from': senderAddr,
@@ -380,6 +400,13 @@ if args_n > 1:
             exit()
         else:
             print("enter the address to check as followup argument")
+            exit()
+    elif sys.argv[1] == "claim":
+        if args_n > 3:
+            claim(sys.argv[2], sys.argv[3])
+        else:
+            print("enter the address and x as followup arguments")
+            exit()
     elif sys.argv[1] == "verify":
         rpc, chain_id, senderAddr, senderPrivKey, url = pickChain()
         flat = checkMultiFile()
