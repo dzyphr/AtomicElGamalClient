@@ -35,6 +35,16 @@ else:
     verifyBlockExplorer = False
 
 def claim(addr, x):
+    if chain == "Goerli":
+        rpc = Web3(Web3.HTTPProvider(os.getenv('Goerli')))
+        chain_id = int(os.getenv('GoerliID')) #use int so it doesnt interpret env variable as string values
+        senderAddr = os.getenv('GoerliSenderAddr')
+        senderPrivKey = os.getenv('GoerliPrivKey')
+    elif chain == "Sepolia":
+        rpc = Web3(Web3.HTTPProvider(os.getenv('Sepolia')))
+        chain_id = int(os.getenv('SepoliaID'))
+        senderAddr = os.getenv('SepoliaSenderAddr')
+        senderPrivKey = os.getenv('SepoliaPrivKey')
     f = open("../AtomicMultisig_ABI_0.0.1.json")
     abi = f.read()
     f.close()
@@ -43,7 +53,23 @@ def claim(addr, x):
     elif chain == "Sepolia":
         rpc = Web3(Web3.HTTPProvider(os.getenv('Sepolia')))
     contract = rpc.eth.contract(address=addr, abi=abi)
-    contract.functions.receiverClaim(x)
+    tx = contract.functions.receiverWithdraw(int(x)).buildTransaction(
+        {
+            'chainId': chain_id,
+            'from': senderAddr,
+            'gasPrice': rpc.eth.gas_price * gasMod,
+            'gas': 6000000,
+            'nonce': rpc.eth.get_transaction_count(senderAddr)
+        }
+    )
+    signed_tx = rpc.eth.account.sign_transaction(tx, private_key=senderPrivKey)
+    send_tx = rpc.eth.send_raw_transaction(signed_tx.rawTransaction)
+    tx_receipt = rpc.eth.wait_for_transaction_receipt(send_tx)
+    print(tx_receipt)
+
+
+#    processed_logs = contract.events.myEvent().process_receipt(tx_receipt)
+#    print(dir(tx_receipt))
 
 def checkCoords(addr):  #TODO: check curve constants against expected as well as receiver pubkey against specified pubkey
     f = open("../AtomicMultisig_ABI_0.0.1.json")
@@ -95,6 +121,12 @@ def sendAmount(amount, receiver):
         senderAddr = os.getenv('SepoliaSenderAddr')
         senderPrivKey = os.getenv('SepoliaPrivKey')
         url = os.getenv('SepoliaScan')
+    nonce = rpc.eth.get_transaction_count(senderAddr)
+    gasprice = rpc.eth.gas_price * gasMod
+    startgas = 70000
+    to = receiver
+    value = int(amount)
+    data = ''
     txdata  = {
         'to': receiver,
         'from': senderAddr,
