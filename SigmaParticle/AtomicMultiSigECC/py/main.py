@@ -60,7 +60,7 @@ def main(args):
         }
         return json.dumps(p1InitiateOBJECT, indent=4)
 
-    def p2Response(ksGERGO, message, srFilePath):
+    def p2Response(ksGERGO, message, srFilePath, xFilePath):
         ksGERGO = ast.literal_eval(ksGERGO)
         ksGERGO_X = ksGERGO[0]
         ksGERGO_Y = ksGERGO[1]        
@@ -108,6 +108,9 @@ def main(args):
         x = secrets.randbits(256)
         x = x % n
         x = x % javaBigIntegerMAX
+        f = open(xFilePath, "w")
+        f.write(str(x))
+        f.close()
         xERGO = BigInteger(str(x))
        # print("\np2 creates a 256bit secret preimage x:", x)
         xGERGO = dlogGroup().generator().multiply(xERGO).normalize()
@@ -176,6 +179,7 @@ def main(args):
         }
         return json.dumps(xObj, indent=4)
         #print("p1 can now spend value locked to hash/public pair xG with x and their signature")
+
     
 
     if len(args) > 1:
@@ -189,10 +193,10 @@ def main(args):
             else:
                 print("enter chainPubkey as following arg")
         if command == "p2Respond":
-            if len(args) > 2:
-               sys.stdout.write(str(p2Response(args[2], args[3], args[4])))
+            if len(args) > 3:
+               sys.stdout.write(str(p2Response(args[2], args[3], args[4], args[5])))
             else:
-                print("enter ksG Message and srFilePath as following args")
+                print("enter ksG, Message, srFilePath, and xFilePath as following args")
         if command == "p1Finalize":
             if len(args) > 4:
                 sys.stdout.write(str(p1Finalize(args[2], args[3], args[4], args[5], args[6], args[7])))
@@ -203,10 +207,8 @@ def main(args):
                 sys.stdout.write(str(p1Deduce(args[2], args[3])))
             else:
                 print("enter sr_ and sr as followup arguments")
-        '''
-        else:
-            test()
-        '''
+#        else:
+#            test()
     
 
 

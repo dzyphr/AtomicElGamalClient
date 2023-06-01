@@ -100,6 +100,7 @@ def deduce_sr(self):
     x = j["x"]
     claimScript = \
             "cd Atomicity/" + chain + " && ./deploy.sh claim " + contractAddr + " " + x 
+    print(claimScript)
     print(os.popen(claimScript).read())
 
 
@@ -491,7 +492,7 @@ def commitResponse(self): #responder operation
         os.popen(\
                 "python3 -u SigmaParticle/AtomicMultiSigECC/py/deploy.py p2Respond " +\
                 "'" + self.ksG + "' " + "'" + str(datetime.now()) + "' " +\
-                self.currentswapname + "/sr" \
+                self.currentswapname + "/sr " + self.currentswapname + "/x" \
                 ).read()
     f = open(self.currentswapname + "/response_commitment.atomicswap", "w")
     f.write(self.response)
