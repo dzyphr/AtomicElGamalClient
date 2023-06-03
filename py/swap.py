@@ -1,5 +1,6 @@
 from datetime import datetime
 import ast
+import subprocess
 from GUI_manager import *
 from chain import setLocalChainPubkeyManual, setCrossChainPubkeyManual, setCrossChainPubkeyDerived
 import tkinter, customtkinter, os, json, time, subprocess, sys, io, pyperclip
@@ -237,28 +238,35 @@ def receiverCheck(self): #responder operation
     if self.swap_tab_view.finalizeEntry.get() == "":
         print("paste in the finalization to claim!")
     else:
-        updateDataBasedOnOpenTab(self)
-        ENCFin = self.swap_tab_view.finalizeEntry.get()
-        f = open(self.currentswapname + "/ENC_Finalization.atomicswap", "w")
-        f.write(ENCFin)
-        f.close()
-        decryptElGamal = \
-            "./ElGamal decryptFromPubKey " + self.currentswapname + "/ENC_Finalization.atomicswap " + \
-            self.currentReceiver + ' ' + self.ElGamalKeyFileName
-        decryption = os.popen(decryptElGamal).read()
-        f = open(self.currentswapname + "/DEC_Finalization.atomicswap", "w")
-        f.write(decryption)
-        f.close()
-        j = json.loads(decryption)
-        boxValCheck = "cd SigmaParticle/boxValue && ./deploy.sh " + j["boxId"] + " ../../" + self.currentswapname + "/InitiatorContractValue"
-        print(boxValCheck)
-        os.popen(boxValCheck).read()
-        time.sleep(1)
-        f = open(self.currentswapname + "/InitiatorContractValue")
-        nanoErgs = f.read()
-        f.close()
-        self.swap_tab_view.labelContractAmount.configure(text= "Contract Value: " +\
-            nanoErgs + " nΣ")
+            updateDataBasedOnOpenTab(self)
+            ENCFin = self.swap_tab_view.finalizeEntry.get()
+            f = open(self.currentswapname + "/ENC_Finalization.atomicswap", "w")
+            f.write(ENCFin)
+            f.close()
+            decryptElGamal = \
+                "./ElGamal decryptFromPubKey " + self.currentswapname + "/ENC_Finalization.atomicswap " + \
+                self.currentReceiver + ' ' + self.ElGamalKeyFileName
+            decryption = os.popen(decryptElGamal).read()
+            f = open(self.currentswapname + "/DEC_Finalization.atomicswap", "w")
+            f.write(decryption)
+            f.close()
+            j = json.loads(decryption)
+            boxValCheck = "cd SigmaParticle/boxValue && ./deploy.sh " +\
+                    j["boxId"] + " ../../" +\
+                    self.currentswapname + "/InitiatorContractValue"
+            devnull = open(os.devnull, 'wb') 
+            os.popen(boxValCheck)
+            p = subprocess.Popen(boxValCheck, shell=True,
+                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                             close_fds=True)
+            if os.path.isfile(self.currentswapname + "/InitiatorContractValue") == True:
+                f = open(self.currentswapname + "/InitiatorContractValue")
+                nanoErgs = f.read()
+                f.close()
+                self.swap_tab_view.labelContractAmount.configure(text= "Contract Value: " +\
+                    nanoErgs + " nΣ")
+            else:
+                print("cant find box, tx not mined yet or invalid id")
 
 
 
@@ -431,7 +439,6 @@ def copyResponse(self): #esponder operation
                         "}")
                 f.write(edit)
                 f.close()
-                time.sleep(1)
                 runElGamal = "./ElGamal encryptToPubKey " + \
                     self.currentReceiver + ' ' + \
                     self.ElGamalKeyFileName + ' ' + \
@@ -481,7 +488,6 @@ def decryptInitiation(self): #responder operation
     f = open(self.currentswapname + "/DEC_initiation.atomicswap", "w")
     f.write(decryption)
     f.close()
-    time.sleep(1)
     j = json.loads(decryption)
     self.counterpartyChainPubkey = j["chainPubkey"]
     self.ksG = j["ksG"]
@@ -512,6 +518,7 @@ def AtomicityScalarContractOperation(self): #responder operation
         str(ast.literal_eval(self.xG)[0])  + " " + str(ast.literal_eval(self.xG)[1])
     new_frame = os.popen(cmd)
     time.sleep(1) #wait for file to be built
+
     #copy in generic ECC timelock multisig contract for atomic swap
     os.remove("Atomicity/" + self.currentswapname + "/contracts/" + self.currentswapname + ".sol")
     contract_copy = \
@@ -520,7 +527,6 @@ def AtomicityScalarContractOperation(self): #responder operation
             "&& cp ../../AtomicMultiSigSecp256k1/contracts/ReentrancyGuard.sol . " + \
             "&& cp ../../AtomicMultiSigSecp256k1/contracts/EllipticCurve.sol . "
     cpy = os.popen(contract_copy).read()
-    time.sleep(1)
     rename = str(open("Atomicity/" + self.currentswapname + "/contracts/" + self.currentswapname + ".sol", "r").read() )
     rewrite = open("Atomicity/" + self.currentswapname + "/contracts/" + self.currentswapname + ".sol", "w")
     rewrite.write(rename.replace('AtomicMultiSigSecp256k1', self.currentswapname))

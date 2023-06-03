@@ -310,7 +310,7 @@ def verify(flat, contractAddr, APIsolcV, url, fresh):
     #verifying the code on a block explorer
     if verifyBlockExplorer == True: #https://docs.etherscan.io/tutorials/verifying-contracts-programmatically
         if fresh == True:
-            time.sleep(60)#giv:ve the explorer some time to register the transaction
+            time.sleep(15)#giv:ve the explorer some time to register the transaction
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
         if constructorArgs == False:
             if os.getenv('MultiFile') == "True":
