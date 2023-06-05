@@ -1,11 +1,13 @@
 **In Development**
 
+### THIS IS EXPERIMENTAL SOFTWARE IN EARLY STAGES OF DEVELOPMENT, <u>DO NOT USE WITH MAINNET FUNDS!!! TESTNET ONLY STAGE OF SOFTWARE</u> USE AT OWN RISK. 
+
 # ElGamal Atomic Swap Client
 
 **Current Project Status**:
   * Tested under Ubuntu Linux
   * Currently requires: [Custom ElGamal Client rsElgamal](https://github.com/dzyphr/rsElGamal/settings)
-  * Plans to include better known encryption libraries like libsodium
+  * Plans to include better known encryption libraries like libsodium, or pycryptodome
   * Working Atomic Swap tested with initiator on Ergo and responder on Sepolia
 
 
@@ -22,7 +24,7 @@
         - senderEIP3Secret=pubkeyIndex
         - apiURL="https://tn-ergo-explorer.anetabtc.io/" (or another explorer)
         
-    - For EVM chains<sub>[Sepolia, Goerli]</sub> (create at `Atomicity/basicframework/.env`)
+    - For EVM chains<sub>[Sepolia, Goerli]</sub> (create at `Atomicity/basic_framework/.env`)
         - SepoliaSenderAddr="0xYourAddr"
         - SepoliaPrivKey="0xyourprivatekeyhex"
         - Sepolia="chain specific rpc https:// address"
