@@ -74,7 +74,7 @@ def setSwapTab(self, first):
     def goDeduce_sr():
         deduce_sr(self)
 
-#    def goDecryptResponse():
+#    def goDecryptResponse():`
 #        decryptResponse(self)
     if self.isInitiator == True:
         if first == True:
@@ -85,14 +85,14 @@ def setSwapTab(self, first):
             self.swap_tab_view.copylabel.grid(row=0, column=0, padx=10, pady=10)
             self.swap_tab_view.copyButton = \
                     customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-                    text="Copy", command=goCopyENCInit)
-            self.swap_tab_view.copyButton.grid(row=1, column=0, padx=10, pady=10)
+                    text="Copy", command=goCopyENCInit, width=5, height=7)
+            self.swap_tab_view.copyButton.grid(row=0, column=1, padx=10, pady=10)
             self.swap_tab_view.responderPasteLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
                     text="Paste responders commitment: ")
             self.swap_tab_view.responderPasteLabel.grid(row=2, column=0, padx=10, pady=10)
             self.swap_tab_view.responderCommitment = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname),\
                     placeholder_text="Responder's Commitments", \
-                    width=700, height=5)
+                    width= 300, height=5)
             self.swap_tab_view.responderCommitment.grid(row=3, column=0, padx=10, pady=10)
             self.swap_tab_view.decryptResponderCommitmentLabel =  \
                     customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
@@ -100,8 +100,8 @@ def setSwapTab(self, first):
             self.swap_tab_view.decryptResponderCommitmentLabel.grid(row=4, column=0, padx=10, pady=10)
             self.swap_tab_view.decryptResponderCommitmentButton = \
                     customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-                    text="Check", command=goInspectScalarLockContract)
-            self.swap_tab_view.decryptResponderCommitmentButton.grid(row=5, column=0, padx=10, pady=10)
+                    text="Check", command=goInspectScalarLockContract, width=5, height=7)
+            self.swap_tab_view.decryptResponderCommitmentButton.grid(row=4, column=1, padx=10, pady=10)
             self.swap_tab_view.responderContractValueLabel = \
                     customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
                     text="Responder Commitment not collected yet")
@@ -118,7 +118,7 @@ def setSwapTab(self, first):
             self.swap_tab_view.initiatorContractValueEntry.grid(row=8, column=0, padx=10, pady=10)
             self.swap_tab_view.finalizeSwapButton = \
                     customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-                    text="Deploy Contract & Copy Commitment", command=goDraftFinalSignature)
+                    text="Deploy Contract & Copy Commitment", command=goDraftFinalSignature, width=5, height=5)
             self.swap_tab_view.finalizeSwapButton.grid(row=9, column=0, padx=10, pady=10)
             self.swap_tab_view.finalizeCheck = \
                     customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
@@ -126,8 +126,8 @@ def setSwapTab(self, first):
             self.swap_tab_view.finalizeCheck.grid(row=10, column=0, padx=10, pady=10)
             self.swap_tab_view.claim = \
                     customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-                    text="Claim", command=goDeduce_sr)
-            self.swap_tab_view.claim.grid(row=11, column=0, padx=10, pady=10)
+                    text="Claim", command=goDeduce_sr, width=5, height=7)
+            self.swap_tab_view.claim.grid(row=10, column=1, padx=10, pady=10)
 
             self.swap_tab_view.pack()
             self.swapTabSet = True
@@ -138,14 +138,14 @@ def setSwapTab(self, first):
             self.swap_tab_view.copylabel.grid(row=0, column=0, padx=10, pady=10)
             self.swap_tab_view.copyButton = \
                     customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-                    text="Copy", command=goCpyENCInit)
-            self.swap_tab_view.copyButton.grid(row=1, column=0, padx=10, pady=10)
+                    text="Copy", command=goCpyENCInit,  width=5, height=7)
+            self.swap_tab_view.copyButton.grid(row=0, column=1, padx=10, pady=10)
             self.swap_tab_view.responderPasteLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
                     text="Paste responders commitment: ")
             self.swap_tab_view.responderPasteLabel.grid(row=2, column=0, padx=10, pady=10)
             self.swap_tab_view.responderCommitment = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname), \
                     placeholder_text="Responder's Commitments", \
-                    width=700, height=5)
+                    width=300, height=5)
             self.swap_tab_view.responderCommitment.grid(row=3, column=0, padx=10, pady=10)
             self.swap_tab_view.decryptResponderCommitmentLabel =  \
                     customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
@@ -153,8 +153,8 @@ def setSwapTab(self, first):
             self.swap_tab_view.decryptResponderCommitmentLabel.grid(row=4, column=0, padx=10, pady=10)
             self.swap_tab_view.decryptResponderCommitmentButton = \
                     customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-                    text="Check", command=goInspectScalarLockContract)
-            self.swap_tab_view.decryptResponderCommitmentButton.grid(row=5, column=0, padx=10, pady=10)
+                    text="Check", command=goInspectScalarLockContract,  width=5, height=7)
+            self.swap_tab_view.decryptResponderCommitmentButton.grid(row=4, column=1, padx=10, pady=10)
             self.swap_tab_view.responderContractValueLabel = \
                     customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
                     text="Responder Commitment not collected yet")
@@ -170,16 +170,16 @@ def setSwapTab(self, first):
             self.swap_tab_view.initiatorContractValueEntry.grid(row=8, column=0, padx=10, pady=10)
             self.swap_tab_view.finalizeSwapButton = \
                     customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-                    text="Deploy Contract & Copy Commitment", command=goDraftFinalSignature)
-            self.swap_tab_view.finalizeSwapButton.grid(row=9, column=0, padx=10, pady=10)
+                    text="Deploy Contract & Copy Commitment", command=goDraftFinalSignature, width=5, height=5)
+            self.swap_tab_view.finalizeSwapButton.grid(row=8, column=1, padx=10, pady=10)
             self.swap_tab_view.finalizeCheck = \
                     customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
                     text="Check tree for finalization", command=goCheckTreeForFinalization)
             self.swap_tab_view.finalizeCheck.grid(row=10, column=0, padx=10, pady=10)
             self.swap_tab_view.claim = \
                     customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-                    text="Claim", command=goDeduce_sr)
-            self.swap_tab_view.claim.grid(row=11, column=0, padx=10, pady=10)
+                    text="Claim", command=goDeduce_sr,  width=5, height=7)
+            self.swap_tab_view.claim.grid(row=10, column=1, padx=10, pady=10)
 
     else:
         if first == True:
@@ -206,13 +206,25 @@ def SwapResponderGUI(self):
     self.swap_tab_view.valueToSpendEntry = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname), \
         placeholder_text="coin amount in wei")
     self.swap_tab_view.valueToSpendEntry.grid(row=1, column=0, padx=10, pady=10)
+    self.swap_tab_view.GasEntryLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+        text="custom gas :")
+    self.swap_tab_view.GasEntryLabel.grid(row=0, column=1, padx=10, pady=10)
+    self.swap_tab_view.GasEntry = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname), \
+        placeholder_text="Gas", width=40, height=5)
+    self.swap_tab_view.GasEntry.grid(row=1, column=1, padx=10, pady=10)
+    self.swap_tab_view.GasModEntryLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+        text="gas mod:")
+    self.swap_tab_view.GasModEntryLabel.grid(row=0, column=2, padx=10, pady=10)
+    self.swap_tab_view.GasModEntry = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname), \
+        placeholder_text="1", width=5, height=5)
+    self.swap_tab_view.GasModEntry.grid(row=1, column=2, padx=10, pady=10)
 
     self.deployAtomicSwapContractLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
             text="Click to deploy & fund the atomic swap contract: ")
     self.deployAtomicSwapContractLabel.grid(row=2, column=0, padx=10, pady=10)
     self.deployAtomicSwapButton = customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-            text="Deploy & Fund", command=goDeployAndFundScalarSwapContract)
-    self.deployAtomicSwapButton.grid(row=3, column=0, padx=10, pady=10)
+            text="Deploy & Fund", command=goDeployAndFundScalarSwapContract,  width=5, height=7)
+    self.deployAtomicSwapButton.grid(row=2, column=1, padx=10, pady=10)
     self.counterpartyChainPubkeyLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
             text="Counterparty ChainPubkey: " + self.counterpartyChainPubkey)
     self.counterpartyChainPubkeyLabel.grid(row=4, column=0, padx=10, pady=10)
@@ -224,25 +236,25 @@ def SwapResponderGUI(self):
     self.swap_tab_view.labelresponse.grid(row=5, column=0, padx=10, pady=10)
     self.swap_tab_view.copyResponseButton = \
             customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-            text="Copy", command=goCopyResponse)
-    self.swap_tab_view.copyResponseButton.grid(row=6, column=0, padx=10, pady=10)
+            text="Copy", command=goCopyResponse,  width=5, height=7)
+    self.swap_tab_view.copyResponseButton.grid(row=5, column=1, padx=10, pady=10)
     self.swap_tab_view.labelFinalize = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
         text="Paste Finalization Commitment: ")
     self.swap_tab_view.labelFinalize.grid(row=7, column=0, padx=10, pady=10)
     self.swap_tab_view.finalizeEntry = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname), \
-        placeholder_text="Finalization", width=700, height=5)
+        placeholder_text="Finalization", width=300, height=5)
     self.swap_tab_view.finalizeEntry.grid(row=8, column=0, padx=10, pady=10)
     self.swap_tab_view.checkButton = \
             customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-            text="Check", command=goReceiverCheck) 
-    self.swap_tab_view.checkButton.grid(row=9, column=0, padx=10, pady=10)
+            text="Check", command=goReceiverCheck,  width=5, height=7) 
+    self.swap_tab_view.checkButton.grid(row=8, column=1, padx=10, pady=10)
     self.swap_tab_view.labelContractAmount = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
         text="Contract amount: not checked yet")
     self.swap_tab_view.labelContractAmount.grid(row=10, column=0, padx=10, pady=10)
     self.swap_tab_view.claimButton = \
             customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-            text="Claim", command=goReceiverClaim)
-    self.swap_tab_view.claimButton.grid(row=11, column=0, padx=10, pady=10)
+            text="Claim", command=goReceiverClaim,  width=5, height=7)
+    self.swap_tab_view.claimButton.grid(row=10, column=1, padx=10, pady=10)
 
 
 #######CHAIN#########

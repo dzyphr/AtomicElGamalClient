@@ -1,3 +1,4 @@
+constructorParamVals = ["0xFe4cc19ea6472582028641B2633d3adBB7685C69",60957405819664880995930253272778473416248683936185227417199686911153163895839,33431753220777226105545002961246555321795769959498578753271217603617610875090]
 import pathlib
 from pathlib import Path
 import requests
@@ -24,7 +25,7 @@ xbyte = "-bytecode"
 contractDir = "./contracts/"
 contractFile = contractName + xsol
 constructorArgs = bool(os.getenv('ConstructorArgs'))
-gasMod = 1
+gasMod = 2
 chain = os.getenv('CurrentChain') #set the current chain in .env
 
 
@@ -130,7 +131,7 @@ def sendAmount(amount, receiver):
         'to': receiver,
         'from': senderAddr,
         'value': int(amount),
-        'gasPrice': rpc.eth.gas_price * gasMod,
+        'gasPrice': rpc.eth.gas_price,
         'gas': 70000,
         'nonce': rpc.eth.get_transaction_count(senderAddr)
     }
@@ -252,18 +253,23 @@ def exportBytecode(compilation):                            #turn off when using
         return abi, bytecode
 
 
-def uploadContract(rpc, abi, bytecode):
+def uploadContract(rpc, abi, bytecode, gas=None, gasModExtra=None):
+
     InitContract = rpc.eth.contract(abi=abi, bytecode=bytecode)
 
     #print("current gas price :", rpc.eth.gas_price );
-
+    if gas == None:
+        gas = 6000000
+    if gasModExtra == None:
+        gasModExtra = 1
     if constructorArgs == True:
         tx = InitContract.constructor(*constructorParamVals).buildTransaction( #if we have constructor parameters we unwrap the array of their arguments into the constructor()
             {
                 "chainId": chain_id, 
                 "from": senderAddr, 
                 "nonce": rpc.eth.getTransactionCount(senderAddr), 
-                "gasPrice": rpc.eth.gas_price * gasMod
+                "gasPrice": rpc.eth.gas_price * int(gasModExtra),
+                "gas": int(gas),
             }
         )
     else:
@@ -272,7 +278,8 @@ def uploadContract(rpc, abi, bytecode):
                 "chainId": chain_id,
                 "from": senderAddr,
                 "nonce": rpc.eth.getTransactionCount(senderAddr),
-                "gasPrice": rpc.eth.gas_price * gasMod
+                "gasPrice": rpc.eth.gas_price * int(gasModExtra),
+                "gas": int(gas),
             }
         )
     signedTx = rpc.eth.account.sign_transaction(tx, private_key=senderPrivKey)
@@ -310,7 +317,7 @@ def verify(flat, contractAddr, APIsolcV, url, fresh):
     #verifying the code on a block explorer
     if verifyBlockExplorer == True: #https://docs.etherscan.io/tutorials/verifying-contracts-programmatically
         if fresh == True:
-            time.sleep(15)#giv:ve the explorer some time to register the transaction
+            time.sleep(60)#giv:ve the explorer some time to register the transaction
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
         if constructorArgs == False:
             if os.getenv('MultiFile') == "True":
@@ -407,7 +414,7 @@ if args_n > 1:
             sendAmount(sys.argv[2], sys.argv[3])
             exit()
         else:
-            print("enter amount(in wei) and receiver evm pubkey as followup arguments to sendAmount")
+            print("enter amount(in wei), receiver evm pubkey as followup arguments to sendAmount")
             exit()
     elif sys.argv[1] == "getBalance":
         if args_n > 2:
@@ -438,6 +445,19 @@ if args_n > 1:
         time.sleep(30)
         checkVerifStatus(guid,  url, False)
         exit()
+    elif sys.argv[1] == "deployCustomGas":
+        if args_n > 3:
+            gas = sys.argv[2]
+            gasModExtra = sys.argv[3]
+            rpc, chain_id, senderAddr, senderPrivKey, url = pickChain()
+            getContract()
+            flat = checkMultiFile()
+            compilation = compileContract()
+            abi, bytecode = exportBytecode(compilation)
+            contractAddr = uploadContract(rpc, abi, bytecode, gas=gas, gasModExtra=gasModExtra)
+            APISolcV = getSOLCVersion()
+            verify(flat, contractAddr, APISolcV, url, True)
+
 else:
     rpc, chain_id, senderAddr, senderPrivKey, url = pickChain()
     getContract()

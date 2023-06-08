@@ -252,18 +252,23 @@ def exportBytecode(compilation):                            #turn off when using
         return abi, bytecode
 
 
-def uploadContract(rpc, abi, bytecode):
+def uploadContract(rpc, abi, bytecode, gas=None, gasModExtra=None):
+
     InitContract = rpc.eth.contract(abi=abi, bytecode=bytecode)
 
     #print("current gas price :", rpc.eth.gas_price );
-
+    if gas == None:
+        gas = 70000
+    if gasModExtra == None:
+        gasModExtra = 1
     if constructorArgs == True:
         tx = InitContract.constructor(*constructorParamVals).buildTransaction( #if we have constructor parameters we unwrap the array of their arguments into the constructor()
             {
                 "chainId": chain_id, 
                 "from": senderAddr, 
                 "nonce": rpc.eth.getTransactionCount(senderAddr), 
-                "gasPrice": rpc.eth.gas_price * gasMod
+                "gas": gas,
+                "gasPrice": rpc.eth.gas_price * (gasModExtra)
             }
         )
     else:
@@ -272,7 +277,8 @@ def uploadContract(rpc, abi, bytecode):
                 "chainId": chain_id,
                 "from": senderAddr,
                 "nonce": rpc.eth.getTransactionCount(senderAddr),
-                "gasPrice": rpc.eth.gas_price * gasMod
+                "gas": gas,
+                "gasPrice": rpc.eth.gas_price * (gasModExtra)
             }
         )
     signedTx = rpc.eth.account.sign_transaction(tx, private_key=senderPrivKey)
@@ -403,11 +409,11 @@ if args_n > 1:
         getAccount()
         exit()
     elif sys.argv[1] == "sendAmount":
-        if args_n > 3:
-            sendAmount(sys.argv[2], sys.argv[3])
+        if args_n > 5:
+            sendAmount(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5],)
             exit()
         else:
-            print("enter amount(in wei) and receiver evm pubkey as followup arguments to sendAmount")
+            print("enter amount(in wei), receiver evm pubkey, gas, gasMod  as followup arguments to sendAmount")
             exit()
     elif sys.argv[1] == "getBalance":
         if args_n > 2:
@@ -438,6 +444,19 @@ if args_n > 1:
         time.sleep(30)
         checkVerifStatus(guid,  url, False)
         exit()
+    elif sys.argv[1] == "deployCustomGas":
+        if args_n > 3:
+            gas = sys.argv[2]
+            gasModExtra = sys.argv[3]
+            rpc, chain_id, senderAddr, senderPrivKey, url = pickChain()
+            getContract()
+            flat = checkMultiFile()
+            compilation = compileContract()
+            abi, bytecode = exportBytecode(compilation)
+            contractAddr = uploadContract(rpc, abi, bytecode, gas=gas, gasModExtra=gasModExtra)
+            APISolcV = getSOLCVersion()
+            verify(flat, contractAddr, APISolcV, url, True)
+
 else:
     rpc, chain_id, senderAddr, senderPrivKey, url = pickChain()
     getContract()

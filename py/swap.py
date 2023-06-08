@@ -454,14 +454,37 @@ def copyResponse(self): #esponder operation
 
 def deployAndFundScalarSwapContract(self): #responder operation
     if self.swap_tab_view.valueToSpendEntry.get() != "":
-        addr = os.popen("cd Atomicity/" + self.currentswapname + "/ && python3 py/deploy.py").read()
-        if addr.startswith("0x"):
-            addrfile = open(self.currentswapname + "/responderContractAddress", "w")
-            addrfile.write(addr)
-            addrfile.close()
-            fundScalarContract(self)
+        customgas = False
+        if self.swap_tab_view.GasEntry.get() != "":
+            gas = self.swap_tab_view.GasEntry.get()
+            customgas = True
         else:
-            print("addr should be output instead got:", addr)
+            gas = "70000"
+        if self.swap_tab_view.GasModEntry.get() != "":
+            gasMod = self.swap_tab_view.GasModEntry.get()
+            customgas = True
+        else:
+            gasMod = "1"
+        if customgas == False:
+            addr = os.popen("cd Atomicity/" + self.currentswapname + "/ && python3 py/deploy.py").read()
+            if addr.startswith("0x"):
+                addrfile = open(self.currentswapname + "/responderContractAddress", "w")
+                addrfile.write(addr)
+                addrfile.close()
+                fundScalarContract(self)
+            else:
+                print("addr should be output instead got:", addr)
+        elif customgas == True:
+            deployCMD = "cd Atomicity/" + self.currentswapname + "/ && python3 py/deploy.py deployCustomGas " + gas + " " + gasMod
+            print(deployCMD)
+            addr = os.popen(deployCMD).read()
+            if addr.startswith("0x"):
+                addrfile = open(self.currentswapname + "/responderContractAddress", "w")
+                addrfile.write(addr)
+                addrfile.close()
+                fundScalarContract(self)
+            else:
+                print("addr should be output instead got:", addr)
     else:
         print("enter value to spend to contract before deploying (to prevent manual overspending)")
 
@@ -471,7 +494,8 @@ def fundScalarContract(self): #responder operation
         cmd = "cd Atomicity/" + \
                 self.currentswapname + " && ./deploy.sh sendAmount " + \
                 self.swap_tab_view.valueToSpendEntry.get()  + ' '+ addr
-        os.popen(cmd).read()          
+        print(cmd)
+        print(os.popen(cmd).read())
     else:
         print("responders contract not found! not deployed yet or recieved")
 
