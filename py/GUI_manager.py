@@ -126,7 +126,7 @@ def setSwapTab(self, first):
             self.swap_tab_view.finalizeCheck.grid(row=10, column=0, padx=10, pady=10)
             self.swap_tab_view.claim = \
                     customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-                    text="Claim", command=goDeduce_sr, width=5, height=7)
+                    text="Claim", command=goDeduce_sr, width=5, height=7, state="disabled")
             self.swap_tab_view.claim.grid(row=10, column=1, padx=10, pady=10)
 
             self.swap_tab_view.pack()
@@ -178,7 +178,7 @@ def setSwapTab(self, first):
             self.swap_tab_view.finalizeCheck.grid(row=10, column=0, padx=10, pady=10)
             self.swap_tab_view.claim = \
                     customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-                    text="Claim", command=goDeduce_sr,  width=5, height=7)
+                    text="Claim", command=goDeduce_sr,  width=5, height=7, state="disabled")
             self.swap_tab_view.claim.grid(row=10, column=1, padx=10, pady=10)
 
     else:
@@ -253,7 +253,7 @@ def SwapResponderGUI(self):
     self.swap_tab_view.labelContractAmount.grid(row=10, column=0, padx=10, pady=10)
     self.swap_tab_view.claimButton = \
             customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-            text="Claim", command=goReceiverClaim,  width=5, height=7)
+            text="Claim", command=goReceiverClaim,  width=5, height=7, state="disabled")
     self.swap_tab_view.claimButton.grid(row=10, column=1, padx=10, pady=10)
 
 

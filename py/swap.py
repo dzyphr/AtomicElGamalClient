@@ -131,6 +131,7 @@ def checkTreeForFinalization(self):
         f = open(self.currentswapname + "/sr", "w")
         f.write(R4)
         f.close()
+        self.swap_tab_view.claim.configure(state="normal")
     else:
         print("no atomic claim transactions found")
 
@@ -226,7 +227,7 @@ def receiverClaim(self):
                 "krGX=" + str(ast.literal_eval(krG)[0]) + "\n" + \
                 "krGY=" + str(ast.literal_eval(krG)[1]) + "\n" + \
                 "atomicBox=" + "\"" + boxId + "\"\n" + \
-                "ergoAmount=" + str(nanoErgToErgo(nanoErgs)) + "\n" + \
+                "ergoAmount=" + str(nanoErgs) + "\n" + \
                 "\" >> SigmaParticle/" + self.currentswapname + "/.env"
         print(os.popen(echoVariablesCMD).read())
         claimCMD = \
@@ -265,6 +266,7 @@ def receiverCheck(self): #responder operation
                 f.close()
                 self.swap_tab_view.labelContractAmount.configure(text= "Contract Value: " +\
                     nanoErgs + " nΣ")
+                self.swap_tab_view.claimButton.configure(state="normal")
             else:
                 print("cant find box, tx not mined yet or invalid id")
 
