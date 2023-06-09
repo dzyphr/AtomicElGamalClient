@@ -29,7 +29,7 @@ def main(contractName, ergo, wallet_mnemonic, mnemonic_password, senderAddress, 
         senderEIP3Secret = int(os.getenv('senderEIP3Secret'))
         senderProver = ergo._ctx.newProverBuilder().withMnemonic(senderWalletMnemonic[0]).withEip3Secret(senderEIP3Secret).build()
         ergoAmountRaw = int(os.getenv('ergoAmount'))
-        ergoAmount = ergoAmountRaw * Parameters.OneErg#should be automated irl
+        ergoAmount = ergoAmountRaw 
         ergoAmountFeeIncluded = ergoAmount #+ Parameters.MinFee #fee seems to include itself
         ECC_Generator = dlogGroup().generator().getEncoded(True)
 
@@ -89,13 +89,15 @@ def main(contractName, ergo, wallet_mnemonic, mnemonic_password, senderAddress, 
         f = open("ergoTree", "w")
         f.write(str(ergoTree))
         f.close()
-        inputBoxes =  ergo.getInputBox(sender_address=castedSender, amount_list=[ergoAmountRaw], tokenList=None)
+        print(dir(ergo))
+        inputBoxes = BoxOperations.createForSender(Address.create(sender), ergo._ctx).withAmountToSpend(ergoAmountFeeIncluded).loadTop()
+#        inputBoxes =  ergo.getInputBox(sender_address=castedSender, amount_list=[ergoAmountRaw], tokenList=None)
         AtomicBox = ergo._ctx.newTxBuilder().outBoxBuilder() \
             .value(ergoAmountFeeIncluded) \
             .contract(AtomicContract)\
             .build()
         unsignedTx = ergo.buildUnsignedTransaction(\
-            input_box = inputBoxes, outBox=[AtomicBox],\
+            input_box =coinSelection.pruneToIndex(0, inputBoxes) , outBox=[AtomicBox],\
             sender_address=castedSender\
         )
         signedTx = senderProver.sign(unsignedTx)
@@ -117,7 +119,8 @@ def main(contractName, ergo, wallet_mnemonic, mnemonic_password, senderAddress, 
         receiverProver = ergo._ctx.newProverBuilder().withMnemonic(receiverWalletMnemonic[0]).withEip3Secret(receiverEIP3Secret).build()
         atomicBoxID = os.getenv('atomicBox')
         ergoAmountRaw = int(os.getenv('ergoAmount'))
-        ergoAmountFeeSubtracted = Parameters.OneErg * ergoAmountRaw - Parameters.MinFee
+#        ergoAmountFeeSubtracted = Parameters.OneErg * ergoAmountRaw - Parameters.MinFee
+        ergoAmountFeeSubtracted = ergoAmountRaw - Parameters.MinFee
         krGX = BigInteger(os.getenv('krGX'))
         krGY = BigInteger(os.getenv('krGY'))
         krG = ecPointToGroupElement(dlogGroup().curve().createPoint(krGX, krGY))
@@ -158,7 +161,8 @@ def main(contractName, ergo, wallet_mnemonic, mnemonic_password, senderAddress, 
         senderErgoTree = ErgoTreeContract(castedSender.getErgoAddress().script(), ergo._networkType)
         atomicBoxID = os.getenv('atomicBox')
         ergoAmountRaw = int(os.getenv('ergoAmount'))
-        ergoAmountFeeSubtracted = Parameters.OneErg * ergoAmountRaw - Parameters.MinFee
+#       ergoAmountFeeSubtracted = Parameters.OneErg * ergoAmountRaw - Parameters.MinFee
+        ergoAmountFeeSubtracted = ergoAmountRaw - Parameters.MinFee
         refundBox = ergo._ctx.newTxBuilder().outBoxBuilder() \
             .value(ergoAmountFeeSubtracted) \
             .contract(senderErgoTree)\
