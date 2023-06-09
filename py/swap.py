@@ -274,7 +274,7 @@ def receiverCheck(self): #responder operation
 
 
 def draftFinalSignature(self): #create the final sig ss and pub value sG #initiator operation
-    if os.path.isfile(self.currentswapname + "/finalize.atomicswap") == False:
+    if os.path.isfile(self.currentswapname + "/finalize.atomicswap") == False or os.path.isfile("SigmaParticle/" + self.currentswapname + "/boxId") == False:
         updateDataBasedOnOpenTab(self)
         f = open(self.currentswapname + "/DEC_response.atomicswap", "r")
         j = json.loads(f.read())
@@ -292,37 +292,37 @@ def draftFinalSignature(self): #create the final sig ss and pub value sG #initia
                 "\"" + str(sr_) + "\"" + " \"" + xG.replace(" ", "") + "\" \"" + srG.replace(" ", "") + "\" \"" + str(e) + "\" " + \
                 "\"" + str(ks) + "\"" + " \"" + str(rs) + "\""
         finalSigJson = os.popen(cmd).read()
-        print(finalSigJson)
-        f = open(self.currentswapname + "/finalize.atomicswap", "w")
-        f.write(finalSigJson)
-        f.close()
-        SigmaParticleAtomicSchnorr(self)
-        f = open(self.currentswapname + "/finalize.atomicswap", "w")
-        f2 = open("SigmaParticle/" + self.currentswapname + "/boxId", "r") 
-        boxId = f2.read()
-        f2.close()
-        mod = finalSigJson
-        modified = mod.replace("\"\n}", "\",\n    \"boxId\": \"" + boxId + "\"\n}")
-        print(modified)
-        f.write(modified)
-        f.close()
-        cmd = \
-            "./ElGamal encryptToPubKey " + \
-            self.currentReceiver + ' ' + \
-            self.ElGamalKeyFileName + ' ' + \
-            "\'" + modified + "\' " + \
-            self.currentswapname + "/ENC_finalize.atomicswap"
-        encrypt = os.popen(cmd).read()
+        if json.loads(finalSigJson) != ValueError and finalSigJson != "":
+            print(finalSigJson)
+            f = open(self.currentswapname + "/finalize.atomicswap", "w")
+            f.write(finalSigJson)
+            f.close()
+            SigmaParticleAtomicSchnorr(self)
+            f = open(self.currentswapname + "/finalize.atomicswap", "w")
+            f2 = open("SigmaParticle/" + self.currentswapname + "/boxId", "r") 
+            boxId = f2.read()
+            f2.close()
+            mod = finalSigJson
+            modified = mod.replace("\"\n}", "\",\n    \"boxId\": \"" + boxId + "\"\n}")
+            print(modified)
+            f.write(modified)
+            f.close()
+            cmd = \
+                "./ElGamal encryptToPubKey " + \
+                self.currentReceiver + ' ' + \
+                self.ElGamalKeyFileName + ' ' + \
+                "\'" + modified + "\' " + \
+                self.currentswapname + "/ENC_finalize.atomicswap"
+            encrypt = os.popen(cmd).read()
+            f = open(self.currentswapname + "/ENC_finalize.atomicswap", "r")
+            encryption = f.read()
+            f.close()
+            #now upload ergoscript contract
+            pyperclip.copy(encryption)
+    if os.path.isfile("SigmaParticle/" + self.currentswapname + "/boxId") == True: #if we already have the box we have properly uploaded the contract
         f = open(self.currentswapname + "/ENC_finalize.atomicswap", "r")
         encryption = f.read()
         f.close()
-        #now upload ergoscript contract
-        pyperclip.copy(encryption)
-    else: #if we already have the finalize file that means we already uploaded so just return a copy of the encryption
-        f = open(self.currentswapname + "/ENC_finalize.atomicswap", "r")
-        encryption = f.read()
-        f.close()
-        #now upload ergoscript contract
         pyperclip.copy(encryption)
 
 

@@ -109,11 +109,11 @@ def setSwapTab(self, first):
 
             self.swap_tab_view.initiatorContractValueLabel = \
                     customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
-                    text="Amount of coin to fund contract with:")
+                    text="Amount of nanoErg to fund contract with:")
             self.swap_tab_view.initiatorContractValueLabel.grid(row=7, column=0, padx=10, pady=10)
             self.swap_tab_view.initiatorContractValueEntry = \
                     customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname),\
-                    placeholder_text="Amount", \
+                    placeholder_text="NanoErgs", \
                     width=70, height=5)
             self.swap_tab_view.initiatorContractValueEntry.grid(row=8, column=0, padx=10, pady=10)
             self.swap_tab_view.finalizeSwapButton = \
@@ -161,11 +161,11 @@ def setSwapTab(self, first):
             self.swap_tab_view.responderContractValueLabel.grid(row=6, column=0, padx=10, pady=10)
             self.swap_tab_view.initiatorContractValueLabel = \
                     customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
-                    text="Amount of coin to fund contract with:")
+                    text="Amount of nanoErg to fund contract with:")
             self.swap_tab_view.initiatorContractValueLabel.grid(row=7, column=0, padx=10, pady=10)
             self.swap_tab_view.initiatorContractValueEntry = \
                     customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname),\
-                    placeholder_text="Amount", \
+                    placeholder_text="NanoErgs", \
                     width=70, height=5)
             self.swap_tab_view.initiatorContractValueEntry.grid(row=8, column=0, padx=10, pady=10)
             self.swap_tab_view.finalizeSwapButton = \
@@ -210,7 +210,7 @@ def SwapResponderGUI(self):
         text="custom gas :")
     self.swap_tab_view.GasEntryLabel.grid(row=0, column=1, padx=10, pady=10)
     self.swap_tab_view.GasEntry = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname), \
-        placeholder_text="Gas", width=40, height=5)
+        placeholder_text="6000000", width=70, height=5)
     self.swap_tab_view.GasEntry.grid(row=1, column=1, padx=10, pady=10)
     self.swap_tab_view.GasModEntryLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
         text="gas mod:")

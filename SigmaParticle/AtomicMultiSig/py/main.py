@@ -31,6 +31,10 @@ def main(contractName, ergo, wallet_mnemonic, mnemonic_password, senderAddress, 
         ergoAmountRaw = int(os.getenv('ergoAmount'))
         ergoAmount = ergoAmountRaw 
         ergoAmountFeeIncluded = ergoAmount #+ Parameters.MinFee #fee seems to include itself
+        if ergoAmountFeeIncluded <= 123841 + Parameters.MinFee: #if someone tries to deposit lower than the fee it cannot be profitably spent
+            #if they deposit more than the minimum + fee the fee can be taken from the box when claiming or withdrawing
+            #IRL dont spend such low amounts because fees will always be more than the amount itself just for testing purposes
+            ergoAmountFeeIncluded = ergoAmountFeeIncluded + Parameters.MinFee
         ECC_Generator = dlogGroup().generator().getEncoded(True)
 
         #Public Key Points for coordinating / proof of nonces specific to swap
