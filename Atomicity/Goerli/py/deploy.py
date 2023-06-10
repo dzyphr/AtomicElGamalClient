@@ -262,7 +262,7 @@ def uploadContract(rpc, abi, bytecode, gas=None, gasModExtra=None):
 
     #print("current gas price :", rpc.eth.gas_price );
     if gas == None:
-        gas = 70000
+        gas = 6000000
     if gasModExtra == None:
         gasModExtra = 1
     if constructorArgs == True:
@@ -413,11 +413,11 @@ if args_n > 1:
         getAccount()
         exit()
     elif sys.argv[1] == "sendAmount":
-        if args_n > 5:
-            sendAmount(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5],)
+        if args_n > 3:
+            sendAmount(sys.argv[2], sys.argv[3])
             exit()
         else:
-            print("enter amount(in wei), receiver evm pubkey, gas, gasMod  as followup arguments to sendAmount")
+            print("enter amount(in wei), receiver evm pubkey as followup arguments to sendAmount")
             exit()
     elif sys.argv[1] == "getBalance":
         if args_n > 2:

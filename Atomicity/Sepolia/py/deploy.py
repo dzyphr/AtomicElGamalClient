@@ -262,7 +262,7 @@ def uploadContract(rpc, abi, bytecode, gas=None, gasModExtra=None):
 
     #print("current gas price :", rpc.eth.gas_price );
     if gas == None:
-        gas = 70000
+        gas = 6000000
     if gasModExtra == None:
         gasModExtra = 1
     if constructorArgs == True:
