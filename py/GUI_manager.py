@@ -97,7 +97,7 @@ def setSwapTab(self, first):
         self.swap_tab_view.decryptResponderCommitmentLabel.grid(row=4, column=0, padx=10, pady=10)
         self.swap_tab_view.decryptResponderCommitmentButton = \
                 customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-                text="Check", command=goInspectScalarLockContract, width=5, height=7)
+                text="Check", command=goInspectScalarLockContract, width=5, height=7, state="disabled")
         self.swap_tab_view.decryptResponderCommitmentButton.grid(row=4, column=1, padx=10, pady=10)
         self.swap_tab_view.responderContractValueLabel = \
                 customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
@@ -124,7 +124,7 @@ def setSwapTab(self, first):
         self.swap_tab_view.refundDurationEntry.grid(row=8, column=1, padx=10, pady=10)
         self.swap_tab_view.finalizeSwapButton = \
                 customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-                text="Deploy Contract & Copy Commitment", command=goDraftFinalSignature, width=5, height=5)
+                text="Deploy Contract & Copy Commitment", command=goDraftFinalSignature, width=5, height=5, state="disabled")
         self.swap_tab_view.finalizeSwapButton.grid(row=9, column=0, padx=10, pady=10)
         self.swap_tab_view.finalizeCheck = \
                 customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \

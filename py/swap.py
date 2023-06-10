@@ -74,6 +74,7 @@ def determineSwapName():
 
 def copyENCInit(self):
     pyperclip.copy(open(self.swap_tab_view.get() + "/ENC_initiation.atomicswap", "r").read())
+    self.swap_tab_view.decryptResponderCommitmentButton.configure(state="normal")
     #make sure active tab functions get swap name from current open tab
 
 def deduce_sr(self):
@@ -351,6 +352,8 @@ def inspectScalarLockContract(self): #initiator operation
         self.scalarContractFundingAmount = os.popen("cd Atomicity/Sepolia && python3 -u py/deploy.py getBalance " + contractAddr).read()
     self.swap_tab_view.responderContractValueLabel.configure(text= "Responder Contract Value: " +\
             self.scalarContractFundingAmount + " wei")
+    if int(self.scalarContractFundingAmount) > 0:
+        self.swap_tab_view.finalizeSwapButton.configure(state="normal")
     print(self.scalarContractFundingAmount)
 
 
@@ -464,6 +467,7 @@ def copyResponse(self): #esponder operation
         print("swap contract not deployed yet!")
 
 def deployAndFundScalarSwapContract(self): #responder operation
+    updateDataBasedOnOpenTab(self)
     if self.swap_tab_view.valueToSpendEntry.get() != "":
         customgas = False
         if self.swap_tab_view.GasEntry.get() != "":
