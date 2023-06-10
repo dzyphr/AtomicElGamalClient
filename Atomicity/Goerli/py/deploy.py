@@ -24,7 +24,7 @@ xbyte = "-bytecode"
 contractDir = "./contracts/"
 contractFile = contractName + xsol
 constructorArgs = bool(os.getenv('ConstructorArgs'))
-gasMod = 2
+gasMod = 1
 chain = os.getenv('CurrentChain') #set the current chain in .env
 
 
@@ -33,7 +33,11 @@ if bool(os.getenv('VerifyBlockExplorer')) == True:
 else:
     verifyBlockExplorer = False
 
-def claim(addr, x):
+def claim(addr, x, gas=None, gasMod=None):
+    if gas == None:
+        gas = 6000000
+    if gasMod == None:
+        gasMod = 1
     if chain == "Goerli":
         rpc = Web3(Web3.HTTPProvider(os.getenv('Goerli')))
         chain_id = int(os.getenv('GoerliID')) #use int so it doesnt interpret env variable as string values
@@ -57,7 +61,7 @@ def claim(addr, x):
             'chainId': chain_id,
             'from': senderAddr,
             'gasPrice': rpc.eth.gas_price * gasMod,
-            'gas': 6000000,
+            'gas': gas,
             'nonce': rpc.eth.get_transaction_count(senderAddr)
         }
     )
@@ -267,8 +271,8 @@ def uploadContract(rpc, abi, bytecode, gas=None, gasModExtra=None):
                 "chainId": chain_id, 
                 "from": senderAddr, 
                 "nonce": rpc.eth.getTransactionCount(senderAddr), 
-                "gas": gas,
-                "gasPrice": rpc.eth.gas_price * (gasModExtra)
+                "gas": int(gas),
+                "gasPrice": rpc.eth.gas_price * int(gasModExtra)
             }
         )
     else:
@@ -277,8 +281,8 @@ def uploadContract(rpc, abi, bytecode, gas=None, gasModExtra=None):
                 "chainId": chain_id,
                 "from": senderAddr,
                 "nonce": rpc.eth.getTransactionCount(senderAddr),
-                "gas": gas,
-                "gasPrice": rpc.eth.gas_price * (gasModExtra)
+                "gas": int(gas),
+                "gasPrice": rpc.eth.gas_price * int(gasModExtra)
             }
         )
     signedTx = rpc.eth.account.sign_transaction(tx, private_key=senderPrivKey)
@@ -430,10 +434,14 @@ if args_n > 1:
             print("enter the address to check as followup argument")
             exit()
     elif sys.argv[1] == "claim":
-        if args_n > 3:
+        if args_n > 3 :
             claim(sys.argv[2], sys.argv[3])
-        else:
-            print("enter the address and x as followup arguments")
+            exit()
+        if args_n > 5:
+            claim(sys.argv[2], sys.argv[3], gas=sys.argv[4], gasMod=sys.argv[5])
+            exit()
+        else :
+            print("enter the address, x, optional: gas and gasMod as followup arguments")
             exit()
     elif sys.argv[1] == "verify":
         rpc, chain_id, senderAddr, senderPrivKey, url = pickChain()
@@ -456,6 +464,7 @@ if args_n > 1:
             contractAddr = uploadContract(rpc, abi, bytecode, gas=gas, gasModExtra=gasModExtra)
             APISolcV = getSOLCVersion()
             verify(flat, contractAddr, APISolcV, url, True)
+            exit()
 
 else:
     rpc, chain_id, senderAddr, senderPrivKey, url = pickChain()
@@ -466,3 +475,4 @@ else:
     contractAddr = uploadContract(rpc, abi, bytecode)
     APISolcV = getSOLCVersion()
     verify(flat, contractAddr, APISolcV, url, True)
+    exit()

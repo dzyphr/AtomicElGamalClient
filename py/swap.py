@@ -99,10 +99,13 @@ def deduce_sr(self):
     response = os.popen(deduceCMD).read()
     j = json.loads(response)
     x = j["x"]
+    gas = self.swap_tab_view.InitiatorGasEntry.get()
+    gasMod = self.swap_tab_view.InitiatorGasModEntry.get()
     claimScript = \
-            "cd Atomicity/" + chain + " && ./deploy.sh claim " + contractAddr + " " + x 
+                "cd Atomicity/" + chain + " && ./deploy.sh claim " + contractAddr + " " + x + " " + gas + " " + gasMod
     print(claimScript)
     print(os.popen(claimScript).read())
+
 
 
 

@@ -124,6 +124,19 @@ def setSwapTab(self, first):
                     customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
                     text="Check tree for finalization", command=goCheckTreeForFinalization)
             self.swap_tab_view.finalizeCheck.grid(row=10, column=0, padx=10, pady=10)
+            self.swap_tab_view.InitiatorCustomGasLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+                    text="custom gas :")
+            self.swap_tab_view.InitiatorCustomGasLabel.grid(row=9, column=2, padx=10, pady=10)
+            self.swap_tab_view.InitiatorGasEntry = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname), \
+            placeholder_text="6000000", width=70, height=5)
+            self.swap_tab_view.InitiatorGasEntry.grid(row=10, column=2, padx=10, pady=10)
+            self.swap_tab_view.InitiatorCustomGasModLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+                    text="gas mod :")
+            self.swap_tab_view.InitiatorCustomGasModLabel.grid(row=9, column=3, padx=10, pady=10)
+            self.swap_tab_view.InitiatorGasModEntry = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname), \
+                    placeholder_text="1", width=10, height=5)
+            self.swap_tab_view.InitiatorGasModEntry.grid(row=10, column=3, padx=10, pady=10)
+
             self.swap_tab_view.claim = \
                     customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
                     text="Claim", command=goDeduce_sr, width=5, height=7, state="disabled")
@@ -176,6 +189,19 @@ def setSwapTab(self, first):
                     customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
                     text="Check tree for finalization", command=goCheckTreeForFinalization)
             self.swap_tab_view.finalizeCheck.grid(row=10, column=0, padx=10, pady=10)
+            self.swap_tab_view.InitiatorCustomGasLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+                    text="custom gas :")
+            self.swap_tab_view.InitiatorCustomGasLabel.grid(row=9, column=2, padx=10, pady=10)
+            self.swap_tab_view.InitiatorGasEntry = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname), \
+                    placeholder_text="6000000", width=70, height=5)
+            self.swap_tab_view.InitiatorGasEntry.grid(row=10, column=2, padx=10, pady=10)
+            self.swap_tab_view.InitiatorCustomGasModLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+                    text="gas mod :")
+            self.swap_tab_view.InitiatorCustomGasModLabel.grid(row=9, column=3, padx=10, pady=10)
+            self.swap_tab_view.InitiatorGasModEntry = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname), \
+                    placeholder_text="1", width=10, height=5)
+            self.swap_tab_view.InitiatorGasModEntry.grid(row=10, column=3, padx=10, pady=10)
+
             self.swap_tab_view.claim = \
                     customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
                     text="Claim", command=goDeduce_sr,  width=5, height=7, state="disabled")

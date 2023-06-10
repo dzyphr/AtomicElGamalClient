@@ -180,7 +180,7 @@ def main(args):
         return json.dumps(xObj, indent=4)
         #print("p1 can now spend value locked to hash/public pair xG with x and their signature")
 
-    
+#    def test():
 
     if len(args) > 1:
         command = args[1]
