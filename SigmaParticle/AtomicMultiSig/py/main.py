@@ -57,7 +57,7 @@ def main(contractName, ergo, wallet_mnemonic, mnemonic_password, senderAddress, 
         ssG = dlogGroup().curve().createPoint(ssGX, ssGY)
         GE_ssG = ecPointToGroupElement(ssG)
         receiver = Address.create(os.getenv('receiverAddr'))
-        lockHeight = ergo._ctx.getHeight() + 10 #irl set relatively large height on BOTH sides of swap for max cooperation
+        lockHeight = ergo._ctx.getHeight() + int(os.getenv('refundDuration')) #irl set relatively large height on BOTH sides of swap for max cooperation
 
         atomicLockScript = \
             "{ \
@@ -101,7 +101,7 @@ def main(contractName, ergo, wallet_mnemonic, mnemonic_password, senderAddress, 
             .contract(AtomicContract)\
             .build()
         unsignedTx = ergo.buildUnsignedTransaction(\
-            input_box =coinSelection.pruneToIndex(0, inputBoxes) , outBox=[AtomicBox],\
+            input_box =coinSelection.pruneToIndex(1, inputBoxes) , outBox=[AtomicBox],\
             sender_address=castedSender\
         )
         signedTx = senderProver.sign(unsignedTx)

@@ -168,12 +168,18 @@ def SigmaParticleAtomicSchnorr(self):
     j = json.loads(f.read())
     f.close()
     receiver = j[self.initiatorChain + "_chainPubkey"]
+    if self.swap_tab_view.refundDurationEntry.get() == "":
+        refundDuration = 25
+    else:
+        refundDuration = self.swap_tab_view.refundDurationEntry.get()
+
     cmd = "cd SigmaParticle && ./new_frame " + self.currentswapname + \
             " && cd " + self.currentswapname + " && echo " + \
             "'" + \
             "senderEIP3Secret=" + self.chainPubkeyEntry.get()  + "\n" + \
             "receiverAddr=\"" + receiver + "\"\n" + \
             "ergoAmount=" + self.swap_tab_view.initiatorContractValueEntry.get() + "\n" +\
+            "refundDuration=" + refundDuration + "\n" + \
             "krGX=" + str(krG[0]) + "\n" +\
             "krGY=" + str(krG[1]) + "\n" +\
             "ksGX=" + str(ksG[0]) + "\n" +\
