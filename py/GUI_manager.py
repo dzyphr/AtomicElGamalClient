@@ -213,7 +213,7 @@ def SwapResponderGUI(self):
     self.swap_tab_view.labelresponse.grid(row=5, column=0, padx=10, pady=10)
     self.swap_tab_view.copyResponseButton = \
             customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-            text="Copy", command=goCopyResponse,  width=5, height=7)
+            text="Copy", command=goCopyResponse,  width=5, height=7, state="disabled")
     self.swap_tab_view.copyResponseButton.grid(row=5, column=1, padx=10, pady=10)
     self.swap_tab_view.labelFinalize = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
         text="Paste Finalization Commitment: ")
@@ -223,7 +223,7 @@ def SwapResponderGUI(self):
     self.swap_tab_view.finalizeEntry.grid(row=8, column=0, padx=10, pady=10)
     self.swap_tab_view.checkButton = \
             customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-            text="Check", command=goReceiverCheck,  width=5, height=7) 
+            text="Check", command=goReceiverCheck,  width=5, height=7, state="disabled") 
     self.swap_tab_view.checkButton.grid(row=8, column=1, padx=10, pady=10)
     self.swap_tab_view.labelContractAmount = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
         text="Contract amount: not checked yet")

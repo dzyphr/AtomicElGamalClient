@@ -480,6 +480,7 @@ def copyResponse(self): #esponder operation
                 enc_response = f.read()
                 f.close()
                 pyperclip.copy(enc_response) #if the response wont paste into GUI entry encryption is too large
+                self.swap_tab_view.checkButton.configure(state="normal")
     else:
         print("swap contract not deployed yet!")
 
@@ -502,7 +503,10 @@ def deployAndFundScalarSwapContract(self): #responder operation
                 addrfile = open(self.currentswapname + "/responderContractAddress", "w")
                 addrfile.write(addr)
                 addrfile.close()
+                #TODO: IMPORTANT! check the contract by comparing its x and y coordinates to make sure they are the ones expected
+                #but more importantly to make sure the contract was properly uploaded to the chain before sending funds to it!!!
                 fundScalarContract(self)
+                self.swap_tab_view.copyResponseButton.configure(state="normal")
             else:
                 print("addr should be output instead got:", addr)
         elif customgas == True:
@@ -513,7 +517,10 @@ def deployAndFundScalarSwapContract(self): #responder operation
                 addrfile = open(self.currentswapname + "/responderContractAddress", "w")
                 addrfile.write(addr)
                 addrfile.close()
+                #TODO: IMPORTANT! check the contract by comparing its x and y coordinates to make sure they are the ones expected
+                #but more importantly to make sure the contract was properly uploaded to the chain before sending funds to it!!!
                 fundScalarContract(self)
+                self.swap_tab_view.copyResponseButton.configure(state="normal")
             else:
                 print("addr should be output instead got:", addr)
     else:
