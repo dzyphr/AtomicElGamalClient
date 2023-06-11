@@ -73,6 +73,7 @@ def determineSwapName():
     return swapname
 
 def copyENCInit(self):
+    updateDataBasedOnOpenTab(self)
     pyperclip.copy(open(self.swap_tab_view.get() + "/ENC_initiation.atomicswap", "r").read())
     self.swap_tab_view.decryptResponderCommitmentButton.configure(state="normal")
     #make sure active tab functions get swap name from current open tab
@@ -145,12 +146,18 @@ def checkTreeForFinalization(self):
 
 def deploySigmaParticleAtomicSchorr(self):
     command = "cd SigmaParticle/" + self.currentswapname + " && ./deploy.sh deposit"
-    response = os.popen(command).read()
-    print(response)
+    devnull = open(os.devnull, 'wb')
+    response = subprocess.Popen(command, shell=True,
+                         stdout=devnull, stderr=devnull,
+                         close_fds=True)
+#   print(response)
+#   if "404" not in response:
+#        self.swap_tab_view.finalizeCheck.configure(state="normal")
     #response should already be a json minus initial "Running ..." Statement
 
 
 def SigmaParticleAtomicSchnorr(self):
+    updateDataBasedOnOpenTab(self)
     f = open(self.currentswapname + "/DEC_response.atomicswap", "r")
     response = f.read()
     f.close()
@@ -173,14 +180,13 @@ def SigmaParticleAtomicSchnorr(self):
         refundDuration = 25
     else:
         refundDuration = self.swap_tab_view.refundDurationEntry.get()
-
-    cmd = "cd SigmaParticle && ./new_frame " + self.currentswapname + \
-            " && cd " + self.currentswapname + " && echo " + \
+    cmd = "cd SigmaParticle && ./new_frame " + str(self.currentswapname) + \
+            " && cd " + str(self.currentswapname) + " && echo " + \
             "'" + \
             "senderEIP3Secret=" + self.chainPubkeyEntry.get()  + "\n" + \
             "receiverAddr=\"" + receiver + "\"\n" + \
-            "ergoAmount=" + self.swap_tab_view.initiatorContractValueEntry.get() + "\n" +\
-            "refundDuration=" + refundDuration + "\n" + \
+            "ergoAmount=" + str(self.swap_tab_view.initiatorContractValueEntry.get()) + "\n" +\
+            "refundDuration=" + str(refundDuration) + "\n" + \
             "krGX=" + str(krG[0]) + "\n" +\
             "krGY=" + str(krG[1]) + "\n" +\
             "ksGX=" + str(ksG[0]) + "\n" +\
@@ -197,14 +203,14 @@ def SigmaParticleAtomicSchnorr(self):
     deploySigmaParticleAtomicSchorr(self)
 
 
-def nanoErgToErgo(nanoErgs):
+def nanoErgToErgo(nanoErgs): #only for round amounts
     return int(int(nanoErgs) / 1000000000)
 
 def receiverClaim(self):
+    updateDataBasedOnOpenTab(self)
     if os.path.isfile(self.currentswapname + "/ENC_Finalization.atomicswap") == False:
         print("finalization not found! paste in finalization and check contract value first!")
     else:
-        updateDataBasedOnOpenTab(self)
         newContractCmd = "cd SigmaParticle && ./new_frame " + self.currentswapname
         print(os.popen(newContractCmd).read())
         copyBoilerplateCmd = "cp SigmaParticle/AtomicMultiSig/py/main.py SigmaParticle/" + self.currentswapname  + "/py/main.py"
@@ -245,92 +251,102 @@ def receiverClaim(self):
         print(os.popen(claimCMD).read())
 
 
-def receiverCheck(self): #responder operation
+def receiverCheck(self): #responder operatio
+    updateDataBasedOnOpenTab(self)
     if self.swap_tab_view.finalizeEntry.get() == "":
         print("paste in the finalization to claim!")
     else:
-            updateDataBasedOnOpenTab(self)
-            ENCFin = self.swap_tab_view.finalizeEntry.get()
-            f = open(self.currentswapname + "/ENC_Finalization.atomicswap", "w")
-            f.write(ENCFin)
+        ENCFin = self.swap_tab_view.finalizeEntry.get()
+        f = open(self.currentswapname + "/ENC_Finalization.atomicswap", "w")
+        f.write(ENCFin)
+        f.close()
+        decryptElGamal = \
+            "./ElGamal decryptFromPubKey " + self.currentswapname + "/ENC_Finalization.atomicswap " + \
+            self.currentReceiver + ' ' + self.ElGamalKeyFileName
+        decryption = os.popen(decryptElGamal).read()
+        f = open(self.currentswapname + "/DEC_Finalization.atomicswap", "w")
+        f.write(decryption)
+        f.close()
+        j = json.loads(decryption)
+        boxValCheck = "cd SigmaParticle/boxValue && ./deploy.sh " +\
+                j["boxId"] + " ../../" +\
+                self.currentswapname + "/InitiatorContractValue"
+        devnull = open(os.devnull, 'wb') 
+        
+#       os.popen(boxValCheck)
+        p = subprocess.Popen(boxValCheck, shell=True,
+                         stdout=devnull, stderr=devnull,
+                         close_fds=True)
+        if os.path.isfile(self.currentswapname + "/InitiatorContractValue") == True:
+            f = open(self.currentswapname + "/InitiatorContractValue")
+            nanoErgs = f.read()
             f.close()
-            decryptElGamal = \
-                "./ElGamal decryptFromPubKey " + self.currentswapname + "/ENC_Finalization.atomicswap " + \
-                self.currentReceiver + ' ' + self.ElGamalKeyFileName
-            decryption = os.popen(decryptElGamal).read()
-            f = open(self.currentswapname + "/DEC_Finalization.atomicswap", "w")
-            f.write(decryption)
-            f.close()
-            j = json.loads(decryption)
-            boxValCheck = "cd SigmaParticle/boxValue && ./deploy.sh " +\
-                    j["boxId"] + " ../../" +\
-                    self.currentswapname + "/InitiatorContractValue"
-            devnull = open(os.devnull, 'wb') 
-            os.popen(boxValCheck)
-            p = subprocess.Popen(boxValCheck, shell=True,
-                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                             close_fds=True)
-            if os.path.isfile(self.currentswapname + "/InitiatorContractValue") == True:
-                f = open(self.currentswapname + "/InitiatorContractValue")
-                nanoErgs = f.read()
-                f.close()
+            if int(nanoErgs) < 123841:
+                print("box is extremely small dust and may not be able to be properly claimed")
+                self.swap_tab_view.labelContractAmount.configure(text= "Contract Value: " +\
+                    "potentially unspendable dust")
+            else:
                 self.swap_tab_view.labelContractAmount.configure(text= "Contract Value: " +\
                     nanoErgs + " nΣ")
                 self.swap_tab_view.claimButton.configure(state="normal")
-            else:
-                print("cant find box, tx not mined yet or invalid id")
-
-
-
+        else:
+            print("cant find box, tx not mined yet or invalid id")
 
 
 
 def draftFinalSignature(self): #create the final sig ss and pub value sG #initiator operation
     if os.path.isfile(self.currentswapname + "/finalize.atomicswap") == False or os.path.isfile("SigmaParticle/" + self.currentswapname + "/boxId") == False:
         updateDataBasedOnOpenTab(self)
-        f = open(self.currentswapname + "/DEC_response.atomicswap", "r")
-        j = json.loads(f.read())
-        f.close()
-        sr_ = j["sr_"]
-        xG = j["xG"]
-        srG = j["srG"]
-        e = j["e"]
-        f = open(self.currentswapname + "/PRIV_initiation.atomicswap", "r")
-        j = json.loads(f.read())
-        f.close()
-        ks = j["ks"]
-        rs = j["rs"]
-        cmd = "cd SigmaParticle/AtomicMultiSigECC/ && python3 -u py/deploy.py p1Finalize " + \
-                "\"" + str(sr_) + "\"" + " \"" + xG.replace(" ", "") + "\" \"" + srG.replace(" ", "") + "\" \"" + str(e) + "\" " + \
-                "\"" + str(ks) + "\"" + " \"" + str(rs) + "\""
-        finalSigJson = os.popen(cmd).read()
-        if json.loads(finalSigJson) != ValueError and finalSigJson != "":
-            print(finalSigJson)
-            f = open(self.currentswapname + "/finalize.atomicswap", "w")
-            f.write(finalSigJson)
+        if int(self.swap_tab_view.initiatorContractValueEntry.get()) >= 123841:
+            f = open(self.currentswapname + "/DEC_response.atomicswap", "r")
+            j = json.loads(f.read())
             f.close()
-            SigmaParticleAtomicSchnorr(self)
-            f = open(self.currentswapname + "/finalize.atomicswap", "w")
-            f2 = open("SigmaParticle/" + self.currentswapname + "/boxId", "r") 
-            boxId = f2.read()
-            f2.close()
-            mod = finalSigJson
-            modified = mod.replace("\"\n}", "\",\n    \"boxId\": \"" + boxId + "\"\n}")
-            print(modified)
-            f.write(modified)
+            sr_ = j["sr_"]
+            xG = j["xG"]
+            srG = j["srG"]
+            e = j["e"]
+            f = open(self.currentswapname + "/PRIV_initiation.atomicswap", "r")
+            j = json.loads(f.read())
             f.close()
-            cmd = \
-                "./ElGamal encryptToPubKey " + \
-                self.currentReceiver + ' ' + \
-                self.ElGamalKeyFileName + ' ' + \
-                "\'" + modified + "\' " + \
-                self.currentswapname + "/ENC_finalize.atomicswap"
-            encrypt = os.popen(cmd).read()
-            f = open(self.currentswapname + "/ENC_finalize.atomicswap", "r")
-            encryption = f.read()
-            f.close()
-            #now upload ergoscript contract
-            pyperclip.copy(encryption)
+            ks = j["ks"]
+            rs = j["rs"]
+            cmd = "cd SigmaParticle/AtomicMultiSigECC/ && python3 -u py/deploy.py p1Finalize " + \
+                    "\"" + str(sr_) + "\"" + " \"" + xG.replace(" ", "") + "\" \"" + srG.replace(" ", "") + "\" \"" + str(e) + "\" " + \
+                    "\"" + str(ks) + "\"" + " \"" + str(rs) + "\""
+            finalSigJson = os.popen(cmd).read()
+            if json.loads(finalSigJson) != ValueError and finalSigJson != "":
+                print(finalSigJson)
+                f = open(self.currentswapname + "/finalize.atomicswap", "w")
+                f.write(finalSigJson)
+                f.close()
+                SigmaParticleAtomicSchnorr(self)
+                time.sleep(3)
+                f = open(self.currentswapname + "/finalize.atomicswap", "w")
+                f2 = open("SigmaParticle/" + self.currentswapname + "/boxId", "r") 
+                boxId = f2.read()
+                f2.close()
+                mod = finalSigJson
+                modified = mod.replace("\"\n}", "\",\n    \"boxId\": \"" + boxId + "\"\n}")
+                print(modified)
+                f.write(modified)
+                f.close()
+                cmd = \
+                    "./ElGamal encryptToPubKey " + \
+                    self.currentReceiver + ' ' + \
+                    self.ElGamalKeyFileName + ' ' + \
+                    "\'" + modified + "\' " + \
+                    self.currentswapname + "/ENC_finalize.atomicswap"
+                encrypt = os.popen(cmd).read()
+                f = open(self.currentswapname + "/ENC_finalize.atomicswap", "r")
+                encryption = f.read()
+                f.close()
+                #now upload ergoscript contract
+                pyperclip.copy(encryption)
+                self.swap_tab_view.finalizeCheck.configure(state="normal")
+        else:
+            print("you must spend minimum 123841 nanoErg into the contract or else it is unclaimable!")
+
+
     if os.path.isfile("SigmaParticle/" + self.currentswapname + "/boxId") == True: #if we already have the box we have properly uploaded the contract
         f = open(self.currentswapname + "/ENC_finalize.atomicswap", "r")
         encryption = f.read()
@@ -359,6 +375,7 @@ def inspectScalarLockContract(self): #initiator operation
 
 
 def decryptResponse(self): #initiator operation
+    updateDataBasedOnOpenTab(self)
     if os.path.isfile(self.currentswapname + "/response.atomicswap"):
         print("response commitment already collected for ", self.currentswapname)
     else:
@@ -467,14 +484,13 @@ def copyResponse(self): #esponder operation
         print("swap contract not deployed yet!")
 
 def deployAndFundScalarSwapContract(self): #responder operation
-    updateDataBasedOnOpenTab(self)
     if self.swap_tab_view.valueToSpendEntry.get() != "":
         customgas = False
         if self.swap_tab_view.GasEntry.get() != "":
             gas = self.swap_tab_view.GasEntry.get()
             customgas = True
         else:
-            gas = "70000"
+            gas = "6000000"
         if self.swap_tab_view.GasModEntry.get() != "":
             gasMod = self.swap_tab_view.GasModEntry.get()
             customgas = True

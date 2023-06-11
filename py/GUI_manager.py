@@ -128,7 +128,7 @@ def setSwapTab(self, first):
         self.swap_tab_view.finalizeSwapButton.grid(row=9, column=0, padx=10, pady=10)
         self.swap_tab_view.finalizeCheck = \
                 customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-                text="Check tree for finalization", command=goCheckTreeForFinalization)
+                text="Check tree for finalization", command=goCheckTreeForFinalization, state="disabled")
         self.swap_tab_view.finalizeCheck.grid(row=10, column=0, padx=10, pady=10)
         self.swap_tab_view.InitiatorCustomGasLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
                 text="custom gas :")
