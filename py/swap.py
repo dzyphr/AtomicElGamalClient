@@ -201,6 +201,7 @@ def SigmaParticleAtomicSchnorr(self):
     copyScriptsCommand = "cp SigmaParticle/AtomicMultiSig/py/main.py SigmaParticle/" + self.currentswapname + "/py/main.py"
     copyScripts = os.popen(copyScriptsCommand).read()
     deploySigmaParticleAtomicSchorr(self)
+    self.swap_tab_view.checkRefundLockTime.configure(state="normal")
 
 
 def nanoErgToErgo(nanoErgs): #only for round amounts
@@ -292,6 +293,51 @@ def receiverCheck(self): #responder operatio
         else:
             print("cant find box, tx not mined yet or invalid id")
 
+def SigmaParticleRefund(self):
+    updateDataBasedOnOpenTab(self)
+    devnull = open(os.devnull, 'wb')
+    f = open("SigmaParticle/" + self.currentswapname + "/boxId", "r")
+    boxId = f.read()
+    f.close()
+    echoBoxIdCMD = \
+            "echo '\natomicBox=" + boxId + "' >> SigmaParticle/" + self.currentswapname + "/.env"
+    os.popen(echoBoxIdCMD).read()
+
+    cmd =  "cd SigmaParticle/" + self.currentswapname + "&& ./deploy.sh refund"
+    os.popen(cmd).read()
+
+def getLocalLockTime(self): #for refunds #returns lock time in # of blocks
+    updateDataBasedOnOpenTab(self)
+    f = open(self.currentswapname + "/roleData.json", "r") #TODO: This is likely the most accurate way to pick a chain responsively
+    role = json.loads(f.read())["role"]
+    f.close()
+    if role == "initiator":
+        f = open(self.currentswapname + "/initiation.atomicswap", "r")
+        initiatorChain = json.loads(f.read())["localChain"]
+        f.close()
+        if initiatorChain == "Ergo":
+            f = open("SigmaParticle/" + self.currentswapname + "/boxId", "r")
+            boxId = f.read()
+            f.close()
+            lockHeightCMD = \
+                            "cd SigmaParticle/boxConstantByIndex && ./deploy.sh " + boxId + \
+                            " 7 ../../" + self.currentswapname + "/localChain_lockHeight"
+            os.popen(lockHeightCMD).read()
+            currentHeightCMD = \
+                            "cd SigmaParticle/currentHeight && ./deploy.sh ../../" + \
+                            self.currentswapname + "/localChain_currentHeight"
+            os.popen(currentHeightCMD).read()
+            f = open(self.currentswapname + "/localChain_lockHeight")
+            lockHeight = f.read()
+            f.close()
+            f = open(self.currentswapname + "/localChain_currentHeight")
+            currentHeight = f.read()
+            f.close()
+            if int(currentHeight) <= int(lockHeight):
+                return int(lockHeight) - int(currentHeight) + 1 #plus 1 because currently contract checks for GREATER THAN lock height
+            else:
+                return 0
+        
 
 
 def draftFinalSignature(self): #create the final sig ss and pub value sG #initiator operation
@@ -320,11 +366,19 @@ def draftFinalSignature(self): #create the final sig ss and pub value sG #initia
                 f.write(finalSigJson)
                 f.close()
                 SigmaParticleAtomicSchnorr(self)
+#               currentHeightCMD = \
+#                       "cd SigmaParticle/currentHeight && ./deploy.sh ../../" + self.currentswapname + "/localChain_currentHeight"
+#                os.popen(currentHeightCMD).read()
                 time.sleep(3)
                 f = open(self.currentswapname + "/finalize.atomicswap", "w")
                 f2 = open("SigmaParticle/" + self.currentswapname + "/boxId", "r") 
                 boxId = f2.read()
                 f2.close()
+#                lockHeightCMD = \
+#                        "cd SigmaParticle/boxConstantByIndex && ./deploy.sh " + boxId + \
+#                        " ../../" + self.currentswapname + "/localChain_lockHeight"
+#                os.popen(lockHeightCMD).read()
+
                 mod = finalSigJson
                 modified = mod.replace("\"\n}", "\",\n    \"boxId\": \"" + boxId + "\"\n}")
                 print(modified)

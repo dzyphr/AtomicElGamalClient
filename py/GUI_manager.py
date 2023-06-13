@@ -1,4 +1,5 @@
 import customtkinter
+import json
 #######MAIN#########
 def unpackMainGUI(self):
     self.initiatorChainLabel.pack_forget()
@@ -62,7 +63,8 @@ def GUI_Arrange_Swap_Based(self): #here we are updating the GUI according to the
 
 
 def setSwapTab(self, first):
-    from swap import SwapTab, copyENCInit, inspectScalarLockContract, draftFinalSignature, checkTreeForFinalization, deduce_sr
+    from swap import SwapTab, copyENCInit, inspectScalarLockContract, draftFinalSignature,\
+            checkTreeForFinalization, deduce_sr, getLocalLockTime, SigmaParticleRefund, updateDataBasedOnOpenTab
     def goCopyENCInit():
         copyENCInit(self)
     def goInspectScalarLockContract():
@@ -73,6 +75,29 @@ def setSwapTab(self, first):
         checkTreeForFinalization(self)
     def goDeduce_sr():
         deduce_sr(self)
+    def goCheckLockTime():
+        lockTime = getLocalLockTime(self)
+        if lockTime != None: 
+            if int(lockTime) > 0:
+                self.swap_tab_view.RefundLockTimeLabel.configure(text="Refund Lock Time Remaining: " + str(lockTime))
+            else:
+                self.swap_tab_view.RefundLockTimeLabel.configure(text="Refund Lock Time Remaining: 0")
+                self.swap_tab_view.RefundButton.configure(state="normal")
+        else:
+            print("cannot check locktime, contract not confirmed on chain yet?")
+
+    def goRefund():
+        updateDataBasedOnOpenTab(self)
+        f = open(self.currentswapname + "/roleData.json", "r") #TODO: This is likely the most accurate way to pick a chain responsively
+        role = json.loads(f.read())["role"]
+        f.close()
+        if role == "initiator":
+            f = open(self.currentswapname + "/initiation.atomicswap", "r")
+            initiatorChain = json.loads(f.read())["localChain"]
+            f.close()
+            if initiatorChain == "Ergo": 
+                SigmaParticleRefund(self)
+
 
 #    def goDecryptResponse():`
 #        decryptResponse(self)
@@ -147,6 +172,20 @@ def setSwapTab(self, first):
                 customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
                 text="Claim", command=goDeduce_sr, width=5, height=7, state="disabled")
         self.swap_tab_view.claim.grid(row=10, column=1, padx=10, pady=10)
+        self.swap_tab_view.checkRefundLockTime = \
+                customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
+                text="LockTime", command=goCheckLockTime, width=10, height=7, state="disabled")
+        self.swap_tab_view.checkRefundLockTime.grid(row=11, column=0, padx=10, pady=10)
+        self.swap_tab_view.RefundButton = \
+                customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
+                text="Refund",  width=10, height=7, state="disabled", command=goRefund)
+        self.swap_tab_view.RefundButton.grid(row=11, column=1, padx=10, pady=10)
+        self.swap_tab_view.RefundLockTimeLabel = \
+                customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+                text="Refund Lock Time Remaining: uninitiated")
+        self.swap_tab_view.RefundLockTimeLabel.grid(row=12, column=0, padx=10, pady=10)
+
+
     if self.isInitiator == True:
         if first == True:
             self.swap_tab_view = SwapTab(master=self.frame, width=600, height=600)

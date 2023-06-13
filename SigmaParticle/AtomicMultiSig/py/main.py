@@ -122,9 +122,8 @@ def main(contractName, ergo, wallet_mnemonic, mnemonic_password, senderAddress, 
         receiverEIP3Secret = int(os.getenv('senderEIP3Secret'))
         receiverProver = ergo._ctx.newProverBuilder().withMnemonic(receiverWalletMnemonic[0]).withEip3Secret(receiverEIP3Secret).build()
         atomicBoxID = os.getenv('atomicBox')
-        ergoAmountRaw = int(os.getenv('ergoAmount'))
-#        ergoAmountFeeSubtracted = Parameters.OneErg * ergoAmountRaw - Parameters.MinFee
-        ergoAmountFeeSubtracted = ergoAmountRaw - Parameters.MinFee
+#        ergoAmountRaw = int(os.getenv('ergoAmount'))
+#        ergoAmountFeeSubtracted = ergoAmountRaw - Parameters.MinFee
         krGX = BigInteger(os.getenv('krGX'))
         krGY = BigInteger(os.getenv('krGY'))
         krG = ecPointToGroupElement(dlogGroup().curve().createPoint(krGX, krGY))
@@ -141,7 +140,7 @@ def main(contractName, ergo, wallet_mnemonic, mnemonic_password, senderAddress, 
         ev_ss_array = ErgoValue.of(ss_array)
         receiverErgoTree = ErgoTreeContract(castedReceiver.getErgoAddress().script(), ergo._networkType)
         unlockBox = ergo._ctx.newTxBuilder().outBoxBuilder() \
-            .value(ergoAmountFeeSubtracted) \
+            .value(java.util.Arrays.asList(ergo._ctx.getBoxesById(atomicBoxID))[0].getValue() - Parameters.MinFee) \
             .contract(receiverErgoTree)\
             .registers([ev_sr_array, ev_ss_array, ev_krG, ev_ksG])\
             .build()
@@ -163,12 +162,9 @@ def main(contractName, ergo, wallet_mnemonic, mnemonic_password, senderAddress, 
         senderEIP3Secret = int(os.getenv('senderEIP3Secret'))
         senderProver = ergo._ctx.newProverBuilder().withMnemonic(senderWalletMnemonic[0]).withEip3Secret(senderEIP3Secret).build()
         senderErgoTree = ErgoTreeContract(castedSender.getErgoAddress().script(), ergo._networkType)
-        atomicBoxID = os.getenv('atomicBox')
-        ergoAmountRaw = int(os.getenv('ergoAmount'))
-#       ergoAmountFeeSubtracted = Parameters.OneErg * ergoAmountRaw - Parameters.MinFee
-        ergoAmountFeeSubtracted = ergoAmountRaw - Parameters.MinFee
+        atomicBoxID = str(os.getenv('atomicBox'))
         refundBox = ergo._ctx.newTxBuilder().outBoxBuilder() \
-            .value(ergoAmountFeeSubtracted) \
+            .value(java.util.Arrays.asList(ergo._ctx.getBoxesById(atomicBoxID))[0].getValue() - Parameters.MinFee) \
             .contract(senderErgoTree)\
             .registers([ 
                 ErgoValue.of(BigInt.javaBigInteger2bigInt(BigInteger("0")).toByteArray()), \
