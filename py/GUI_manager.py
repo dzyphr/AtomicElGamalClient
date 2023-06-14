@@ -219,7 +219,7 @@ def SwapResponderGUI(self):
     def goCheckLockTime():
         lockTime = getLocalLockTime(self)
         if lockTime != None:
-            self.lockTimeLabel.configure(text="LockTime: " + lockTime)
+            self.swap_tab_view.lockTimeLabel.configure(text="LockTime: " + lockTime)
         else:
             print("error checking locktime")
     self.swap_tab_view.valueLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
@@ -241,23 +241,30 @@ def SwapResponderGUI(self):
         placeholder_text="1", width=5, height=5)
     self.swap_tab_view.GasModEntry.grid(row=1, column=2, padx=10, pady=10)
 
-    self.deployAtomicSwapContractLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+    self.swap_tab_view.deployAtomicSwapContractLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
             text="Click to deploy & fund the atomic swap contract: ")
-    self.deployAtomicSwapContractLabel.grid(row=2, column=0, padx=10, pady=10)
-    self.deployAtomicSwapButton = customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
+    self.swap_tab_view.deployAtomicSwapContractLabel.grid(row=2, column=0, padx=10, pady=10)
+    self.swap_tab_view.CustomLockTimeLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+            text="Custom LockTime:")
+    self.swap_tab_view.CustomLockTimeLabel.grid(row=3, column=0, padx=10, pady=10)
+    self.swap_tab_view.CustomLockTimeEntry = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname), \
+        placeholder_text="25", width=20, height=5)
+    self.swap_tab_view.CustomLockTimeEntry.grid(row=3, column=1, padx=10, pady=10)
+
+    self.swap_tab_view.deployAtomicSwapButton = customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
             text="Deploy & Fund", command=goDeployAndFundScalarSwapContract,  width=5, height=7)
-    self.deployAtomicSwapButton.grid(row=2, column=1, padx=10, pady=10)
-    self.checkLockTimeButton = customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-            text="LockTime",   width=5, height=7, command=goCheckLockTime)
-    self.checkLockTimeButton.grid(row=2, column=2, padx=10, pady=10)
-    self.lockTimeLabel =  customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+    self.swap_tab_view.deployAtomicSwapButton.grid(row=2, column=1, padx=10, pady=10)
+    self.swap_tab_view.checkLockTimeButton = customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
+            text="LockTime",   width=5, height=7, command=goCheckLockTime, state="disabled")
+    self.swap_tab_view.checkLockTimeButton.grid(row=2, column=2, padx=10, pady=10)
+    self.swap_tab_view.lockTimeLabel =  customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
             text="LockTime: unititiated")
-    self.lockTimeLabel.grid(row=2, column=3, padx=10, pady=10)
+    self.swap_tab_view.lockTimeLabel.grid(row=2, column=3, padx=10, pady=10)
 
 
-    self.counterpartyChainPubkeyLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+    self.swap_tab_view.counterpartyChainPubkeyLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
             text="Counterparty ChainPubkey: " + self.counterpartyChainPubkey)
-    self.counterpartyChainPubkeyLabel.grid(row=4, column=0, padx=10, pady=10)
+    self.swap_tab_view.counterpartyChainPubkeyLabel.grid(row=4, column=0, padx=10, pady=10)
 
     #TODO: WARN USER about sending funds!!
     #TODO: make value entry based on chain aka wei or sats

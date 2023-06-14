@@ -76,6 +76,7 @@ def copyENCInit(self):
     updateDataBasedOnOpenTab(self)
     pyperclip.copy(open(self.swap_tab_view.get() + "/ENC_initiation.atomicswap", "r").read())
     self.swap_tab_view.decryptResponderCommitmentButton.configure(state="normal")
+
     #make sure active tab functions get swap name from current open tab
 
 def deduce_sr(self):
@@ -348,7 +349,8 @@ def getLocalLockTime(self): #for refunds #returns lock time in # of blocks
 #            print("todo checklocktime function made of check timelock and current lock time math in Atomicity script")
             cmd = \
                     "cd Atomicity/" + self.currentswapname + " && ./deploy.sh lockTime " + \
-                    addr + "../../" + self.currentswapname + "/remainingLockTime"
+                    addr + " ../../" + self.currentswapname + "/remainingLockTime"
+            print(cmd)
             os.popen(cmd).read()
             if os.path.isfile(self.currentswapname + "/remainingLockTime"):
                 f = open(self.currentswapname + "/remainingLockTime", "r")
@@ -519,6 +521,7 @@ def initiatorStart(self): #initiator operation
         setSwapTab(self, False)
 
 def copyResponse(self): #esponder operation
+    updateDataBasedOnOpenTab(self)
     if os.path.isfile(self.currentswapname + "/responderContractAddress"):
         if os.path.isfile(self.swap_tab_view.get() + "/response_commitment.atomicswap"):
             addr = open(self.currentswapname + "/responderContractAddress", "r").read().rstrip()
@@ -555,11 +558,14 @@ def copyResponse(self): #esponder operation
                 f.close()
                 pyperclip.copy(enc_response) #if the response wont paste into GUI entry encryption is too large
                 self.swap_tab_view.checkButton.configure(state="normal")
+                self.swap_tab_view.checkLockTimeButton.configure(state="normal")
     else:
         print("swap contract not deployed yet!")
 
 def deployAndFundScalarSwapContract(self): #responder operation
+    updateDataBasedOnOpenTab(self)
     if self.swap_tab_view.valueToSpendEntry.get() != "":
+        AtomicityScalarContractOperation(self)
         customgas = False
         if self.swap_tab_view.GasEntry.get() != "":
             gas = self.swap_tab_view.GasEntry.get()
@@ -649,9 +655,12 @@ def commitResponse(self): #responder operation
     self.encryption = os.popen(runElGamal).read()
 
 def AtomicityScalarContractOperation(self): #responder operation 
+    DURATION = "25"
+    if self.swap_tab_view.CustomLockTimeEntry.get() != "":
+        DURATION = self.swap_tab_view.CustomLockTimeEntry.get()
     cmd = "cd Atomicity && ./new_frame " + self.currentswapname  + \
-        " -M -CA 3 " + "\\\"" + self.counterpartyChainPubkey + "\\\" " + \
-        str(ast.literal_eval(self.xG)[0])  + " " + str(ast.literal_eval(self.xG)[1])
+        " -M -CA 4 " + "\\\"" + self.counterpartyChainPubkey + "\\\" " + \
+        str(ast.literal_eval(self.xG)[0])  + " " + str(ast.literal_eval(self.xG)[1]) + " " + DURATION
     new_frame = os.popen(cmd)
     time.sleep(1) #wait for file to be built
 
@@ -703,7 +712,6 @@ def initiateSwap(self): #currently ambiguous as it facilitates initiator and res
                 setCrossChainPubkeyDerived(self)
                 GUI_ReArrange_Chain_Based(self)
                 commitResponse(self)
-                AtomicityScalarContractOperation(self)
                 SwapResponderGUI(self)
                 saveRole(self)
             else:

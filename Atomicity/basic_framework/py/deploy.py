@@ -131,9 +131,10 @@ def checkRemainingLockTime(addr, filepath=None):
 def getHeight():
     if chain == "Goerli":
         rpc = Web3(Web3.HTTPProvider(os.getenv('Goerli')))
+        return int(rpc.eth.get_block_number())
     elif chain == "Sepolia":
         rpc = Web3(Web3.HTTPProvider(os.getenv('Sepolia')))
-    return int(rpc.eth.get_block_number())
+        return int(rpc.eth.get_block_number())
 
 def checkLockHeight(addr):
     f = open("../AtomicMultisig_ABI_0.0.1.json")
@@ -141,10 +142,12 @@ def checkLockHeight(addr):
     f.close()
     if chain == "Goerli":
         rpc = Web3(Web3.HTTPProvider(os.getenv('Goerli')))
+        contract = rpc.eth.contract(address=addr, abi=abi)
+        return int(contract.functions.lockHeight().call())
     elif chain == "Sepolia":
         rpc = Web3(Web3.HTTPProvider(os.getenv('Sepolia')))
-    contract = rpc.eth.contract(address=addr, abi=abi)
-    return int(contract.functions.lockHeight().call())
+        contract = rpc.eth.contract(address=addr, abi=abi)
+        return int(contract.functions.lockHeight().call())
 
 def checkCoords(addr):  #TODO: check curve constants against expected as well as receiver pubkey against specified pubkey
     f = open("../AtomicMultisig_ABI_0.0.1.json")
@@ -526,11 +529,11 @@ if args_n > 1:
             print("enter the address, optional: gas and gasMod as followup arguments")
             exit()
     elif sys.argv[1] == "lockTime":
-        if args_n > 2:
-            checkRemainingLockTime(sys.argv[1])
+        if args_n == 3:
+            checkRemainingLockTime(sys.argv[2])
             exit()
-        if args_n > 3:
-            checkRemainingLockTime(sys.argv[1], sys.argv[2])
+        if args_n == 4:
+            checkRemainingLockTime(sys.argv[2], sys.argv[3])
             exit()
         else:
             print("enter address, optional: filepath as follup arguments")
