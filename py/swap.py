@@ -337,6 +337,26 @@ def getLocalLockTime(self): #for refunds #returns lock time in # of blocks
                 return int(lockHeight) - int(currentHeight) + 1 #plus 1 because currently contract checks for GREATER THAN lock height
             else:
                 return 0
+    if role == "responder":
+        f = open(self.currentswapname + "/response_commitment.atomicswap", "r")
+        responderChain = json.loads(f.read())["chain"]
+        f.close()
+        if responderChain == "Sepolia":
+            f = open(self.currentswapname + "/response_commitment.atomicswap", "r")
+            addr = json.loads(f.read())["contractAddr"]
+            f.close()
+#            print("todo checklocktime function made of check timelock and current lock time math in Atomicity script")
+            cmd = \
+                    "cd Atomicity/" + self.currentswapname + " && ./deploy.sh lockTime " + \
+                    addr + "../../" + self.currentswapname + "/remainingLockTime"
+            os.popen(cmd).read()
+            if os.path.isfile(self.currentswapname + "/remainingLockTime"):
+                f = open(self.currentswapname + "/remainingLockTime", "r")
+                lockTime = f.read()
+                f.close()
+                return lockTime
+            else:
+                print("failed to create or find remainingLockTime file")
         
 
 

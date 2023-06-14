@@ -207,7 +207,7 @@ def setSwapTab(self, first):
             self.swap_tab_view.add(self.currentswapname)
 
 def SwapResponderGUI(self):
-    from swap import copyResponse, deployAndFundScalarSwapContract, receiverCheck, receiverClaim #TODO rename receiver to responder?
+    from swap import copyResponse, deployAndFundScalarSwapContract, receiverCheck, getLocalLockTime, receiverClaim #TODO rename receiver to responder?
     def goCopyResponse():
         copyResponse(self)
     def goDeployAndFundScalarSwapContract():
@@ -216,6 +216,12 @@ def SwapResponderGUI(self):
         receiverCheck(self)
     def goReceiverClaim():
         receiverClaim(self)
+    def goCheckLockTime():
+        lockTime = getLocalLockTime(self)
+        if lockTime != None:
+            self.lockTimeLabel.configure(text="LockTime: " + lockTime)
+        else:
+            print("error checking locktime")
     self.swap_tab_view.valueLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
         text="Amount to spend in wei:")
     self.swap_tab_view.valueLabel.grid(row=0, column=0, padx=10, pady=10)
@@ -241,6 +247,14 @@ def SwapResponderGUI(self):
     self.deployAtomicSwapButton = customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
             text="Deploy & Fund", command=goDeployAndFundScalarSwapContract,  width=5, height=7)
     self.deployAtomicSwapButton.grid(row=2, column=1, padx=10, pady=10)
+    self.checkLockTimeButton = customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
+            text="LockTime",   width=5, height=7, command=goCheckLockTime)
+    self.checkLockTimeButton.grid(row=2, column=2, padx=10, pady=10)
+    self.lockTimeLabel =  customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+            text="LockTime: unititiated")
+    self.lockTimeLabel.grid(row=2, column=3, padx=10, pady=10)
+
+
     self.counterpartyChainPubkeyLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
             text="Counterparty ChainPubkey: " + self.counterpartyChainPubkey)
     self.counterpartyChainPubkeyLabel.grid(row=4, column=0, padx=10, pady=10)

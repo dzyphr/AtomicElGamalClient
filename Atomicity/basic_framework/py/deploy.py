@@ -33,6 +33,44 @@ if bool(os.getenv('VerifyBlockExplorer')) == True:
 else:
     verifyBlockExplorer = False
 
+
+def senderReclaim(addr, x, gas=None, gasMod=None):
+    if gas == None:
+        gas = 6000000
+    if gasMod == None:
+        gasMod = 1
+    if chain == "Goerli":
+        rpc = Web3(Web3.HTTPProvider(os.getenv('Goerli')))
+        chain_id = int(os.getenv('GoerliID')) #use int so it doesnt interpret env variable as string values
+        senderAddr = os.getenv('GoerliSenderAddr')
+        senderPrivKey = os.getenv('GoerliPrivKey')
+    elif chain == "Sepolia":
+        rpc = Web3(Web3.HTTPProvider(os.getenv('Sepolia')))
+        chain_id = int(os.getenv('SepoliaID'))
+        senderAddr = os.getenv('SepoliaSenderAddr')
+        senderPrivKey = os.getenv('SepoliaPrivKey')
+    f = open("../AtomicMultisig_ABI_0.0.1.json")
+    abi = f.read()
+    f.close()
+    if chain == "Goerli":
+        rpc = Web3(Web3.HTTPProvider(os.getenv('Goerli')))
+    elif chain == "Sepolia":
+        rpc = Web3(Web3.HTTPProvider(os.getenv('Sepolia')))
+    contract = rpc.eth.contract(address=addr, abi=abi)
+    tx = contract.functions.senderReclaim.buildTransaction(
+        {
+            'chainId': chain_id,
+            'from': senderAddr,
+            'gasPrice': rpc.eth.gas_price * gasMod,
+            'gas': gas,
+            'nonce': rpc.eth.get_transaction_count(senderAddr)
+        }
+    )
+    signed_tx = rpc.eth.account.sign_transaction(tx, private_key=senderPrivKey)
+    send_tx = rpc.eth.send_raw_transaction(signed_tx.rawTransaction)
+    tx_receipt = rpc.eth.wait_for_transaction_receipt(send_tx)
+    print(tx_receipt)
+
 def claim(addr, x, gas=None, gasMod=None):
     if gas == None:
         gas = 6000000
@@ -73,6 +111,40 @@ def claim(addr, x, gas=None, gasMod=None):
 
 #    processed_logs = contract.events.myEvent().process_receipt(tx_receipt)
 #    print(dir(tx_receipt))
+
+def checkRemainingLockTime(addr, filepath=None):
+    if checkLockHeight(addr) >= getHeight():
+        if filepath != None:
+            f = open(filepath, "w")
+            f.write(str(int(checkLockHeight(addr)) - int(getHeight())))
+            f.close()
+        sys.stdout.write(str(int(checkLockHeight(addr)) - int(getHeight())))
+        return int(checkLockHeight(addr)) - int(getHeight())
+    else:
+        if filepath != None:
+            f = open(filepath, "w")
+            f.write("0")
+            f.close()
+        sys.stdout.write("0")
+        return 0
+
+def getHeight():
+    if chain == "Goerli":
+        rpc = Web3(Web3.HTTPProvider(os.getenv('Goerli')))
+    elif chain == "Sepolia":
+        rpc = Web3(Web3.HTTPProvider(os.getenv('Sepolia')))
+    return int(rpc.eth.get_block_number())
+
+def checkLockHeight(addr):
+    f = open("../AtomicMultisig_ABI_0.0.1.json")
+    abi = f.read()
+    f.close()
+    if chain == "Goerli":
+        rpc = Web3(Web3.HTTPProvider(os.getenv('Goerli')))
+    elif chain == "Sepolia":
+        rpc = Web3(Web3.HTTPProvider(os.getenv('Sepolia')))
+    contract = rpc.eth.contract(address=addr, abi=abi)
+    return int(contract.functions.lockHeight().call())
 
 def checkCoords(addr):  #TODO: check curve constants against expected as well as receiver pubkey against specified pubkey
     f = open("../AtomicMultisig_ABI_0.0.1.json")
@@ -319,8 +391,8 @@ def getSOLCVersion():
 def verify(flat, contractAddr, APIsolcV, url, fresh):
     #verifying the code on a block explorer
     if verifyBlockExplorer == True: #https://docs.etherscan.io/tutorials/verifying-contracts-programmatically
-        if fresh == True:
-            time.sleep(60)#giv:ve the explorer some time to register the transaction
+#        if fresh == True:
+#            time.sleep(60)#giv:ve the explorer some time to register the transaction
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
         if constructorArgs == False:
             if os.getenv('MultiFile') == "True":
@@ -443,6 +515,26 @@ if args_n > 1:
         else :
             print("enter the address, x, optional: gas and gasMod as followup arguments")
             exit()
+    elif sys.argv[1] == "refund":
+        if args_n > 2 :
+            senderReclaim(sys.argv[2])
+            exit()
+        if args_n > 4 : 
+            senderReclaim(sys.argv[2], gas=sys.argv[3], gasMod=sys.argv[4])
+            exit()
+        else:
+            print("enter the address, optional: gas and gasMod as followup arguments")
+            exit()
+    elif sys.argv[1] == "lockTime":
+        if args_n > 2:
+            checkRemainingLockTime(sys.argv[1])
+            exit()
+        if args_n > 3:
+            checkRemainingLockTime(sys.argv[1], sys.argv[2])
+            exit()
+        else:
+            print("enter address, optional: filepath as follup arguments")
+
     elif sys.argv[1] == "verify":
         rpc, chain_id, senderAddr, senderPrivKey, url = pickChain()
         flat = checkMultiFile()
