@@ -12,20 +12,15 @@ class SwapTab(customtkinter.CTkTabview):
 def updateDataBasedOnOpenTab(self):
     if hasattr(self, "swap_tab_view"):
         self.currentswapname = self.swap_tab_view.get()
-    '''
-    if os.isdir(openTabSwapName) == True:
+    if os.path.isdir(self.currentswapname) == True:
         #roledata
-        f = open(openTabSwapName + "/roleData.json", "r")
+        f = open(self.currentswapname + "/roleData.json", "r")
         role = f.read()
         f.close()
         if role == "initiator":
             self.isInitiator == True
         elif role == "responder":
             self.isInitiator == False
-        #swapname
-        self.currentswapname = openTabSwapName
-        #chainpubkey
-    '''
 
 def saveRole(self):
     if self.isInitiator == True:
@@ -151,10 +146,6 @@ def deploySigmaParticleAtomicSchorr(self):
     response = subprocess.Popen(command, shell=True,
                          stdout=devnull, stderr=devnull,
                          close_fds=True)
-#   print(response)
-#   if "404" not in response:
-#        self.swap_tab_view.finalizeCheck.configure(state="normal")
-    #response should already be a json minus initial "Running ..." Statement
 
 
 def SigmaParticleAtomicSchnorr(self):
@@ -274,8 +265,6 @@ def receiverCheck(self): #responder operatio
                 j["boxId"] + " ../../" +\
                 self.currentswapname + "/InitiatorContractValue"
         devnull = open(os.devnull, 'wb') 
-        
-#       os.popen(boxValCheck)
         p = subprocess.Popen(boxValCheck, shell=True,
                          stdout=devnull, stderr=devnull,
                          close_fds=True)
@@ -356,7 +345,6 @@ def getLocalLockTime(self): #for refunds #returns lock time in # of blocks
             f = open(self.currentswapname + "/response_commitment.atomicswap", "r")
             addr = json.loads(f.read())["contractAddr"]
             f.close()
-#            print("todo checklocktime function made of check timelock and current lock time math in Atomicity script")
             cmd = \
                     "cd Atomicity/" + self.currentswapname + " && ./deploy.sh lockTime " + \
                     addr + " ../../" + self.currentswapname + "/remainingLockTime"
@@ -398,18 +386,11 @@ def draftFinalSignature(self): #create the final sig ss and pub value sG #initia
                 f.write(finalSigJson)
                 f.close()
                 SigmaParticleAtomicSchnorr(self)
-#               currentHeightCMD = \
-#                       "cd SigmaParticle/currentHeight && ./deploy.sh ../../" + self.currentswapname + "/localChain_currentHeight"
-#                os.popen(currentHeightCMD).read()
                 time.sleep(3)
                 f = open(self.currentswapname + "/finalize.atomicswap", "w")
                 f2 = open("SigmaParticle/" + self.currentswapname + "/boxId", "r") 
                 boxId = f2.read()
                 f2.close()
-#                lockHeightCMD = \
-#                        "cd SigmaParticle/boxConstantByIndex && ./deploy.sh " + boxId + \
-#                        " ../../" + self.currentswapname + "/localChain_lockHeight"
-#                os.popen(lockHeightCMD).read()
 
                 mod = finalSigJson
                 modified = mod.replace("\"\n}", "\",\n    \"boxId\": \"" + boxId + "\"\n}")
@@ -479,8 +460,9 @@ def decryptResponse(self): #initiator operation
         else:
             print("enter the commitment from responder!")
 
-def initiatorStart(self): #initiator operation
-    updateDataBasedOnOpenTab(self)
+def initiatorStart(self): #initiator operation #start operations should not have update  functions at the beginning
+                            #because they imply newly generated content
+                            #update functions imply already generated content
     self.currentswapname = determineSwapName()
     if self.chainPubkey == "":
         setCrossChainPubkeyManual(self)
