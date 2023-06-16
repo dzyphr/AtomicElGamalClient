@@ -208,7 +208,8 @@ def setSwapTab(self, first):
             self.swap_tab_view.add(self.currentswapname)
 
 def SwapResponderGUI(self):
-    from swap import copyResponse, deployAndFundScalarSwapContract, receiverCheck, getLocalLockTime, receiverClaim #TODO rename receiver to responder?
+    from swap import copyResponse, deployAndFundScalarSwapContract, receiverCheck, \
+            getLocalLockTime, AtomicityRefund, receiverClaim #TODO rename receiver to responder?
     def goCopyResponse():
         copyResponse(self)
     def goDeployAndFundScalarSwapContract():
@@ -225,6 +226,9 @@ def SwapResponderGUI(self):
                 self.swap_tab_view.refundButton.configure(state="normal")
         else:
             print("error checking locktime")
+    def goRefund():
+        AtomicityRefund(self)
+
     self.swap_tab_view.valueLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
         text="Amount to spend in wei")
     self.swap_tab_view.valueLabel.grid(row=0, column=1, padx=4, pady=4)
@@ -267,7 +271,7 @@ def SwapResponderGUI(self):
             text="LockTime: unititiated")
     self.swap_tab_view.lockTimeLabel.grid(row=4, column=2, padx=4, pady=4)
     self.swap_tab_view.refundButton = customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-            text="Refund",   width=4, height=7,  state="disabled")#, command=goRefund)
+            text="Refund",   width=4, height=7,  state="disabled", command=goRefund)
     self.swap_tab_view.refundButton.grid(row=4, column=3, padx=4, pady=4)
 
     #TODO: WARN USER about sending funds!!

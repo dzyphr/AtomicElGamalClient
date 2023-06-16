@@ -294,6 +294,16 @@ def receiverCheck(self): #responder operatio
         else:
             print("cant find box, tx not mined yet or invalid id")
 
+def AtomicityRefund(self):
+    updateDataBasedOnOpenTab(self)
+    f = open(self.currentswapname + "/response_commitment.atomicswap", "r")
+    addr = json.loads(f.read())["contractAddr"]
+    f.close()
+    
+    refundCMD = \
+            "cd Atomicity/" + self.currentswapname + " && ./deploy.sh refund " + addr
+    print(os.popen(refundCMD).read())
+
 def SigmaParticleRefund(self):
     updateDataBasedOnOpenTab(self)
     devnull = open(os.devnull, 'wb')
@@ -305,7 +315,7 @@ def SigmaParticleRefund(self):
     os.popen(echoBoxIdCMD).read()
 
     cmd =  "cd SigmaParticle/" + self.currentswapname + "&& ./deploy.sh refund"
-    os.popen(cmd).read()
+    print(os.popen(cmd).read())
 
 def getLocalLockTime(self): #for refunds #returns lock time in # of blocks
     updateDataBasedOnOpenTab(self)

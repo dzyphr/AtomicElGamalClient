@@ -1,3 +1,4 @@
+constructorParamVals = ["0xFe4cc19ea6472582028641B2633d3adBB7685C69",56303885248681872659839421575092859630585208504780561614532311581156932511396,113176523919299695134198408571624750528228342992271556605022879386160283788182,25]
 import pathlib
 from pathlib import Path
 import requests
@@ -34,7 +35,7 @@ else:
     verifyBlockExplorer = False
 
 
-def senderReclaim(addr, x, gas=None, gasMod=None):
+def senderReclaim(addr, gas=None, gasMod=None):
     if gas == None:
         gas = 6000000
     if gasMod == None:
@@ -57,7 +58,7 @@ def senderReclaim(addr, x, gas=None, gasMod=None):
     elif chain == "Sepolia":
         rpc = Web3(Web3.HTTPProvider(os.getenv('Sepolia')))
     contract = rpc.eth.contract(address=addr, abi=abi)
-    tx = contract.functions.senderReclaim.buildTransaction(
+    tx = contract.functions.senderReclaim().buildTransaction(
         {
             'chainId': chain_id,
             'from': senderAddr,
@@ -519,10 +520,10 @@ if args_n > 1:
             print("enter the address, x, optional: gas and gasMod as followup arguments")
             exit()
     elif sys.argv[1] == "refund":
-        if args_n > 2 :
+        if args_n == 3 :
             senderReclaim(sys.argv[2])
             exit()
-        if args_n > 4 : 
+        if args_n == 5  : 
             senderReclaim(sys.argv[2], gas=sys.argv[3], gasMod=sys.argv[4])
             exit()
         else:
