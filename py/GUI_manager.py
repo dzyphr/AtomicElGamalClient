@@ -86,6 +86,7 @@ def setSwapTab(self, first):
         else:
             print("cannot check locktime, contract not confirmed on chain yet?")
 
+
     def goRefund():
         updateDataBasedOnOpenTab(self)
         f = open(self.currentswapname + "/roleData.json", "r") #TODO: This is likely the most accurate way to pick a chain responsively
@@ -104,86 +105,86 @@ def setSwapTab(self, first):
     def InitiatorGui():
         self.swap_tab_view.copylabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
                 text="Click to copy generated Pedersen commitments: ")
-        self.swap_tab_view.copylabel.grid(row=0, column=0, padx=10, pady=10)
+        self.swap_tab_view.copylabel.grid(row=0, column=0, padx=4, pady=4)
         self.swap_tab_view.copyButton = \
                 customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
                 text="Copy", command=goCopyENCInit, width=5, height=7)
-        self.swap_tab_view.copyButton.grid(row=0, column=1, padx=10, pady=10)
+        self.swap_tab_view.copyButton.grid(row=0, column=1, padx=4, pady=4)
         self.swap_tab_view.responderPasteLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
                 text="Paste responders commitment: ")
-        self.swap_tab_view.responderPasteLabel.grid(row=2, column=0, padx=10, pady=10)
+        self.swap_tab_view.responderPasteLabel.grid(row=2, column=0, padx=4, pady=4)
         self.swap_tab_view.responderCommitment = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname),\
                 placeholder_text="Responder's Commitments", \
                 width= 300, height=5)
-        self.swap_tab_view.responderCommitment.grid(row=3, column=0, padx=10, pady=10)
+        self.swap_tab_view.responderCommitment.grid(row=3, column=0, padx=4, pady=4)
         self.swap_tab_view.decryptResponderCommitmentLabel =  \
                 customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
                 text="Check responders commitment: ")
-        self.swap_tab_view.decryptResponderCommitmentLabel.grid(row=4, column=0, padx=10, pady=10)
+        self.swap_tab_view.decryptResponderCommitmentLabel.grid(row=4, column=0, padx=4, pady=4)
         self.swap_tab_view.decryptResponderCommitmentButton = \
                 customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
                 text="Check", command=goInspectScalarLockContract, width=5, height=7, state="disabled")
-        self.swap_tab_view.decryptResponderCommitmentButton.grid(row=4, column=1, padx=10, pady=10)
+        self.swap_tab_view.decryptResponderCommitmentButton.grid(row=4, column=1, padx=4, pady=4)
         self.swap_tab_view.responderContractValueLabel = \
                 customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
                 text="Responder Commitment not collected yet")
-        self.swap_tab_view.responderContractValueLabel.grid(row=6, column=0, padx=10, pady=10)
+        self.swap_tab_view.responderContractValueLabel.grid(row=6, column=0, padx=4, pady=4)
 
         self.swap_tab_view.initiatorContractValueLabel = \
                 customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
                 text="Amount of nanoErg to fund contract with:")
-        self.swap_tab_view.initiatorContractValueLabel.grid(row=7, column=0, padx=10, pady=10)
+        self.swap_tab_view.initiatorContractValueLabel.grid(row=7, column=0, padx=4, pady=4)
+        self.swap_tab_view.refundDurationEntryLabel = \
+                customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+                text="Lock time:")
+        self.swap_tab_view.refundDurationEntryLabel.grid(row=7, column=1, padx=4, pady=4)
         self.swap_tab_view.initiatorContractValueEntry = \
                 customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname),\
                 placeholder_text="NanoErgs", \
                 width=70, height=5)
-        self.swap_tab_view.initiatorContractValueEntry.grid(row=8, column=0, padx=10, pady=10)
-        self.swap_tab_view.refundDurationEntryLabel = \
-                customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
-                text="Lock time:")
-        self.swap_tab_view.refundDurationEntryLabel.grid(row=7, column=1, padx=10, pady=10)
+        self.swap_tab_view.initiatorContractValueEntry.grid(row=8, column=0, padx=4, pady=4)
         self.swap_tab_view.refundDurationEntry = \
                 customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname),\
                 placeholder_text="25", \
                 width=30, height=5)
-        self.swap_tab_view.refundDurationEntry.grid(row=8, column=1, padx=10, pady=10)
+        self.swap_tab_view.refundDurationEntry.grid(row=8, column=1, padx=4, pady=4)
         self.swap_tab_view.finalizeSwapButton = \
                 customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
                 text="Deploy Contract & Copy Commitment", command=goDraftFinalSignature, width=5, height=5, state="disabled")
-        self.swap_tab_view.finalizeSwapButton.grid(row=9, column=0, padx=10, pady=10)
+        self.swap_tab_view.finalizeSwapButton.grid(row=9, column=0, padx=4, pady=4)
         self.swap_tab_view.finalizeCheck = \
                 customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
                 text="Check tree for finalization", command=goCheckTreeForFinalization, state="disabled")
-        self.swap_tab_view.finalizeCheck.grid(row=10, column=0, padx=10, pady=10)
+        self.swap_tab_view.finalizeCheck.grid(row=10, column=0, padx=4, pady=4)
         self.swap_tab_view.InitiatorCustomGasLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
                 text="custom gas :")
-        self.swap_tab_view.InitiatorCustomGasLabel.grid(row=9, column=2, padx=10, pady=10)
+        self.swap_tab_view.InitiatorCustomGasLabel.grid(row=9, column=2, padx=4, pady=4)
         self.swap_tab_view.InitiatorGasEntry = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname), \
         placeholder_text="6000000", width=70, height=5)
-        self.swap_tab_view.InitiatorGasEntry.grid(row=10, column=2, padx=10, pady=10)
+        self.swap_tab_view.InitiatorGasEntry.grid(row=10, column=2, padx=4, pady=4)
         self.swap_tab_view.InitiatorCustomGasModLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
                 text="gas mod :")
-        self.swap_tab_view.InitiatorCustomGasModLabel.grid(row=9, column=3, padx=10, pady=10)
+        self.swap_tab_view.InitiatorCustomGasModLabel.grid(row=9, column=3, padx=4, pady=4)
         self.swap_tab_view.InitiatorGasModEntry = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname), \
                 placeholder_text="1", width=10, height=5)
-        self.swap_tab_view.InitiatorGasModEntry.grid(row=10, column=3, padx=10, pady=10)
+        self.swap_tab_view.InitiatorGasModEntry.grid(row=10, column=3, padx=4, pady=4)
 
         self.swap_tab_view.claim = \
                 customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
                 text="Claim", command=goDeduce_sr, width=5, height=7, state="disabled")
-        self.swap_tab_view.claim.grid(row=10, column=1, padx=10, pady=10)
+        self.swap_tab_view.claim.grid(row=10, column=1, padx=4, pady=4)
         self.swap_tab_view.checkRefundLockTime = \
                 customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
                 text="LockTime", command=goCheckLockTime, width=10, height=7, state="disabled")
-        self.swap_tab_view.checkRefundLockTime.grid(row=11, column=0, padx=10, pady=10)
+        self.swap_tab_view.checkRefundLockTime.grid(row=11, column=0, padx=4, pady=4)
         self.swap_tab_view.RefundButton = \
                 customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
                 text="Refund",  width=10, height=7, state="disabled", command=goRefund)
-        self.swap_tab_view.RefundButton.grid(row=11, column=1, padx=10, pady=10)
+        self.swap_tab_view.RefundButton.grid(row=11, column=1, padx=4, pady=4)
         self.swap_tab_view.RefundLockTimeLabel = \
                 customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
                 text="Refund Lock Time Remaining: uninitiated")
-        self.swap_tab_view.RefundLockTimeLabel.grid(row=12, column=0, padx=10, pady=10)
+        self.swap_tab_view.RefundLockTimeLabel.grid(row=12, column=0, padx=4, pady=4)
 
 
     if self.isInitiator == True:
@@ -220,78 +221,85 @@ def SwapResponderGUI(self):
         lockTime = getLocalLockTime(self)
         if lockTime != None:
             self.swap_tab_view.lockTimeLabel.configure(text="LockTime: " + lockTime)
+            if int(lockTime) == 0:
+                self.swap_tab_view.refundButton.configure(state="normal")
         else:
             print("error checking locktime")
     self.swap_tab_view.valueLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
-        text="Amount to spend in wei:")
-    self.swap_tab_view.valueLabel.grid(row=0, column=0, padx=10, pady=10)
+        text="Amount to spend in wei")
+    self.swap_tab_view.valueLabel.grid(row=0, column=1, padx=4, pady=4)
+    self.swap_tab_view.GasEntryLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+        text="custom gas ")
+    self.swap_tab_view.GasEntryLabel.grid(row=0, column=2, padx=4, pady=4)
+    self.swap_tab_view.GasModEntryLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+        text="gas mod")
+    self.swap_tab_view.GasModEntryLabel.grid(row=0, column=3, padx=4, pady=4)
     self.swap_tab_view.valueToSpendEntry = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname), \
         placeholder_text="coin amount in wei")
-    self.swap_tab_view.valueToSpendEntry.grid(row=1, column=0, padx=10, pady=10)
-    self.swap_tab_view.GasEntryLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
-        text="custom gas :")
-    self.swap_tab_view.GasEntryLabel.grid(row=0, column=1, padx=10, pady=10)
+    self.swap_tab_view.valueToSpendEntry.grid(row=1, column=1, padx=4, pady=4)
     self.swap_tab_view.GasEntry = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname), \
         placeholder_text="6000000", width=70, height=5)
-    self.swap_tab_view.GasEntry.grid(row=1, column=1, padx=10, pady=10)
-    self.swap_tab_view.GasModEntryLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
-        text="gas mod:")
-    self.swap_tab_view.GasModEntryLabel.grid(row=0, column=2, padx=10, pady=10)
+    self.swap_tab_view.GasEntry.grid(row=1, column=2, padx=4, pady=4)
     self.swap_tab_view.GasModEntry = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname), \
         placeholder_text="1", width=5, height=5)
-    self.swap_tab_view.GasModEntry.grid(row=1, column=2, padx=10, pady=10)
+    self.swap_tab_view.GasModEntry.grid(row=1, column=3, padx=4, pady=4)
 
-    self.swap_tab_view.deployAtomicSwapContractLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
-            text="Click to deploy & fund the atomic swap contract: ")
-    self.swap_tab_view.deployAtomicSwapContractLabel.grid(row=2, column=0, padx=10, pady=10)
+#   self.swap_tab_view.deployAtomicSwapContractLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+#           text="Click to deploy & fund the atomic swap contract: ")
+#   self.swap_tab_view.deployAtomicSwapContractLabel.grid(row=2, column=0, padx=4, pady=4)
     self.swap_tab_view.CustomLockTimeLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
-            text="Custom LockTime:")
-    self.swap_tab_view.CustomLockTimeLabel.grid(row=3, column=0, padx=10, pady=10)
-    self.swap_tab_view.CustomLockTimeEntry = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname), \
-        placeholder_text="25", width=20, height=5)
-    self.swap_tab_view.CustomLockTimeEntry.grid(row=3, column=1, padx=10, pady=10)
-
+            text="Custom LockTime")
+    self.swap_tab_view.CustomLockTimeLabel.grid(row=2, column=2, padx=4, pady=4)
+    self.swap_tab_view.CheckCurrentLockTimeLabel = \
+            customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+            text="Check Locktime ")
+    self.swap_tab_view.CheckCurrentLockTimeLabel.grid(row=2, column=3, padx=4, pady=4)
     self.swap_tab_view.deployAtomicSwapButton = customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
             text="Deploy & Fund", command=goDeployAndFundScalarSwapContract,  width=5, height=7)
-    self.swap_tab_view.deployAtomicSwapButton.grid(row=2, column=1, padx=10, pady=10)
+    self.swap_tab_view.deployAtomicSwapButton.grid(row=3, column=1, padx=4, pady=4)
+    self.swap_tab_view.CustomLockTimeEntry = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname), \
+        placeholder_text="25", width=20, height=5)
+    self.swap_tab_view.CustomLockTimeEntry.grid(row=3, column=2, padx=4, pady=4)
     self.swap_tab_view.checkLockTimeButton = customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
             text="LockTime",   width=5, height=7, command=goCheckLockTime, state="disabled")
-    self.swap_tab_view.checkLockTimeButton.grid(row=2, column=2, padx=10, pady=10)
+    self.swap_tab_view.checkLockTimeButton.grid(row=3, column=3, padx=4, pady=4)
     self.swap_tab_view.lockTimeLabel =  customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
             text="LockTime: unititiated")
-    self.swap_tab_view.lockTimeLabel.grid(row=2, column=3, padx=10, pady=10)
-
-
-    self.swap_tab_view.counterpartyChainPubkeyLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
-            text="Counterparty ChainPubkey: " + self.counterpartyChainPubkey)
-    self.swap_tab_view.counterpartyChainPubkeyLabel.grid(row=4, column=0, padx=10, pady=10)
+    self.swap_tab_view.lockTimeLabel.grid(row=4, column=2, padx=4, pady=4)
+    self.swap_tab_view.refundButton = customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
+            text="Refund",   width=4, height=7,  state="disabled")#, command=goRefund)
+    self.swap_tab_view.refundButton.grid(row=4, column=3, padx=4, pady=4)
 
     #TODO: WARN USER about sending funds!!
     #TODO: make value entry based on chain aka wei or sats
-    self.swap_tab_view.labelresponse = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
-        text="Click to copy generated response commitments: ")
-    self.swap_tab_view.labelresponse.grid(row=5, column=0, padx=10, pady=10)
+#    self.swap_tab_view.labelresponse = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+#        text="Click to copy response : ")
+#    self.swap_tab_view.labelresponse.grid(row=5, column=0, padx=4, pady=4)
     self.swap_tab_view.copyResponseButton = \
             customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-            text="Copy", command=goCopyResponse,  width=5, height=7, state="disabled")
-    self.swap_tab_view.copyResponseButton.grid(row=5, column=1, padx=10, pady=10)
+            text="Copy Response", command=goCopyResponse,  width=5, height=7, state="disabled")
+    self.swap_tab_view.copyResponseButton.grid(row=5, column=1, padx=4, pady=4)
     self.swap_tab_view.labelFinalize = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
         text="Paste Finalization Commitment: ")
-    self.swap_tab_view.labelFinalize.grid(row=7, column=0, padx=10, pady=10)
+    self.swap_tab_view.labelFinalize.grid(row=7, column=1, padx=4, pady=4)
     self.swap_tab_view.finalizeEntry = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname), \
         placeholder_text="Finalization", width=300, height=5)
-    self.swap_tab_view.finalizeEntry.grid(row=8, column=0, padx=10, pady=10)
+    self.swap_tab_view.finalizeEntry.grid(row=8, column=1, padx=4, pady=4)
     self.swap_tab_view.checkButton = \
             customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
             text="Check", command=goReceiverCheck,  width=5, height=7, state="disabled") 
-    self.swap_tab_view.checkButton.grid(row=8, column=1, padx=10, pady=10)
+    self.swap_tab_view.checkButton.grid(row=8, column=2, padx=4, pady=4)
     self.swap_tab_view.labelContractAmount = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
         text="Contract amount: not checked yet")
-    self.swap_tab_view.labelContractAmount.grid(row=10, column=0, padx=10, pady=10)
+    self.swap_tab_view.labelContractAmount.grid(row=10, column=1, padx=4, pady=4)
     self.swap_tab_view.claimButton = \
             customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
             text="Claim", command=goReceiverClaim,  width=5, height=7, state="disabled")
-    self.swap_tab_view.claimButton.grid(row=10, column=1, padx=10, pady=10)
+    self.swap_tab_view.claimButton.grid(row=10, column=2, padx=4, pady=4)
+    self.swap_tab_view.counterpartyChainPubkeyLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
+            text="Counterparty: " + self.counterpartyChainPubkey)
+    self.swap_tab_view.counterpartyChainPubkeyLabel.grid(row=11, column=1, padx=4, pady=4)
+
 
 
 #######CHAIN#########

@@ -13,7 +13,7 @@ class GUI(customtkinter.CTk):
         customtkinter.set_default_color_theme("dark-blue")
 
         root = customtkinter.CTk()
-        root.geometry("1000x1400")
+        root.geometry("900x1000")
 
         self.frame = customtkinter.CTkFrame(master=root)
         self.frame.pack(pady=20, padx=30, fill="both", expand=True)
