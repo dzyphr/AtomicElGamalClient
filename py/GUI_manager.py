@@ -285,7 +285,7 @@ def SwapResponderGUI(self):
             text="Deploy & Fund", command=goDeployAndFundScalarSwapContract,  width=5, height=7)
     self.swap_tab_view.deployAtomicSwapButton.grid(row=3, column=1, padx=4, pady=4)
     self.swap_tab_view.CustomLockTimeEntry = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname), \
-        placeholder_text="25", width=20, height=5)
+        placeholder_text="200", width=50, height=5)
     self.swap_tab_view.CustomLockTimeEntry.grid(row=3, column=2, padx=4, pady=4)
     self.swap_tab_view.checkLockTimeButton = customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
             text="LockTime",   width=5, height=7, command=goCheckLockTime, state="disabled")

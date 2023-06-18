@@ -662,7 +662,7 @@ def commitResponse(self): #responder operation
     self.encryption = os.popen(runElGamal).read()
 
 def AtomicityScalarContractOperation(self): #responder operation 
-    DURATION = "25"
+    DURATION = "200"
     if self.swap_tab_view.CustomLockTimeEntry.get() != "":
         DURATION = self.swap_tab_view.CustomLockTimeEntry.get()
     cmd = "cd Atomicity && ./new_frame " + self.currentswapname  + \
