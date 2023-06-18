@@ -1,6 +1,7 @@
 from datetime import datetime
 import ast
 import subprocess
+
 from GUI_manager import *
 from chain import setLocalChainPubkeyManual, setCrossChainPubkeyManual, setCrossChainPubkeyDerived
 import tkinter, customtkinter, os, json, time, subprocess, sys, io, pyperclip
@@ -322,21 +323,32 @@ def getLocalLockTime(self): #for refunds #returns lock time in # of blocks
             lockHeightCMD = \
                             "cd SigmaParticle/boxConstantByIndex && ./deploy.sh " + boxId + \
                             " 7 ../../" + self.currentswapname + "/localChain_lockHeight"
-            os.popen(lockHeightCMD).read()
+            devnull = open(os.devnull, 'wb')
+            response = subprocess.Popen(lockHeightCMD, shell=True,
+                                 stdout=devnull, stderr=devnull,
+                                 close_fds=True)
+
+
             currentHeightCMD = \
                             "cd SigmaParticle/currentHeight && ./deploy.sh ../../" + \
                             self.currentswapname + "/localChain_currentHeight"
-            os.popen(currentHeightCMD).read()
-            f = open(self.currentswapname + "/localChain_lockHeight")
-            lockHeight = f.read()
-            f.close()
-            f = open(self.currentswapname + "/localChain_currentHeight")
-            currentHeight = f.read()
-            f.close()
-            if int(currentHeight) <= int(lockHeight):
-                return int(lockHeight) - int(currentHeight) + 1 #plus 1 because currently contract checks for GREATER THAN lock height
+
+            response = subprocess.Popen(currentHeightCMD, shell=True,
+                                 stdout=devnull, stderr=devnull,
+                                 close_fds=True)
+            if os.path.isfile(self.currentswapname + "/localChain_lockHeight") == True:
+                f = open(self.currentswapname + "/localChain_lockHeight")
+                lockHeight = f.read()
+                f.close()
+                f = open(self.currentswapname + "/localChain_currentHeight")
+                currentHeight = f.read()
+                f.close()
+                if int(currentHeight) <= int(lockHeight):
+                    return int(lockHeight) - int(currentHeight) + 1 #plus 1 because currently contract checks for GREATER THAN lock height
+                else:
+                    return 0
             else:
-                return 0
+                print("cant find path:", self.currentswapname + "/localChain_lockHeight", "\n\n box not uploaded yet or invalid ")
     if role == "responder":
         f = open(self.currentswapname + "/response_commitment.atomicswap", "r")
         responderChain = json.loads(f.read())["chain"]
@@ -349,7 +361,10 @@ def getLocalLockTime(self): #for refunds #returns lock time in # of blocks
                     "cd Atomicity/" + self.currentswapname + " && ./deploy.sh lockTime " + \
                     addr + " ../../" + self.currentswapname + "/remainingLockTime"
             print(cmd)
-            os.popen(cmd).read()
+            devnull = open(os.devnull, 'wb')
+            response = subprocess.Popen(cmd, shell=True,
+                                 stdout=devnull, stderr=devnull,
+                                 close_fds=True)
             if os.path.isfile(self.currentswapname + "/remainingLockTime"):
                 f = open(self.currentswapname + "/remainingLockTime", "r")
                 lockTime = f.read()
