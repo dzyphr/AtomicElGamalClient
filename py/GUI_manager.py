@@ -1,4 +1,5 @@
 import customtkinter
+import threading
 import json
 #######MAIN#########
 def unpackMainGUI(self):
@@ -65,16 +66,26 @@ def GUI_Arrange_Swap_Based(self): #here we are updating the GUI according to the
 def setSwapTab(self, first):
     from swap import SwapTab, copyENCInit, inspectScalarLockContract, draftFinalSignature,\
             checkTreeForFinalization, deduce_sr, getLocalLockTime, SigmaParticleRefund, updateDataBasedOnOpenTab
+
     def goCopyENCInit():
         copyENCInit(self)
+
     def goInspectScalarLockContract():
-        inspectScalarLockContract(self)
+        t = threading.Thread(target=inspectScalarLockContract, args=(self,))
+        t.start()
+
     def goDraftFinalSignature():
-        draftFinalSignature(self)
+        t = threading.Thread(target=draftFinalSignature, args=(self,))
+        t.start()
+
     def goCheckTreeForFinalization():
-        checkTreeForFinalization(self)
+        t = threading.Thread(target=checkTreeForFinalization, args=(self,))
+        t.start()
+
     def goDeduce_sr():
-        deduce_sr(self)
+        t = threading.Thread(target=deduce_sr, args=(self,))
+        t.start()
+
     def goCheckLockTime():
         lockTime = getLocalLockTime(self)
         if lockTime != None: 
@@ -96,8 +107,9 @@ def setSwapTab(self, first):
             f = open(self.currentswapname + "/initiation.atomicswap", "r")
             initiatorChain = json.loads(f.read())["localChain"]
             f.close()
-            if initiatorChain == "Ergo": 
-                SigmaParticleRefund(self)
+            if initiatorChain == "Ergo":
+                t = threading.Thread(target=SigmaParticleRefund, args=(self,))
+                t.start()
 
 
 #    def goDecryptResponse():`
@@ -210,14 +222,23 @@ def setSwapTab(self, first):
 def SwapResponderGUI(self):
     from swap import copyResponse, deployAndFundScalarSwapContract, receiverCheck, \
             getLocalLockTime, AtomicityRefund, receiverClaim #TODO rename receiver to responder?
+
     def goCopyResponse():
-        copyResponse(self)
+        t = threading.Thread(target=copyResponse, args=(self,))
+        t.start()
+
     def goDeployAndFundScalarSwapContract():
-        deployAndFundScalarSwapContract(self)
+        t = threading.Thread(target=deployAndFundScalarSwapContract, args=(self,))
+        t.start()
+
     def goReceiverCheck():
-        receiverCheck(self)
+        t = threading.Thread(target=receiverCheck, args=(self,))
+        t.start()
+
     def goReceiverClaim():
-        receiverClaim(self)
+        t = threading.Thread(target=receiverClaim, args=(self,))
+        t.start()
+
     def goCheckLockTime():
         lockTime = getLocalLockTime(self)
         if lockTime != None:
@@ -226,8 +247,10 @@ def SwapResponderGUI(self):
                 self.swap_tab_view.refundButton.configure(state="normal")
         else:
             print("error checking locktime")
+
     def goRefund():
-        AtomicityRefund(self)
+        t = threading.Thread(target=AtomicityRefund, args=(self,))
+        t.start()
 
     self.swap_tab_view.valueLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
         text="Amount to spend in wei")
