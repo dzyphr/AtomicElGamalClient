@@ -1,4 +1,3 @@
-constructorParamVals = ["0xFe4cc19ea6472582028641B2633d3adBB7685C69",56303885248681872659839421575092859630585208504780561614532311581156932511396,113176523919299695134198408571624750528228342992271556605022879386160283788182,25]
 import pathlib
 from pathlib import Path
 import requests
@@ -395,8 +394,8 @@ def getSOLCVersion():
 def verify(flat, contractAddr, APIsolcV, url, fresh):
     #verifying the code on a block explorer
     if verifyBlockExplorer == True: #https://docs.etherscan.io/tutorials/verifying-contracts-programmatically
-#        if fresh == True:
-#            time.sleep(60)#giv:ve the explorer some time to register the transaction
+        if fresh == True:
+            time.sleep(60)#giv:ve the explorer some time to register the transaction
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
         if constructorArgs == False:
             if os.getenv('MultiFile') == "True":

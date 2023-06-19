@@ -1,79 +1,15 @@
 from datetime import datetime
 import ast
 import subprocess
-
-from GUI_manager import *
+import sys
+sys.path.append('py/swap')
+from initiator import *
 from chain import setLocalChainPubkeyManual, setCrossChainPubkeyManual, setCrossChainPubkeyDerived
-import tkinter, customtkinter, os, json, time, subprocess, sys, io, pyperclip
+import tkinter, customtkinter, os, json, time, subprocess, io, pyperclip
 
 class SwapTab(customtkinter.CTkTabview):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-
-def updateDataBasedOnOpenTab(self):
-    if hasattr(self, "swap_tab_view"):
-        self.currentswapname = self.swap_tab_view.get()
-    if os.path.isdir(self.currentswapname) == True:
-        #roledata
-        f = open(self.currentswapname + "/roleData.json", "r")
-        role = f.read()
-        f.close()
-        if role == "initiator":
-            self.isInitiator == True
-        elif role == "responder":
-            self.isInitiator == False
-
-def saveRole(self):
-    if self.isInitiator == True:
-        f = open(self.currentswapname + "/roleData.json", "w")
-        f.write("{\n" + 
-                "    \"role\": \"initiator\"\n" +
-                "}")
-        f.close()
-    else:
-        f = open(self.currentswapname + "/roleData.json", "w")
-        f.write("{\n" +
-                "    \"role\": \"responder\"\n" +
-                "}")
-        f.close()
-
-def setInitiator(self): #here we are setting the initiator based on the PREVIOUS state of the isInitiator boolean
-    if self.isInitiator == True:
-        self.isInitiator = False
-        print("isInitiator = ", self.isInitiator)
-        GUI_Arrange_Swap_Based(self)
-        GUI_ReArrange_Chain_Based(self)
-    else:
-        self.isInitiator = True
-        print("isInitiator = ", self.isInitiator)
-        GUI_Arrange_Swap_Based(self)
-        GUI_ReArrange_Chain_Based(self)
-
-def determineSwapName():
-    swap = "swap"
-    index = 1
-    strindex = str(index)
-    swapname = swap + strindex
-    if os.path.isdir(swapname) == False:
-        print(swapname + " dir not found")
-        os.mkdir(swapname)
-    else:
-        while True:
-            index = index + 1
-            strindex = str(index)
-            swapname = swap + strindex
-            if os.path.isdir(swapname) == False:
-                os.mkdir(swapname)
-                print("making dir " + swapname )
-                break
-    return swapname
-
-def copyENCInit(self):
-    updateDataBasedOnOpenTab(self)
-    pyperclip.copy(open(self.swap_tab_view.get() + "/ENC_initiation.atomicswap", "r").read())
-    self.swap_tab_view.decryptResponderCommitmentButton.configure(state="normal")
-
-    #make sure active tab functions get swap name from current open tab
 
 def deduce_sr(self):
     updateDataBasedOnOpenTab(self)
@@ -474,58 +410,6 @@ def decryptResponse(self): #initiator operation
             print(decrypt)
         else:
             print("enter the commitment from responder!")
-
-def initiatorStart(self): #initiator operation #start operations should not have update  functions at the beginning
-                            #because they imply newly generated content
-                            #update functions imply already generated content
-    self.currentswapname = determineSwapName()
-    if self.chainPubkey == "":
-        setCrossChainPubkeyManual(self)
-    init = "python3 -u SigmaParticle/AtomicMultiSigECC/py/deploy.py  p1Initiate " + self.chainPubkey + " " + self.initiatorChain
-    initiation = os.popen(init).read() #run wit -u for unbuffered stream
-    j = json.loads(initiation)
-    ks = j["ks"]
-    rs = j["rs"]
-    strippedInitiation = initiation.replace("\"ks\": " + str(ks) + ",", "")
-    strippedInitiation1 = strippedInitiation.replace("\"rs\": " + str(rs) , "")
-    #extra redundant cases: (if json order changes)
-    strippedInitiation2 = strippedInitiation1.replace("\"rs\": " + str(rs) + ",", "") 
-    strippedInitiation3 = strippedInitiation2.replace("\"ks\": " + str(ks), "")
-    #redundant cases implemented in case of json protocol change prevents secret leakage
-    ksG = j["ksG"]
-    #get rid of last comma and newlines
-    strippedInitiation4 = strippedInitiation3.replace("\"ksG\": \"" + str(ksG) + "\",", "\"ksG\": \"" + str(ksG) + "\"")
-    strippedInitiation5 = strippedInitiation4.replace("}", "")
-    strippedInitiation5.rstrip()
-    strippedInitiation6 = strippedInitiation5.replace("\"ksG\": \"" + str(ksG) + "\"", "\"ksG\": \"" + str(ksG) + "\"\n}")
-#    print(strippedInitiation6)
-    #STRIP ks AND rs !!!!
-    #save non stripped version to PRIVATE labeled file
-    #proceed normally with stripped version
-    #obviously strip BEFORE encryption
-    runElGamal = "./ElGamal encryptToPubKey " + \
-            self.currentReceiver + ' ' + \
-            self.ElGamalKeyFileName + ' ' + \
-            "\'" + strippedInitiation6 + "\' " + \
-            self.currentswapname + "/ENC_initiation.atomicswap "
-    encryption = os.popen(runElGamal).read()
-    f = open(self.currentswapname + "/PRIV_initiation.atomicswap", "w")
-    f.write(initiation)
-    f.close()
-    f = open(self.currentswapname + "/initiation.atomicswap", "w")
-    f.write(strippedInitiation6)
-    f.close()
-    f = open(self.currentswapname + "/Receiver.ElGamalPub", "w")
-    f.write(self.currentReceiver)
-    f.close()
-    f = open(self.currentswapname + "/SenderKey.ElGamalPub", "w")
-    #maybe we can just backup the whole private keyfile in this instance
-    f.write(self.ElGamalPublicKey)
-    f.close()
-    if self.swapTabSet == False:
-        setSwapTab(self, True)
-    else:
-        setSwapTab(self, False)
 
 def copyResponse(self): #esponder operation
     updateDataBasedOnOpenTab(self)
