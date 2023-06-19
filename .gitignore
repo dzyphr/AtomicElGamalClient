@@ -11,6 +11,7 @@ ElGamal
 lib64
 *.env
 /swap*
+
 Key*
 pyvenv.cfg
 ergpy/*
@@ -19,6 +20,7 @@ SwapKeyManager/py/__pycache__/*
 *.swp
 *.atom
 swap*/
+!py/swap/
 solidity-flattener/*
 Atomicity/solidity-flattener/*
 Atomicity/AtomicMultiSigSecp256k1/.idea/*
