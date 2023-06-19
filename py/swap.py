@@ -243,6 +243,7 @@ def SigmaParticleRefund(self):
     cmd =  "cd SigmaParticle/" + self.currentswapname + "&& ./deploy.sh refund"
     print(os.popen(cmd).read())
 
+'''
 def getLocalLockTime(self): #for refunds #returns lock time in # of blocks
     updateDataBasedOnOpenTab(self)
     f = open(self.currentswapname + "/roleData.json", "r") #TODO: This is likely the most accurate way to pick a chain responsively
@@ -308,7 +309,7 @@ def getLocalLockTime(self): #for refunds #returns lock time in # of blocks
                 return lockTime
             else:
                 print("failed to create or find remainingLockTime file")
-        
+'''        
 
 
 def draftFinalSignature(self): #create the final sig ss and pub value sG #initiator operation
