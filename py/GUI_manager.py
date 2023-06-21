@@ -1,6 +1,4 @@
-import customtkinter
-import threading
-import json
+import json, os, threading, customtkinter
 #######MAIN#########
 def unpackMainGUI(self):
     self.initiatorChainLabel.pack_forget()
@@ -221,7 +219,7 @@ def setSwapTab(self, first):
 
 def SwapResponderGUI(self):
     from swap import copyResponse, deployAndFundScalarSwapContract, receiverCheck, \
-            getLocalLockTime, AtomicityRefund, receiverClaim #TODO rename receiver to responder?
+            getLocalLockTime, AtomicityRefund, updateDataBasedOnOpenTab, receiverClaim #TODO rename receiver to responder?
 
     def goCopyResponse():
         t = threading.Thread(target=copyResponse, args=(self,))
@@ -251,6 +249,37 @@ def SwapResponderGUI(self):
     def goRefund():
         t = threading.Thread(target=AtomicityRefund, args=(self,))
         t.start()
+
+    def goAutoClaim():
+        updateDataBasedOnOpenTab(self)
+        if os.path.isfile(self.currentswapname + "/AutoClaim") == False:
+            f = open(self.currentswapname + "/AutoClaim", "w")
+            f.write("true")
+            f.close()
+            self.swap_tab_view.claimButton.configure(state="disabled")
+        if os.path.isfile(self.currentswapname + "/AutoClaim") == True:
+            f = open(self.currentswapname + "/AutoClaim", "r")
+            b = f.read()
+            f.close()
+            if b == "true":
+                f = open(self.currentswapname + "/AutoClaim", "w")
+                f.write("false")
+                f.truncate()
+                f.close()
+                if os.path.isfile(self.currentswapname + "/DEC_Finalization.atomicswap"):
+                    if os.path.isfile(self.currentswapname + "InitiatorContractValue"):
+                        f = open(self.currentswapname + "InitiatorContractValue", "r")
+                        val = f.read()
+                        f.close()
+                        if val > 1:
+                            self.swap_tab_view.claimButton.configure(state="normal")
+
+            if b == "false":
+                f = open(self.currentswapname + "/AutoClaim", "w")
+                f.write("true")
+                f.truncate()
+                f.close()
+                self.swap_tab_view.claimButton.configure(state="disabled")
 
     self.swap_tab_view.valueLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
         text="Amount to spend in wei")
@@ -333,8 +362,8 @@ def SwapResponderGUI(self):
     self.swap_tab_view.minimumValueAutoClaim.grid(row=12, column=1, padx=4, pady=4)
     self.swap_tab_view.autoClaimCheckbox = \
             customtkinter.CTkCheckBox(master=self.swap_tab_view.tab(self.currentswapname) \
-            , text="AutoClaim")#, \
-#                command=)
+            , text="AutoClaim", \
+                command=goAutoClaim)
     self.swap_tab_view.autoClaimCheckbox.grid(row=12, column=2, padx=4, pady=4)
 
 
