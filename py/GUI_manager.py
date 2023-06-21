@@ -319,6 +319,7 @@ def SwapResponderGUI(self):
     self.swap_tab_view.labelContractAmount = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
         text="Contract amount: not checked yet")
     self.swap_tab_view.labelContractAmount.grid(row=10, column=1, padx=4, pady=4)
+
     self.swap_tab_view.claimButton = \
             customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
             text="Claim", command=goReceiverClaim,  width=5, height=7, state="disabled")
@@ -326,6 +327,16 @@ def SwapResponderGUI(self):
     self.swap_tab_view.counterpartyChainPubkeyLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
             text="Counterparty: " + self.counterpartyChainPubkey)
     self.swap_tab_view.counterpartyChainPubkeyLabel.grid(row=11, column=1, padx=4, pady=4)
+    self.swap_tab_view.minimumValueAutoClaim = \
+            customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname), \
+        placeholder_text="minimum value in nanoErg (for autoclaim)", width=300, height=5) #TODO automate denomination label
+    self.swap_tab_view.minimumValueAutoClaim.grid(row=12, column=1, padx=4, pady=4)
+    self.swap_tab_view.autoClaimCheckbox = \
+            customtkinter.CTkCheckBox(master=self.swap_tab_view.tab(self.currentswapname) \
+            , text="AutoClaim")#, \
+#                command=)
+    self.swap_tab_view.autoClaimCheckbox.grid(row=12, column=2, padx=4, pady=4)
+
 
 
 
