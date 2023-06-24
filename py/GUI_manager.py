@@ -219,7 +219,7 @@ def setSwapTab(self, first):
 
 def SwapResponderGUI(self):
     from swap import copyResponse, deployAndFundScalarSwapContract, receiverCheck, \
-            getLocalLockTime, AtomicityRefund, updateDataBasedOnOpenTab, AutoClaim, receiverClaim #TODO rename receiver to responder?
+            getLocalLockTime, AtomicityRefund, updateDataBasedOnOpenTab, AutoClaim, responderClaim #TODO rename receiver to responder?
 
     def goCopyResponse():
         t = threading.Thread(target=copyResponse, args=(self,))
@@ -234,7 +234,7 @@ def SwapResponderGUI(self):
         t.start()
 
     def goReceiverClaim():
-        t = threading.Thread(target=receiverClaim, args=(self,))
+        t = threading.Thread(target=responderClaim, args=(self,))
         t.start()
 
     def goCheckLockTime():
@@ -264,7 +264,7 @@ def SwapResponderGUI(self):
                 if os.path.isfile(relevantTab + "/DEC_Finalization.atomicswap"):
                     if os.path.isfile(relevantTab + "/InitiatorContractValue"):
                         print("autoclaiming")
-                        returnVal = AutoClaim(self)
+                        returnVal = AutoClaim(self, relevantTab)
                         if "error"  in returnVal:
                                 continue
                         else:
@@ -315,7 +315,7 @@ def SwapResponderGUI(self):
                             val = f.read()
                             f.close()
                             print("autoclaiming")
-                            returnVal = AutoClaim(self)
+                            returnVal = AutoClaim(self, relevantTab)
                             if "error"  in returnVal:
                                 continue
                             else:
@@ -336,8 +336,7 @@ def SwapResponderGUI(self):
                             val = f.read()
                             f.close()
                             print("autoclaiming")
-                            AutoClaim(self)
-                            returnVal = AutoClaim(self)
+                            returnVal = AutoClaim(self, relevantTab)
                             if "error"  in returnVal:
                                 continue
                             else:

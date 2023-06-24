@@ -15,44 +15,50 @@ class SwapTab(customtkinter.CTkTabview):
 def nanoErgToErgo(nanoErgs): #only for round amounts
     return int(int(nanoErgs) / 1000000000)
 
-def AutoClaim(self):
+def AutoClaim(self, relevantTab):
     while True:
-        if os.path.isfile(self.currentswapname + "/AutoClaim"):
-            f = open(self.currentswapname + "/AutoClaim")
+        if os.path.isfile(relevantTab + "/AutoClaim"):
+            f = open(relevantTab + "/AutoClaim")
             b = f.read()
             f.close()
             if  b == "false":
                 print("autoclaim set to false: stopping")
                 break
             else:
-                if os.path.isfile(self.currentswapname + "/roleData.json") == True:
-                    f = open(self.currentswapname + "/roleData.json")
+                if os.path.isfile(relevantTab + "/roleData.json") == True:
+                    f = open(relevantTab + "/roleData.json")
                     role = json.loads(f.read())["role"]
                     f.close()
                     if role == "responder":
-                        if os.path.isfile(self.currentswapname + "/InitiatorContractValue"):
-                            f = open(self.currentswapname + "/InitiatorContractValue", "r")
-                            val = f.read()
+                        if os.path.isfile(relevantTab + "/DEC_initiation.atomicswap") == True:
+                            f = open(relevantTab + "/DEC_initiation.atomicswap", "r")
+                            initiation = f.read()
                             f.close()
-                            minimum = self.swap_tab_view.minimumValueAutoClaim.get()
-                            if minimum == "":
-                                print("enter minimum val!")
-                                f = open(self.currentswapname + "/AutoClaim", "w")
-                                f.write("false")
-                                f.truncate()
-                                f.close()
-                                self.swap_tab_view.autoClaimCheckbox.toggle()
-                                break
-                            else:
-                                if int(minimum) < int(val):
-                                    return receiverClaim(self)
-                                    break
-                                else:
-                                    print("under minimum value")
+                            j = json.loads(initiation)
+                            if j["localChain"] == "Ergo": #user is responding to initiator, who's `localChain` is Ergo
+                                if os.path.isfile(relevantTab + "/InitiatorContractValue"):
+                                    f = open(relevantTab + "/InitiatorContractValue", "r")
+                                    val = f.read()
+                                    f.close()
+                                    minimum = self.swap_tab_view.minimumValueAutoClaim.get()
+                                    if minimum == "":
+                                        print("enter minimum val!")
+                                        f = open(relevantTab + "/AutoClaim", "w")
+                                        f.write("false")
+                                        f.truncate()
+                                        f.close()
+                                        self.swap_tab_view.autoClaimCheckbox.toggle()
+                                        break
+                                    else:
+                                        if int(minimum) < int(val):
+                                            return responderClaim(self)
+                                            break
+                                        else:
+                                            print("under minimum value")
                 else:
                     time.sleep(5)
         else:
-            print("cant find path: " +  self.currentswapname + "/AutoClaim")
+            print("cant find path: " +  relevantTab + "/AutoClaim")
         i = i + 1
 
 

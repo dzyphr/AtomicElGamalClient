@@ -5,7 +5,7 @@ from GUI_manager import *
 from chain import setLocalChainPubkeyManual, setCrossChainPubkeyManual, setCrossChainPubkeyDerived
 import tkinter, customtkinter, os, json, time, subprocess, sys, io, pyperclip
 
-def receiverClaim(self):
+def responderClaim(self):
     updateDataBasedOnOpenTab(self)
     if os.path.isfile(self.currentswapname + "/ENC_Finalization.atomicswap") == False:
         print("finalization not found! paste in finalization and check contract value first!")
