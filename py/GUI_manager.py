@@ -1,4 +1,5 @@
-import json, os, threading, customtkinter, time
+import json, os, threading, customtkinter, time, file_tools
+from file_tools import clean_file_open
 #######MAIN#########
 def unpackMainGUI(self):
     self.initiatorChainLabel.pack_forget()
@@ -266,18 +267,24 @@ def SwapResponderGUI(self):
         while True:
             if os.path.isfile(relevantTab + "/AutoClaim") == False:
                 print("no autoclaim file found yet creating one")
-                f = open(relevantTab + "/AutoClaim", "w")
-                f.write("true")
-                f.close()
+                clean_file_open(relevantTab + "/AutoClaim", "w", "true", "AutoClaim file not writable")
+#                f = open(relevantTab + "/AutoClaim", "w")
+#                f.write("true")
+#                f.close()
                 self.swap_tab_view.claimButton.configure(state="disabled")
                 if os.path.isfile(relevantTab + "/DEC_Finalization.atomicswap"):
-                    if os.path.isfile(relevantTab + "/InitiatorContractValue"):
-                        print("autoclaiming")
-                        returnVal = AutoClaim(self, relevantTab)
-                        if "error"  in returnVal:
-                                continue
-                        else:
-                            break
+                    if os.path.isfile(relevantTab + "/DEC_initiation.atomicswap") == True:
+                        f = open(relevantTab + "/DEC_initiation.atomicswap")
+                        chain = json.loads(f.read())["localChain"]
+                        f.close()
+                        if chain == "Ergo":
+                            if os.path.isfile(relevantTab + "/InitiatorContractValue"):
+                                print("autoclaiming")
+                                returnVal = AutoClaim(self, relevantTab)
+                                if "error"  in returnVal:
+                                        continue
+                                else:
+                                    break
                     else:
                         receiverCheck(self)
                         time.sleep(5)
@@ -297,16 +304,21 @@ def SwapResponderGUI(self):
                     f.truncate()
                     f.close()
                     if os.path.isfile(relevantTab + "/DEC_Finalization.atomicswap"):
-                        if os.path.isfile(relevantTab + "/InitiatorContractValue"):
-                            f = open(relevantTab + "/InitiatorContractValue", "r")
-                            val = f.read()
+                        if os.path.isfile(relevantTab + "/DEC_initiation.atomicswap") == True:
+                            f = open(relevantTab + "/DEC_initiation.atomicswap")
+                            chain = json.loads(f.read())["localChain"]
                             f.close()
-                            if val > 1:
-                                self.swap_tab_view.claimButton.configure(state="normal")
-                                break
-                        else: 
-                            receiverCheck(self)
-                            break
+                            if chain == "Ergo":
+                                if os.path.isfile(relevantTab + "/InitiatorContractValue"):
+                                    f = open(relevantTab + "/InitiatorContractValue", "r")
+                                    val = f.read()
+                                    f.close()
+                                    if val > 1:
+                                        self.swap_tab_view.claimButton.configure(state="normal")
+                                        break
+                                else: 
+                                    receiverCheck(self)
+                                    break
                     else:
                         break
                 if b == "false" and self.swap_tab_view.autoClaimCheckbox.get() == 1:
@@ -319,44 +331,54 @@ def SwapResponderGUI(self):
                     print("looking for " + relevantTab + "/DEC_Finalization.atomicswap" + " path")
                     if os.path.isfile(relevantTab + "/DEC_Finalization.atomicswap"):
                         print("found " + relevantTab + "/DEC_Finalization.atomicswap" + " path")
-                        print("looking for " + relevantTab + "/InitiatorContractValue" + " path")
-                        if os.path.isfile(relevantTab + "/InitiatorContractValue"):
-                            print("found " + relevantTab + "/InitiatorContractValue" + " path")
-                            f = open(relevantTab + "/InitiatorContractValue", "r")
-                            val = f.read()
+                        if os.path.isfile(relevantTab + "/DEC_initiation.atomicswap") == True:
+                            f = open(relevantTab + "/DEC_initiation.atomicswap")
+                            chain = json.loads(f.read())["localChain"]
                             f.close()
-                            print("autoclaiming")
-                            returnVal = AutoClaim(self, relevantTab)
-                            if "error"  in returnVal or type(returnVal) == type(None):
-                                continue
-                            else:
-                                break
-                        else:
-                            receiverCheck(self)
-                            time.sleep(5)
-                            continue
+                            if chain == "Ergo":
+                                print("looking for " + relevantTab + "/InitiatorContractValue" + " path")
+                                if os.path.isfile(relevantTab + "/InitiatorContractValue"):
+                                    print("found " + relevantTab + "/InitiatorContractValue" + " path")
+                                    f = open(relevantTab + "/InitiatorContractValue", "r")
+                                    val = f.read()
+                                    f.close()
+                                    print("autoclaiming")
+                                    returnVal = AutoClaim(self, relevantTab)
+                                    if "error"  in returnVal or type(returnVal) == type(None):
+                                        continue
+                                    else:
+                                        break
+                                else:
+                                    receiverCheck(self)
+                                    time.sleep(5)
+                                    continue
                     else:
                         time.sleep(5)
                         continue
                 if b == "true" and self.swap_tab_view.autoClaimCheckbox.get() == 1: 
                     if os.path.isfile(relevantTab + "/DEC_Finalization.atomicswap"):
                         print("found " + relevantTab + "/DEC_Finalization.atomicswap" + " path")
-                        print("looking for " + relevantTab + "/InitiatorContractValue" + " path")
-                        if os.path.isfile(relevantTab + "/InitiatorContractValue"):
-                            print("found " + relevantTab + "/InitiatorContractValue" + " path")
-                            f = open(relevantTab + "/InitiatorContractValue", "r")
-                            val = f.read()
+                        if os.path.isfile(relevantTab + "/DEC_initiation.atomicswap") == True:
+                            f = open(relevantTab + "/DEC_initiation.atomicswap")
+                            chain = json.loads(f.read())["localChain"]
                             f.close()
-                            print("autoclaiming")
-                            returnVal = AutoClaim(self, relevantTab)
-                            if "error"  in returnVal or type(returnVal) == type(None):
-                                continue
-                            else:
-                                break
-                        else:
-                            receiverCheck(self)
-                            time.sleep(5)
-                            continue
+                            if chain == "Ergo":
+                                print("looking for " + relevantTab + "/InitiatorContractValue" + " path")
+                                if os.path.isfile(relevantTab + "/InitiatorContractValue"):
+                                    print("found " + relevantTab + "/InitiatorContractValue" + " path")
+                                    f = open(relevantTab + "/InitiatorContractValue", "r")
+                                    val = f.read()
+                                    f.close()
+                                    print("autoclaiming")
+                                    returnVal = AutoClaim(self, relevantTab)
+                                    if "error"  in returnVal or type(returnVal) == type(None):
+                                        continue
+                                    else:
+                                        break
+                                else:
+                                    receiverCheck(self)
+                                    time.sleep(5)
+                                    continue
                     else:
                         print("finalization not found, waiting...")
                         time.sleep(5)

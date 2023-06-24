@@ -5,7 +5,8 @@ from threading import Thread
 from ElGamalManagement import *
 from chain import *
 from swap import *
-
+sys.path.append('py/swap')
+from tools import setInitiator
 class GUI(customtkinter.CTk):
     def __init__(self):
         self.thread_pool_executor = futures.ThreadPoolExecutor(max_workers=4)
