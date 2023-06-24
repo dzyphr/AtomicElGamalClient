@@ -195,6 +195,15 @@ def setSwapTab(self, first):
                 customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
                 text="Refund Lock Time Remaining: uninitiated")
         self.swap_tab_view.RefundLockTimeLabel.grid(row=12, column=0, padx=4, pady=4)
+        self.swap_tab_view.minimumValueAutoClaim = \
+            customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname), \
+        placeholder_text="minimum autoclaim val in wei", width=300, height=5) #TODO automate denomination label
+        self.swap_tab_view.minimumValueAutoClaim.grid(row=13, column=0, padx=4, pady=4)
+        self.swap_tab_view.autoClaimCheckbox = \
+                customtkinter.CTkCheckBox(master=self.swap_tab_view.tab(self.currentswapname) \
+                , text="AutoClaim")#, \
+        #            command=goAutoClaimTHREAD)
+        self.swap_tab_view.autoClaimCheckbox.grid(row=13, column=1, padx=4, pady=4)
 
 
     if self.isInitiator == True:
