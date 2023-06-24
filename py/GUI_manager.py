@@ -85,7 +85,7 @@ def setSwapTab(self, first):
         t.start()
 
     def goCheckLockTime():
-        lockTime = getLocalLockTime(self)
+        lockTime = getLocalLockTime(self, self.currentswapname)
         if lockTime != None: 
             if int(lockTime) > 0:
                 self.swap_tab_view.RefundLockTimeLabel.configure(text="Refund Lock Time Remaining: " + str(lockTime))
@@ -229,7 +229,7 @@ def SwapResponderGUI(self):
         t = threading.Thread(target=deployAndFundScalarSwapContract, args=(self,))
         t.start()
 
-    def goReceiverCheck():
+    def goResponderCheck():
         t = threading.Thread(target=receiverCheck, args=(self,))
         t.start()
 
@@ -238,7 +238,7 @@ def SwapResponderGUI(self):
         t.start()
 
     def goCheckLockTime():
-        lockTime = getLocalLockTime(self)
+        lockTime = getLocalLockTime(self, self.currentswapname)
         if lockTime != None:
             self.swap_tab_view.lockTimeLabel.configure(text="LockTime: " + lockTime)
             if int(lockTime) == 0:
@@ -270,6 +270,7 @@ def SwapResponderGUI(self):
                         else:
                             break
                     else:
+                        receiverCheck(self)
                         time.sleep(5)
                         continue
                 else:
@@ -295,6 +296,7 @@ def SwapResponderGUI(self):
                                 self.swap_tab_view.claimButton.configure(state="normal")
                                 break
                         else: 
+                            receiverCheck(self)
                             break
                     else:
                         break
@@ -316,11 +318,12 @@ def SwapResponderGUI(self):
                             f.close()
                             print("autoclaiming")
                             returnVal = AutoClaim(self, relevantTab)
-                            if "error"  in returnVal:
+                            if "error"  in returnVal or type(returnVal) == type(None):
                                 continue
                             else:
                                 break
                         else:
+                            receiverCheck(self)
                             time.sleep(5)
                             continue
                     else:
@@ -337,11 +340,12 @@ def SwapResponderGUI(self):
                             f.close()
                             print("autoclaiming")
                             returnVal = AutoClaim(self, relevantTab)
-                            if "error"  in returnVal:
+                            if "error"  in returnVal or type(returnVal) == type(None):
                                 continue
                             else:
                                 break
                         else:
+                            receiverCheck(self)
                             time.sleep(5)
                             continue
                     else:
@@ -418,7 +422,7 @@ def SwapResponderGUI(self):
     self.swap_tab_view.finalizeEntry.grid(row=8, column=1, padx=4, pady=4)
     self.swap_tab_view.checkButton = \
             customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-            text="Check", command=goReceiverCheck,  width=5, height=7, state="disabled") 
+            text="Check", command=goResponderCheck,  width=5, height=7, state="disabled") 
     self.swap_tab_view.checkButton.grid(row=8, column=2, padx=4, pady=4)
     self.swap_tab_view.labelContractAmount = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
         text="Contract amount: not checked yet")

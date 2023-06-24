@@ -61,22 +61,22 @@ def setInitiator(self): #here we are setting the initiator based on the PREVIOUS
         GUI_Arrange_Swap_Based(self)
         GUI_ReArrange_Chain_Based(self)
 
-def getLocalLockTime(self): #for refunds #returns lock time in # of blocks
+def getLocalLockTime(self, relevantTab): #for refunds #returns lock time in # of blocks
     updateDataBasedOnOpenTab(self)
-    f = open(self.currentswapname + "/roleData.json", "r") #TODO: This is likely the most accurate way to pick a chain responsively
+    f = open(relevantTab + "/roleData.json", "r") #TODO: This is likely the most accurate way to pick a chain responsively
     role = json.loads(f.read())["role"]
     f.close()
     if role == "initiator":
-        f = open(self.currentswapname + "/initiation.atomicswap", "r")
+        f = open(relevantTab + "/initiation.atomicswap", "r")
         initiatorChain = json.loads(f.read())["localChain"]
         f.close()
         if initiatorChain == "Ergo":
-            f = open("SigmaParticle/" + self.currentswapname + "/boxId", "r")
+            f = open("SigmaParticle/" + relevantTab + "/boxId", "r")
             boxId = f.read()
             f.close()
             lockHeightCMD = \
                             "cd SigmaParticle/boxConstantByIndex && ./deploy.sh " + boxId + \
-                            " 7 ../../" + self.currentswapname + "/localChain_lockHeight"
+                            " 7 ../../" + relevantTab + "/localChain_lockHeight"
             devnull = open(os.devnull, 'wb')
             response = subprocess.Popen(lockHeightCMD, shell=True,
                                  stdout=devnull, stderr=devnull,
@@ -85,16 +85,16 @@ def getLocalLockTime(self): #for refunds #returns lock time in # of blocks
 
             currentHeightCMD = \
                             "cd SigmaParticle/currentHeight && ./deploy.sh ../../" + \
-                            self.currentswapname + "/localChain_currentHeight"
+                            relevantTab + "/localChain_currentHeight"
 
             response = subprocess.Popen(currentHeightCMD, shell=True,
                                  stdout=devnull, stderr=devnull,
                                  close_fds=True)
-            if os.path.isfile(self.currentswapname + "/localChain_lockHeight") == True:
-                f = open(self.currentswapname + "/localChain_lockHeight")
+            if os.path.isfile(relevantTab + "/localChain_lockHeight") == True:
+                f = open(relevantTab + "/localChain_lockHeight")
                 lockHeight = f.read()
                 f.close()
-                f = open(self.currentswapname + "/localChain_currentHeight")
+                f = open(relevantTab + "/localChain_currentHeight")
                 currentHeight = f.read()
                 f.close()
                 if int(currentHeight) <= int(lockHeight):
@@ -102,25 +102,25 @@ def getLocalLockTime(self): #for refunds #returns lock time in # of blocks
                 else:
                     return 0
             else:
-                print("cant find path:", self.currentswapname + "/localChain_lockHeight", "\n\n box not uploaded yet or invalid ")
+                print("cant find path:", relevantTab + "/localChain_lockHeight", "\n\n box not uploaded yet or invalid ")
     if role == "responder":
-        f = open(self.currentswapname + "/response_commitment.atomicswap", "r")
+        f = open(relevantTab + "/response_commitment.atomicswap", "r")
         responderChain = json.loads(f.read())["chain"]
         f.close()
         if responderChain == "Sepolia":
-            f = open(self.currentswapname + "/response_commitment.atomicswap", "r")
+            f = open(relevantTab + "/response_commitment.atomicswap", "r")
             addr = json.loads(f.read())["contractAddr"]
             f.close()
             cmd = \
-                    "cd Atomicity/" + self.currentswapname + " && ./deploy.sh lockTime " + \
-                    addr + " ../../" + self.currentswapname + "/remainingLockTime"
+                    "cd Atomicity/" + relevantTab + " && ./deploy.sh lockTime " + \
+                    addr + " ../../" + relevantTab + "/remainingLockTime"
             print(cmd)
             devnull = open(os.devnull, 'wb')
             response = subprocess.Popen(cmd, shell=True,
                                  stdout=devnull, stderr=devnull,
                                  close_fds=True)
-            if os.path.isfile(self.currentswapname + "/remainingLockTime"):
-                f = open(self.currentswapname + "/remainingLockTime", "r")
+            if os.path.isfile(relevantTab + "/remainingLockTime"):
+                f = open(relevantTab + "/remainingLockTime", "r")
                 lockTime = f.read()
                 f.close()
                 return lockTime
