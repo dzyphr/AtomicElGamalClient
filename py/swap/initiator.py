@@ -79,6 +79,9 @@ def inspectScalarLockContract(self): #initiator operation
         self.scalarContractFundingAmount = os.popen("cd Atomicity/Sepolia && python3 -u py/deploy.py getBalance " + contractAddr).read()
     self.swap_tab_view.responderContractValueLabel.configure(text= "Responder Contract Value: " +\
             self.scalarContractFundingAmount + " wei")
+    if self.scalarContractFundingAmount.isdigit() == False:
+        print("self.scalarContractFundingAmount is not digit, instead is :", self.scalarContractFundingAmount)
+        return
     if int(self.scalarContractFundingAmount) > 0:
         self.swap_tab_view.finalizeSwapButton.configure(state="normal")
     print(self.scalarContractFundingAmount)
@@ -133,6 +136,7 @@ def draftFinalSignature(self): #create the final sig ss and pub value sG #initia
                 SigmaParticleAtomicSchnorr(self)
                 time.sleep(3)
                 f = open(self.currentswapname + "/finalize.atomicswap", "w")
+                time.sleep(3)
                 f2 = open("SigmaParticle/" + self.currentswapname + "/boxId", "r")
                 boxId = f2.read()
                 f2.close()

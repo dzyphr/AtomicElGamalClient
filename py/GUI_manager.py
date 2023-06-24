@@ -1,4 +1,4 @@
-import json, os, threading, customtkinter
+import json, os, threading, customtkinter, time
 #######MAIN#########
 def unpackMainGUI(self):
     self.initiatorChainLabel.pack_forget()
@@ -170,7 +170,7 @@ def setSwapTab(self, first):
                 text="custom gas :")
         self.swap_tab_view.InitiatorCustomGasLabel.grid(row=9, column=2, padx=4, pady=4)
         self.swap_tab_view.InitiatorGasEntry = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname), \
-        placeholder_text="6000000", width=70, height=5)
+        placeholder_text="8000000", width=70, height=5)
         self.swap_tab_view.InitiatorGasEntry.grid(row=10, column=2, padx=4, pady=4)
         self.swap_tab_view.InitiatorCustomGasModLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
                 text="gas mod :")
@@ -219,7 +219,7 @@ def setSwapTab(self, first):
 
 def SwapResponderGUI(self):
     from swap import copyResponse, deployAndFundScalarSwapContract, receiverCheck, \
-            getLocalLockTime, AtomicityRefund, updateDataBasedOnOpenTab, receiverClaim #TODO rename receiver to responder?
+            getLocalLockTime, AtomicityRefund, updateDataBasedOnOpenTab, AutoClaim, receiverClaim #TODO rename receiver to responder?
 
     def goCopyResponse():
         t = threading.Thread(target=copyResponse, args=(self,))
@@ -250,36 +250,112 @@ def SwapResponderGUI(self):
         t = threading.Thread(target=AtomicityRefund, args=(self,))
         t.start()
 
+
     def goAutoClaim():
         updateDataBasedOnOpenTab(self)
-        if os.path.isfile(self.currentswapname + "/AutoClaim") == False:
-            f = open(self.currentswapname + "/AutoClaim", "w")
-            f.write("true")
-            f.close()
-            self.swap_tab_view.claimButton.configure(state="disabled")
-        if os.path.isfile(self.currentswapname + "/AutoClaim") == True:
-            f = open(self.currentswapname + "/AutoClaim", "r")
-            b = f.read()
-            f.close()
-            if b == "true":
-                f = open(self.currentswapname + "/AutoClaim", "w")
-                f.write("false")
-                f.truncate()
-                f.close()
-                if os.path.isfile(self.currentswapname + "/DEC_Finalization.atomicswap"):
-                    if os.path.isfile(self.currentswapname + "InitiatorContractValue"):
-                        f = open(self.currentswapname + "InitiatorContractValue", "r")
-                        val = f.read()
-                        f.close()
-                        if val > 1:
-                            self.swap_tab_view.claimButton.configure(state="normal")
-
-            if b == "false":
-                f = open(self.currentswapname + "/AutoClaim", "w")
+        relevantTab = self.currentswapname
+        while True:
+            if os.path.isfile(relevantTab + "/AutoClaim") == False:
+                print("no autoclaim file found yet creating one")
+                f = open(relevantTab + "/AutoClaim", "w")
                 f.write("true")
-                f.truncate()
                 f.close()
                 self.swap_tab_view.claimButton.configure(state="disabled")
+                if os.path.isfile(relevantTab + "/DEC_Finalization.atomicswap"):
+                    if os.path.isfile(relevantTab + "/InitiatorContractValue"):
+                        print("autoclaiming")
+                        returnVal = AutoClaim(self)
+                        if "error"  in returnVal:
+                                continue
+                        else:
+                            break
+                    else:
+                        time.sleep(5)
+                        continue
+                else:
+                    print("finalization not found, waiting...")
+                    time.sleep(5)
+                    continue
+            elif os.path.isfile(relevantTab + "/AutoClaim") == True:
+                f = open(relevantTab + "/AutoClaim", "r")
+                b = f.read()
+                f.close()
+                if b == "true" and self.swap_tab_view.autoClaimCheckbox.get() == 0:
+                    print("autoclaim true, changing to false")
+                    f = open(relevantTab + "/AutoClaim", "w")
+                    f.write("false")
+                    f.truncate()
+                    f.close()
+                    if os.path.isfile(relevantTab + "/DEC_Finalization.atomicswap"):
+                        if os.path.isfile(relevantTab + "/InitiatorContractValue"):
+                            f = open(relevantTab + "/InitiatorContractValue", "r")
+                            val = f.read()
+                            f.close()
+                            if val > 1:
+                                self.swap_tab_view.claimButton.configure(state="normal")
+                                break
+                        else: 
+                            break
+                    else:
+                        break
+                if b == "false" and self.swap_tab_view.autoClaimCheckbox.get() == 1:
+                    print("autoclaim false, changing to true")
+                    f = open(relevantTab + "/AutoClaim", "w")
+                    f.write("true")
+                    f.truncate()
+                    f.close()
+                    self.swap_tab_view.claimButton.configure(state="disabled")
+                    print("looking for " + relevantTab + "/DEC_Finalization.atomicswap" + " path")
+                    if os.path.isfile(relevantTab + "/DEC_Finalization.atomicswap"):
+                        print("found " + relevantTab + "/DEC_Finalization.atomicswap" + " path")
+                        print("looking for " + relevantTab + "/InitiatorContractValue" + " path")
+                        if os.path.isfile(relevantTab + "/InitiatorContractValue"):
+                            print("found " + relevantTab + "/InitiatorContractValue" + " path")
+                            f = open(relevantTab + "/InitiatorContractValue", "r")
+                            val = f.read()
+                            f.close()
+                            print("autoclaiming")
+                            returnVal = AutoClaim(self)
+                            if "error"  in returnVal:
+                                continue
+                            else:
+                                break
+                        else:
+                            time.sleep(5)
+                            continue
+                    else:
+                        time.sleep(5)
+                        continue
+                if b == "true" and self.swap_tab_view.autoClaimCheckbox.get() == 1: 
+                    if os.path.isfile(relevantTab + "/DEC_Finalization.atomicswap"):
+                        print("found " + relevantTab + "/DEC_Finalization.atomicswap" + " path")
+                        print("looking for " + relevantTab + "/InitiatorContractValue" + " path")
+                        if os.path.isfile(relevantTab + "/InitiatorContractValue"):
+                            print("found " + relevantTab + "/InitiatorContractValue" + " path")
+                            f = open(relevantTab + "/InitiatorContractValue", "r")
+                            val = f.read()
+                            f.close()
+                            print("autoclaiming")
+                            AutoClaim(self)
+                            returnVal = AutoClaim(self)
+                            if "error"  in returnVal:
+                                continue
+                            else:
+                                break
+                        else:
+                            time.sleep(5)
+                            continue
+                    else:
+                        print("finalization not found, waiting...")
+                        time.sleep(5)
+                        continue
+                else:
+                    time.sleep(5)
+                    continue
+
+    def goAutoClaimTHREAD():
+        t = threading.Thread(target=goAutoClaim)
+        t.start()
 
     self.swap_tab_view.valueLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
         text="Amount to spend in wei")
@@ -294,14 +370,14 @@ def SwapResponderGUI(self):
         placeholder_text="coin amount in wei")
     self.swap_tab_view.valueToSpendEntry.grid(row=1, column=1, padx=4, pady=4)
     self.swap_tab_view.GasEntry = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname), \
-        placeholder_text="6000000", width=70, height=5)
+        placeholder_text="8000000", width=70, height=5)
     self.swap_tab_view.GasEntry.grid(row=1, column=2, padx=4, pady=4)
     self.swap_tab_view.GasModEntry = customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname), \
         placeholder_text="1", width=5, height=5)
     self.swap_tab_view.GasModEntry.grid(row=1, column=3, padx=4, pady=4)
 
 #   self.swap_tab_view.deployAtomicSwapContractLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
-#           text="Click to deploy & fund the atomic swap contract: ")
+ #          text="Click to deploy & fund the atomic swap contract: ")
 #   self.swap_tab_view.deployAtomicSwapContractLabel.grid(row=2, column=0, padx=4, pady=4)
     self.swap_tab_view.CustomLockTimeLabel = customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
             text="Custom LockTime")
@@ -363,7 +439,7 @@ def SwapResponderGUI(self):
     self.swap_tab_view.autoClaimCheckbox = \
             customtkinter.CTkCheckBox(master=self.swap_tab_view.tab(self.currentswapname) \
             , text="AutoClaim", \
-                command=goAutoClaim)
+                command=goAutoClaimTHREAD)
     self.swap_tab_view.autoClaimCheckbox.grid(row=12, column=2, padx=4, pady=4)
 
 

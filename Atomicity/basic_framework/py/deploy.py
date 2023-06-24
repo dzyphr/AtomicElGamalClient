@@ -36,7 +36,7 @@ else:
 
 def senderReclaim(addr, gas=None, gasMod=None):
     if gas == None:
-        gas = 6000000
+        gas = 8000000
     if gasMod == None:
         gasMod = 1
     if chain == "Goerli":
@@ -73,7 +73,7 @@ def senderReclaim(addr, gas=None, gasMod=None):
 
 def claim(addr, x, gas=None, gasMod=None):
     if gas == None:
-        gas = 6000000
+        gas = 8000000
     if gasMod == None:
         gasMod = 1
     if chain == "Goerli":
@@ -210,7 +210,7 @@ def sendAmount(amount, receiver):
         'from': senderAddr,
         'value': int(amount),
         'gasPrice': rpc.eth.gas_price * gasMod,
-        'gas': 70000,
+        'gas': 7000000,
         'nonce': rpc.eth.get_transaction_count(senderAddr)
     }
     signed = rpc.eth.account.sign_transaction(txdata, senderPrivKey)
@@ -337,7 +337,7 @@ def uploadContract(rpc, abi, bytecode, gas=None, gasModExtra=None):
 
     #print("current gas price :", rpc.eth.gas_price );
     if gas == None:
-        gas = 6000000
+        gas = 8000000
     if gasModExtra == None:
         gasModExtra = 1
     if constructorArgs == True:

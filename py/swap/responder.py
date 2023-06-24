@@ -47,7 +47,8 @@ def receiverClaim(self):
         print(os.popen(echoVariablesCMD).read())
         claimCMD = \
                 "cd SigmaParticle/" + self.currentswapname + " && ./deploy.sh claim"
-        print(os.popen(claimCMD).read())
+        returnVal = os.popen(claimCMD).read()
+        return returnVal
 
 
 def receiverCheck(self): #responder operatio

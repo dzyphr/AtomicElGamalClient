@@ -15,6 +15,48 @@ class SwapTab(customtkinter.CTkTabview):
 def nanoErgToErgo(nanoErgs): #only for round amounts
     return int(int(nanoErgs) / 1000000000)
 
+def AutoClaim(self):
+    while True:
+        if os.path.isfile(self.currentswapname + "/AutoClaim"):
+            f = open(self.currentswapname + "/AutoClaim")
+            b = f.read()
+            f.close()
+            if  b == "false":
+                print("autoclaim set to false: stopping")
+                break
+            else:
+                if os.path.isfile(self.currentswapname + "/roleData.json") == True:
+                    f = open(self.currentswapname + "/roleData.json")
+                    role = json.loads(f.read())["role"]
+                    f.close()
+                    if role == "responder":
+                        if os.path.isfile(self.currentswapname + "/InitiatorContractValue"):
+                            f = open(self.currentswapname + "/InitiatorContractValue", "r")
+                            val = f.read()
+                            f.close()
+                            minimum = self.swap_tab_view.minimumValueAutoClaim.get()
+                            if minimum == "":
+                                print("enter minimum val!")
+                                f = open(self.currentswapname + "/AutoClaim", "w")
+                                f.write("false")
+                                f.truncate()
+                                f.close()
+                                self.swap_tab_view.autoClaimCheckbox.toggle()
+                                break
+                            else:
+                                if int(minimum) < int(val):
+                                    return receiverClaim(self)
+                                    break
+                                else:
+                                    print("under minimum value")
+                else:
+                    time.sleep(5)
+        else:
+            print("cant find path: " +  self.currentswapname + "/AutoClaim")
+        i = i + 1
+
+
+
 def initiateSwap(self): #currently ambiguous as it facilitates initiator and responder swap start
     if self.isInitiator == True and (self.initiatorChain  == "NotSelected" or self.responderChain == "NotSelected"):
         print("at least one chain not selected! initiator must select both chains")
