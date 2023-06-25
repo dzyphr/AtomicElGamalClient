@@ -1,6 +1,6 @@
 import os
 
-def clean_file_open(filepath, readOrWrite, writingContent=None, extraWarn=None):
+def clean_file_open(filepath, readOrWrite, writingContent=None, extraWarn=None, truncate=None):
     if type(readOrWrite) != str:
         print("for argument 2 'readOrWrite' enter r or w as a STRING")
     if extraWarn != None:
@@ -15,6 +15,8 @@ def clean_file_open(filepath, readOrWrite, writingContent=None, extraWarn=None):
             try:
                 f = open(filepath, "w")
                 f.write(str(writingContent))
+                if truncate == True:
+                    f.truncate()
                 f.close()
             except:
                 print("cant write ", writingContent, "to:", filePath, "\n", extraWarn)

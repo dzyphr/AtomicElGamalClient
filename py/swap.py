@@ -7,7 +7,7 @@ from initiator import *
 from responder import *
 from chain import setLocalChainPubkeyManual, setCrossChainPubkeyManual, setCrossChainPubkeyDerived
 import tkinter, customtkinter, os, json, time, subprocess, io, pyperclip
-
+import file_tools
 class SwapTab(customtkinter.CTkTabview):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
@@ -18,35 +18,23 @@ def nanoErgToErgo(nanoErgs): #only for round amounts
 def AutoClaim(self, relevantTab):
     while True:
         if os.path.isfile(relevantTab + "/AutoClaim"):
-            f = open(relevantTab + "/AutoClaim")
-            b = f.read()
-            f.close()
+            b = clean_file_open(relevantTab + "/AutoClaim", "r")
             if  b == "false":
                 print("autoclaim set to false: stopping")
                 break
             else:
                 if os.path.isfile(relevantTab + "/roleData.json") == True:
-                    f = open(relevantTab + "/roleData.json")
-                    role = json.loads(f.read())["role"]
-                    f.close()
+                    role = json.loads(clean_file_open(relevantTab + "/roleData.json", "r"))["role"]
                     if role == "responder":
                         if os.path.isfile(relevantTab + "/DEC_initiation.atomicswap") == True:
-                            f = open(relevantTab + "/DEC_initiation.atomicswap", "r")
-                            initiation = f.read()
-                            f.close()
-                            j = json.loads(initiation)
+                            j = json.loads(clean_file_open(relevantTab + "/DEC_initiation.atomicswap", "r"))
                             if j["localChain"] == "Ergo": #user is responding to initiator, who's `localChain` is Ergo
                                 if os.path.isfile(relevantTab + "/InitiatorContractValue"):
-                                    f = open(relevantTab + "/InitiatorContractValue", "r")
-                                    val = f.read()
-                                    f.close()
+                                    val = clean_file_open(relevantTab + "/InitiatorContractValue", "r")
                                     minimum = self.swap_tab_view.minimumValueAutoClaim.get()
                                     if minimum == "":
                                         print("enter minimum val!")
-                                        f = open(relevantTab + "/AutoClaim", "w")
-                                        f.write("false")
-                                        f.truncate()
-                                        f.close()
+                                        clean_file_open(relevantTab + "/AutoClaim", "w", "false", truncate=True)
                                         self.swap_tab_view.autoClaimCheckbox.toggle()
                                         break
                                     else:
@@ -59,7 +47,6 @@ def AutoClaim(self, relevantTab):
                     time.sleep(5)
         else:
             print("cant find path: " +  relevantTab + "/AutoClaim")
-        i = i + 1
 
 
 
