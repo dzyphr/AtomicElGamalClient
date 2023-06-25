@@ -5,6 +5,8 @@ from GUI_manager import *
 from chain import setLocalChainPubkeyManual, setCrossChainPubkeyManual, setCrossChainPubkeyDerived
 import tkinter, customtkinter, os, json, time, subprocess, sys, io, pyperclip
 from tools import *
+from file_tools import *
+
 def initiatorStart(self): #initiator operation #start operations should not have update  functions at the beginning
                             #because they imply newly generated content
                             #update functions imply already generated content
@@ -39,19 +41,11 @@ def initiatorStart(self): #initiator operation #start operations should not have
             "\'" + strippedInitiation6 + "\' " + \
             self.currentswapname + "/ENC_initiation.atomicswap "
     encryption = os.popen(runElGamal).read()
-    f = open(self.currentswapname + "/PRIV_initiation.atomicswap", "w")
-    f.write(initiation)
-    f.close()
-    f = open(self.currentswapname + "/initiation.atomicswap", "w")
-    f.write(strippedInitiation6)
-    f.close()
-    f = open(self.currentswapname + "/Receiver.ElGamalPub", "w")
-    f.write(self.currentReceiver)
-    f.close()
-    f = open(self.currentswapname + "/SenderKey.ElGamalPub", "w")
+    clean_file_open(self.currentswapname + "/PRIV_initiation.atomicswap", "w", initiation)
+    clean_file_open(self.currentswapname + "/initiation.atomicswap", "w", strippedInitiation6)
+    clean_file_open(self.currentswapname + "/Receiver.ElGamalPub", "w", self.currentReceiver)
+    clean_file_open(self.currentswapname + "/SenderKey.ElGamalPub", "w", self.ElGamalPublicKey)
     #maybe we can just backup the whole private keyfile in this instance
-    f.write(self.ElGamalPublicKey)
-    f.close()
     if self.swapTabSet == False:
         setSwapTab(self, True)
     else:
@@ -68,9 +62,7 @@ def copyENCInit(self):
 def inspectScalarLockContract(self): #initiator operation
     updateDataBasedOnOpenTab(self)
     decryptResponse(self)
-    f = open(self.currentswapname + "/DEC_response.atomicswap", "r")
-    j = json.loads(f.read())
-    f.close()
+    j = json.loads(clean_file_open(self.currentswapname + "/DEC_response.atomicswap", "r"))
     chain = j["chain"]
     contractAddr = j["contractAddr"]
     if chain == "Goerli":
@@ -94,15 +86,12 @@ def decryptResponse(self): #initiator operation
         print("response commitment already collected for ", self.currentswapname)
     else:
         if self.swap_tab_view.responderCommitment.get() != "":
-            responseFile = open(self.currentswapname + "/response.atomicswap", "w")
-            responseFile.write(self.swap_tab_view.responderCommitment.get())
+            clean_file_open(self.currentswapname + "/response.atomicswap", "w", self.swap_tab_view.responderCommitment.get())
             decryptElGamal = \
                         "./ElGamal decryptFromPubKey " + self.currentswapname + "/response.atomicswap " + \
                         self.currentReceiver + ' ' + self.ElGamalKeyFileName
             decrypt = os.popen(decryptElGamal).read()
-            f = open(self.currentswapname + "/DEC_response.atomicswap", "w")
-            f.write(decrypt)
-            f.close()
+            clean_file_open(self.currentswapname + "/DEC_response.atomicswap", "w", decrypt)
             print(decrypt)
         else:
             print("enter the commitment from responder!")
@@ -112,16 +101,12 @@ def draftFinalSignature(self): #create the final sig ss and pub value sG #initia
     if os.path.isfile(self.currentswapname + "/finalize.atomicswap") == False or os.path.isfile("SigmaParticle/" + self.currentswapname + "/boxId") == False:
         updateDataBasedOnOpenTab(self)
         if int(self.swap_tab_view.initiatorContractValueEntry.get()) >= 123841:
-            f = open(self.currentswapname + "/DEC_response.atomicswap", "r")
-            j = json.loads(f.read())
-            f.close()
+            j = json.loads(clean_file_open(self.currentswapname + "/DEC_response.atomicswap", "r"))
             sr_ = j["sr_"]
             xG = j["xG"]
             srG = j["srG"]
             e = j["e"]
-            f = open(self.currentswapname + "/PRIV_initiation.atomicswap", "r")
-            j = json.loads(f.read())
-            f.close()
+            j = json.loads(clean_file_open(self.currentswapname + "/PRIV_initiation.atomicswap", "r"))
             ks = j["ks"]
             rs = j["rs"]
             cmd = "cd SigmaParticle/AtomicMultiSigECC/ && python3 -u py/deploy.py p1Finalize " + \
@@ -130,22 +115,14 @@ def draftFinalSignature(self): #create the final sig ss and pub value sG #initia
             finalSigJson = os.popen(cmd).read()
             if json.loads(finalSigJson) != ValueError and finalSigJson != "":
                 print(finalSigJson)
-                f = open(self.currentswapname + "/finalize.atomicswap", "w")
-                f.write(finalSigJson)
-                f.close()
+                clean_file_open(self.currentswapname + "/finalize.atomicswap", "w", finalSigJson)
                 SigmaParticleAtomicSchnorr(self)
-                time.sleep(3)
-                f = open(self.currentswapname + "/finalize.atomicswap", "w")
-                time.sleep(3)
-                f2 = open("SigmaParticle/" + self.currentswapname + "/boxId", "r")
-                boxId = f2.read()
-                f2.close()
-
+                time.sleep(4)
+                boxId = clean_file_open("SigmaParticle/" + self.currentswapname + "/boxId", "r")
                 mod = finalSigJson
                 modified = mod.replace("\"\n}", "\",\n    \"boxId\": \"" + boxId + "\"\n}")
                 print(modified)
-                f.write(modified)
-                f.close()
+                clean_file_open(self.currentswapname + "/finalize.atomicswap", "w", modified)
                 cmd = \
                     "./ElGamal encryptToPubKey " + \
                     self.currentReceiver + ' ' + \
@@ -153,9 +130,7 @@ def draftFinalSignature(self): #create the final sig ss and pub value sG #initia
                     "\'" + modified + "\' " + \
                     self.currentswapname + "/ENC_finalize.atomicswap"
                 encrypt = os.popen(cmd).read()
-                f = open(self.currentswapname + "/ENC_finalize.atomicswap", "r")
-                encryption = f.read()
-                f.close()
+                encryption = clean_file_open(self.currentswapname + "/ENC_finalize.atomicswap", "r")
                 #now upload ergoscript contract
                 pyperclip.copy(encryption)
                 self.swap_tab_view.finalizeCheck.configure(state="normal")
@@ -164,19 +139,13 @@ def draftFinalSignature(self): #create the final sig ss and pub value sG #initia
 
 
     if os.path.isfile("SigmaParticle/" + self.currentswapname + "/boxId") == True: #if we already have the box we have properly uploaded the contract
-        f = open(self.currentswapname + "/ENC_finalize.atomicswap", "r")
-        encryption = f.read()
-        f.close()
+        encryption = clean_file_open(self.currentswapname + "/ENC_finalize.atomicswap", "r")
         pyperclip.copy(encryption)
 
 def checkTreeForFinalization(self):
     updateDataBasedOnOpenTab(self)
-    f = open("SigmaParticle/" + self.currentswapname + "/ergoTree")
-    tree = f.read()
-    f.close()
-    f = open(self.currentswapname + "/finalize.atomicswap")
-    j = json.loads(f.read())
-    f.close()
+    tree = clean_file_open("SigmaParticle/" + self.currentswapname + "/ergoTree", "r")
+    j = json.loads(clean_file_open(self.currentswapname + "/finalize.atomicswap", "r"))
     boxId = j["boxId"]
     treeToAddrCmd = \
             "cd SigmaParticle/treeToAddr && ./deploy.sh " + tree
@@ -187,13 +156,9 @@ def checkTreeForFinalization(self):
             "./deploy.sh " + addr + " " + boxId + " ../../" + self.currentswapname + "/atomicClaim"
     print(os.popen(boxFilterCmd).read())
     if os.path.isfile(self.currentswapname + "/atomicClaim_tx1"):
-        f = open(self.currentswapname + "/atomicClaim_tx1", "r")
-        j = json.loads(f.read())
-        f.close()
+        j = json.loads(clean_file_open(self.currentswapname + "/atomicClaim_tx1", "r"))
         R4 = j["outputs"][0]["additionalRegisters"]["R4"]
-        f = open(self.currentswapname + "/sr", "w")
-        f.write(R4)
-        f.close()
+        clean_file_open(self.currentswapname + "/sr", "w", R4)
         self.swap_tab_view.claim.configure(state="normal")
     else:
         print("no atomic claim transactions found")
@@ -201,21 +166,16 @@ def checkTreeForFinalization(self):
 
 def deduce_sr(self):
     updateDataBasedOnOpenTab(self)
-    f = open(self.currentswapname + "/DEC_response.atomicswap", "r")
-    j = json.loads(f.read())
+
+    j = json.loads(clean_file_open(self.currentswapname + "/DEC_response.atomicswap", "r"))
     sr_ = j["sr_"]
     contractAddr = j["contractAddr"]
     chain = j["chain"]
-    f.close()
-    f = open(self.currentswapname + "/sr", "r")
-    sr = f.read()
-    f.close()
+    sr = clean_file_open(self.currentswapname + "/sr", "r")
     decodeCMD = \
             "cd SigmaParticle/valFromHex && ./deploy.sh " + sr + " ../../" + self.currentswapname + "/decoded_sr"
     decodeResponse = os.popen(decodeCMD).read()
-    f = open(self.currentswapname + "/decoded_sr", "r")
-    dec_sr = f.read()
-    f.close()
+    dec_sr = clean_file_open(self.currentswapname + "/decoded_sr", "r")
     deduceCMD = \
             "cd SigmaParticle/AtomicMultiSigECC && python3 -u py/deploy.py p1Deduce " + sr_ + " " + dec_sr
     #note when we do python operations and want to capture the output as json we should not run the deploy.sh but call python3
@@ -239,23 +199,16 @@ def deploySigmaParticleAtomicSchorr(self):
 
 def SigmaParticleAtomicSchnorr(self):
     updateDataBasedOnOpenTab(self)
-    f = open(self.currentswapname + "/DEC_response.atomicswap", "r")
-    response = f.read()
-    f.close()
+    response = clean_file_open(self.currentswapname + "/DEC_response.atomicswap", "r")
     j = json.loads(response)
     krG = ast.literal_eval(j["krG"])
     srG = ast.literal_eval(j["srG"])
-    f = open(self.currentswapname + "/finalize.atomicswap", "r")
-    finalize = f.read()
-    f.close()
+    finalize = clean_file_open(self.currentswapname + "/finalize.atomicswap", "r")
     j = json.loads(finalize)
     ssG = ast.literal_eval(j["ssG"])
-    f = open(self.currentswapname + "/initiation.atomicswap", "r")
-    j = json.loads(f.read())
+    j = json.loads(clean_file_open(self.currentswapname + "/initiation.atomicswap", "r"))
     ksG = ast.literal_eval(j["ksG"])
-    f = open(self.currentswapname + "/DEC_response.atomicswap", "r")
-    j = json.loads(f.read())
-    f.close()
+    j = json.loads(clean_file_open(self.currentswapname + "/DEC_response.atomicswap", "r"))
     receiver = j[self.initiatorChain + "_chainPubkey"]
     if self.swap_tab_view.refundDurationEntry.get() == "":
         refundDuration = 25
