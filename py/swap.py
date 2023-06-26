@@ -68,7 +68,8 @@ def initiateSwap(self): #currently ambiguous as it facilitates initiator and res
         elif any(c.isalpha() for c in self.currentReceiver):
             print("detected alphabetical characters, hexadecimal keys not implemented yet")
         elif self.isInitiator == True:
-            initiatorStart(self)
+            self.currentswapname = determineSwapName()
+            initiatorStart(self, self.currentswapname)
             saveRole(self)
         elif self.isInitiator == False:
             #make sure active tab functions get swap name from current open tab

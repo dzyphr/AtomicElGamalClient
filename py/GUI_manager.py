@@ -67,22 +67,22 @@ def setSwapTab(self, first):
             checkTreeForFinalization, deduce_sr, getLocalLockTime, SigmaParticleRefund, updateDataBasedOnOpenTab
 
     def goCopyENCInit():
-        copyENCInit(self)
+        copyENCInit(self, self.currentswapname)
 
     def goInspectScalarLockContract():
-        t = threading.Thread(target=inspectScalarLockContract, args=(self,))
+        t = threading.Thread(target=inspectScalarLockContract, args=(self, self.currentswapname))
         t.start()
 
     def goDraftFinalSignature():
-        t = threading.Thread(target=draftFinalSignature, args=(self,))
+        t = threading.Thread(target=draftFinalSignature, args=(self, self.currentswapname))
         t.start()
 
     def goCheckTreeForFinalization():
-        t = threading.Thread(target=checkTreeForFinalization, args=(self,))
+        t = threading.Thread(target=checkTreeForFinalization, args=(self, self.currentswapname))
         t.start()
 
     def goDeduce_sr():
-        t = threading.Thread(target=deduce_sr, args=(self,))
+        t = threading.Thread(target=deduce_sr, args=(self, self.currentswapname))
         t.start()
 
     def goCheckLockTime():
@@ -107,7 +107,7 @@ def setSwapTab(self, first):
             initiatorChain = json.loads(f.read())["localChain"]
             f.close()
             if initiatorChain == "Ergo":
-                t = threading.Thread(target=SigmaParticleRefund, args=(self,))
+                t = threading.Thread(target=SigmaParticleRefund, args=(self, self.currentswapname))
                 t.start()
 
 
