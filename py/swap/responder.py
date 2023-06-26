@@ -40,28 +40,28 @@ def responderClaim(self):
         return returnVal
 
 
-def responderCheck(self): #responder operatio
+def responderCheck(self, relevantTab): #responder operatio
     updateDataBasedOnOpenTab(self)
     if self.swap_tab_view.finalizeEntry.get() == "":
         print("paste in the finalization to claim!")
     else:
         ENCFin = self.swap_tab_view.finalizeEntry.get()
-        clean_file_open(self.currentswapname + "/ENC_Finalization.atomicswap", "w", ENCFin)
+        clean_file_open(relevantTab + "/ENC_Finalization.atomicswap", "w", ENCFin)
         decryptElGamal = \
-            "./ElGamal decryptFromPubKey " + self.currentswapname + "/ENC_Finalization.atomicswap " + \
+            "./ElGamal decryptFromPubKey " + relevantTab + "/ENC_Finalization.atomicswap " + \
             self.currentReceiver + ' ' + self.ElGamalKeyFileName
         decryption = os.popen(decryptElGamal).read()
-        clean_file_open(self.currentswapname + "/DEC_Finalization.atomicswap", "w", decryption)
+        clean_file_open(relevantTab + "/DEC_Finalization.atomicswap", "w", decryption)
         j = json.loads(decryption)
         boxValCheck = "cd SigmaParticle/boxValue && ./deploy.sh " +\
                 j["boxId"] + " ../../" +\
-                self.currentswapname + "/InitiatorContractValue"
+                relevantTab + "/InitiatorContractValue"
         devnull = open(os.devnull, 'wb')
         p = subprocess.Popen(boxValCheck, shell=True,
                          stdout=devnull, stderr=devnull,
                          close_fds=True)
-        if os.path.isfile(self.currentswapname + "/InitiatorContractValue") == True:
-            nanoErgs = clean_file_open(self.currentswapname + "/InitiatorContractValue", "r")
+        if os.path.isfile(relevantTab + "/InitiatorContractValue") == True:
+            nanoErgs = clean_file_open(relevantTab + "/InitiatorContractValue", "r")
             if int(nanoErgs) < 123841:
                 print("box is extremely small dust and may not be able to be properly claimed")
                 self.swap_tab_view.labelContractAmount.configure(text= "Contract Value: " +\

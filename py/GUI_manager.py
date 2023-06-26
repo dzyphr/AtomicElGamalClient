@@ -240,7 +240,7 @@ def SwapResponderGUI(self):
         t.start()
 
     def goResponderCheck():
-        t = threading.Thread(target=responderCheck, args=(self,))
+        t = threading.Thread(target=responderCheck, args=(self, self.currentswapname))
         t.start()
 
     def goReceiverClaim():
@@ -284,7 +284,7 @@ def SwapResponderGUI(self):
                                 else:
                                     break
                     else:
-                        responderCheck(self)
+                        responderCheck(self, relevantTab)
                         time.sleep(5)
                         continue
                 else:
@@ -306,7 +306,7 @@ def SwapResponderGUI(self):
                                         self.swap_tab_view.claimButton.configure(state="normal")
                                         break
                                 else: 
-                                    responderCheck(self)
+                                    responderCheck(self, relevantTab)
                                     break
                     else:
                         break
@@ -334,7 +334,7 @@ def SwapResponderGUI(self):
                                     else:
                                         break
                                 else:
-                                    responderCheck(self)
+                                    responderCheck(self, relevantTab)
                                     time.sleep(5)
                                     continue
                     else:
@@ -359,7 +359,7 @@ def SwapResponderGUI(self):
                                     else:
                                         break
                                 else:
-                                    responderCheck(self)
+                                    responderCheck(self, relevantTab)
                                     time.sleep(5)
                                     continue
                     else:
