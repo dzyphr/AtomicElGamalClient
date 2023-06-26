@@ -276,7 +276,10 @@ def SwapResponderGUI(self):
                             if os.path.isfile(relevantTab + "/InitiatorContractValue"):
                                 print("autoclaiming")
                                 returnVal = AutoClaim(self, relevantTab)
-                                if "error"  in returnVal:
+                                if type(returnVal) == type(None):
+                                        continue
+                                if type(returnVal) == type(str):
+                                    if "error"  in returnVal:
                                         continue
                                 else:
                                     break
@@ -323,8 +326,11 @@ def SwapResponderGUI(self):
                                     print("found " + relevantTab + "/InitiatorContractValue" + " path")
                                     print("autoclaiming")
                                     returnVal = AutoClaim(self, relevantTab)
-                                    if "error"  in returnVal or type(returnVal) == type(None):
+                                    if type(returnVal) == type(None):
                                         continue
+                                    if type(returnVal) == type(str):
+                                        if "error"  in returnVal:
+                                            continue
                                     else:
                                         break
                                 else:
@@ -345,8 +351,11 @@ def SwapResponderGUI(self):
                                     print("found " + relevantTab + "/InitiatorContractValue" + " path")
                                     print("autoclaiming")
                                     returnVal = AutoClaim(self, relevantTab)
-                                    if "error"  in returnVal or type(returnVal) == type(None):
+                                    if type(returnVal) == type(None):
                                         continue
+                                    if type(returnVal) == type(str):
+                                        if "error"  in returnVal:
+                                            continue
                                     else:
                                         break
                                 else:

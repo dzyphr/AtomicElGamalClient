@@ -14,25 +14,14 @@ def responderClaim(self):
         print(os.popen(newContractCmd).read())
         copyBoilerplateCmd = "cp SigmaParticle/AtomicMultiSig/py/main.py SigmaParticle/" + self.currentswapname  + "/py/main.py"
         print(os.popen(copyBoilerplateCmd).read())
-        f = open(self.currentswapname + "/sr")
-        sr = f.read()
-        f.close()
-        f = open(self.currentswapname + "/DEC_Finalization.atomicswap", "r")
-        j = json.loads(f.read())
-        f.close()
+        sr = clean_file_open(self.currentswapname + "/sr", "r")
+        j = json.loads(clean_file_open(self.currentswapname + "/DEC_Finalization.atomicswap", "r"))
         ss = j["ss"]
-        f = open(self.currentswapname + "/DEC_initiation.atomicswap")
-        ksG = json.loads(f.read())["ksG"]
-        f.close()
-        f = open(self.currentswapname + "/response_commitment.atomicswap")
-        krG = json.loads(f.read())["krG"]
-        f = open(self.currentswapname + "/DEC_Finalization.atomicswap", "r")
-        j = json.loads(f.read())
-        f.close()
+        ksG = json.loads(clean_file_open(self.currentswapname + "/DEC_initiation.atomicswap", "r"))["ksG"]
+        krG = json.loads(clean_file_open(self.currentswapname + "/response_commitment.atomicswap", "r"))["krG"]
+        j = json.loads(clean_file_open(self.currentswapname + "/DEC_Finalization.atomicswap", "r"))
         boxId = j["boxId"]
-        f = open(self.currentswapname + "/InitiatorContractValue")
-        nanoErgs = f.read()
-        f.close()
+        nanoErgs = clean_file_open(self.currentswapname + "/InitiatorContractValue", "r")
         echoVariablesCMD = \
                 "echo \"" + \
                 "sr=" + sr + "\n" + \
@@ -57,16 +46,12 @@ def receiverCheck(self): #responder operatio
         print("paste in the finalization to claim!")
     else:
         ENCFin = self.swap_tab_view.finalizeEntry.get()
-        f = open(self.currentswapname + "/ENC_Finalization.atomicswap", "w")
-        f.write(ENCFin)
-        f.close()
+        clean_file_open(self.currentswapname + "/ENC_Finalization.atomicswap", "w", ENCFin)
         decryptElGamal = \
             "./ElGamal decryptFromPubKey " + self.currentswapname + "/ENC_Finalization.atomicswap " + \
             self.currentReceiver + ' ' + self.ElGamalKeyFileName
         decryption = os.popen(decryptElGamal).read()
-        f = open(self.currentswapname + "/DEC_Finalization.atomicswap", "w")
-        f.write(decryption)
-        f.close()
+        clean_file_open(self.currentswapname + "/DEC_Finalization.atomicswap", "w", decryption)
         j = json.loads(decryption)
         boxValCheck = "cd SigmaParticle/boxValue && ./deploy.sh " +\
                 j["boxId"] + " ../../" +\
@@ -76,9 +61,7 @@ def receiverCheck(self): #responder operatio
                          stdout=devnull, stderr=devnull,
                          close_fds=True)
         if os.path.isfile(self.currentswapname + "/InitiatorContractValue") == True:
-            f = open(self.currentswapname + "/InitiatorContractValue")
-            nanoErgs = f.read()
-            f.close()
+            nanoErgs = clean_file_open(self.currentswapname + "/InitiatorContractValue", "r")
             if int(nanoErgs) < 123841:
                 print("box is extremely small dust and may not be able to be properly claimed")
                 self.swap_tab_view.labelContractAmount.configure(text= "Contract Value: " +\
@@ -92,10 +75,7 @@ def receiverCheck(self): #responder operatio
 
 def AtomicityRefund(self):
     updateDataBasedOnOpenTab(self)
-    f = open(self.currentswapname + "/response_commitment.atomicswap", "r")
-    addr = json.loads(f.read())["contractAddr"]
-    f.close()
-
+    addr = json.loads(clean_file_open(self.currentswapname + "/response_commitment.atomicswap", "r"))["contractAddr"]
     refundCMD = \
             "cd Atomicity/" + self.currentswapname + " && ./deploy.sh refund " + addr
     print(os.popen(refundCMD).read())
@@ -103,9 +83,7 @@ def AtomicityRefund(self):
 def SigmaParticleRefund(self):
     updateDataBasedOnOpenTab(self)
     devnull = open(os.devnull, 'wb')
-    f = open("SigmaParticle/" + self.currentswapname + "/boxId", "r")
-    boxId = f.read()
-    f.close()
+    boxId = clean_file_open("SigmaParticle/" + self.currentswapname + "/boxId", "r")
     echoBoxIdCMD = \
             "echo '\natomicBox=" + boxId + "' >> SigmaParticle/" + self.currentswapname + "/.env"
     os.popen(echoBoxIdCMD).read()
@@ -117,12 +95,10 @@ def copyResponse(self): #esponder operation
     updateDataBasedOnOpenTab(self)
     if os.path.isfile(self.currentswapname + "/responderContractAddress"):
         if os.path.isfile(self.swap_tab_view.get() + "/response_commitment.atomicswap"):
-            addr = open(self.currentswapname + "/responderContractAddress", "r").read().rstrip()
-            response = open(self.swap_tab_view.get() + "/response_commitment.atomicswap", "r").read()
+            addr = clean_file_open(self.currentswapname + "/responderContractAddress", "r").rstrip()
+            response = clean_file_open(self.swap_tab_view.get() + "/response_commitment.atomicswap", "r")
             if "chain" not in response :
-                f = open(self.currentswapname + "/response_commitment.atomicswap", "w")
-                init = open(self.currentswapname + "/DEC_initiation.atomicswap", "r").read()
-                j = json.loads(init)
+                j = json.loads(clean_file_open(self.currentswapname + "/DEC_initiation.atomicswap", "r"))
                 self.counterpartyChainPubkey = j["chainPubkey"]
                 self.crossChain = j["localChain"]
                 if self.crossChain == "Ergo": #TODO: any non account chain
@@ -138,17 +114,14 @@ def copyResponse(self): #esponder operation
                         "    \"chain\": " + "\"" + self.responderChain.rstrip() + "\"" + ",\n" + \
                         "    \"" + self.crossChain  + "_chainPubkey\": " + "\"" + self.chainPubkey.rstrip() + "\"" + "\n" + \
                         "}")
-                f.write(edit)
-                f.close()
+                clean_file_open(self.currentswapname + "/response_commitment.atomicswap", "w", edit)
                 runElGamal = "./ElGamal encryptToPubKey " + \
                     self.currentReceiver + ' ' + \
                     self.ElGamalKeyFileName + ' ' + \
                     "\'" + edit + "\' " + \
                     self.currentswapname + "/ENC_response_commitment.atomicswap"
                 ElGamal = os.popen(runElGamal).read()
-                f = open(self.currentswapname + "/ENC_response_commitment.atomicswap", "r")
-                enc_response = f.read()
-                f.close()
+                enc_response = clean_file_open(self.currentswapname + "/ENC_response_commitment.atomicswap", "r")
                 pyperclip.copy(enc_response) #if the response wont paste into GUI entry encryption is too large
                 self.swap_tab_view.checkButton.configure(state="normal")
                 self.swap_tab_view.checkLockTimeButton.configure(state="normal")
@@ -173,9 +146,7 @@ def deployAndFundScalarSwapContract(self): #responder operation
         if customgas == False:
             addr = os.popen("cd Atomicity/" + self.currentswapname + "/ && python3 py/deploy.py").read()
             if addr.startswith("0x"):
-                addrfile = open(self.currentswapname + "/responderContractAddress", "w")
-                addrfile.write(addr)
-                addrfile.close()
+                clean_file_open(self.currentswapname + "/responderContractAddress", "w", addr)
                 #TODO: IMPORTANT! check the contract by comparing its x and y coordinates to make sure they are the ones expected
                 #but more importantly to make sure the contract was properly uploaded to the chain before sending funds to it!!!
                 fundScalarContract(self)
@@ -187,9 +158,7 @@ def deployAndFundScalarSwapContract(self): #responder operation
             print(deployCMD)
             addr = os.popen(deployCMD).read()
             if addr.startswith("0x"):
-                addrfile = open(self.currentswapname + "/responderContractAddress", "w")
-                addrfile.write(addr)
-                addrfile.close()
+                clean_file_open(self.currentswapname + "/responderContractAddress", "w", addr)
                 #TODO: IMPORTANT! check the contract by comparing its x and y coordinates to make sure they are the ones expected
                 #but more importantly to make sure the contract was properly uploaded to the chain before sending funds to it!!!
                 fundScalarContract(self)
@@ -201,7 +170,7 @@ def deployAndFundScalarSwapContract(self): #responder operation
 
 def fundScalarContract(self): #responder operation
     if os.path.isfile(self.currentswapname + "/responderContractAddress"):
-        addr = open(self.currentswapname + "/responderContractAddress", "r").read().rstrip()
+        addr = clean_file_open(self.currentswapname + "/responderContractAddress", "r").rstrip()
         cmd = "cd Atomicity/" + \
                 self.currentswapname + " && ./deploy.sh sendAmount " + \
                 self.swap_tab_view.valueToSpendEntry.get()  + ' '+ addr
@@ -211,18 +180,14 @@ def fundScalarContract(self): #responder operation
         print("responders contract not found! not deployed yet or recieved")
 
 def writeInitiation(self): #responder operation
-    f = open(self.currentswapname + "/initiation.atomicswap", "w")
-    f.write(self.initiatorCommitment.get())
-    f.close()
+    clean_file_open(self.currentswapname + "/initiation.atomicswap", "w", self.initiatorCommitment.get())
 
 def decryptInitiation(self): #responder operation
     decryptElGamal = \
             "./ElGamal decryptFromPubKey " + self.currentswapname + "/initiation.atomicswap " + \
             self.currentReceiver + ' ' + self.ElGamalKeyFileName
     decryption = os.popen(decryptElGamal).read()
-    f = open(self.currentswapname + "/DEC_initiation.atomicswap", "w")
-    f.write(decryption)
-    f.close()
+    clean_file_open(self.currentswapname + "/DEC_initiation.atomicswap", "w", decryption)
     j = json.loads(decryption)
     self.counterpartyChainPubkey = j["chainPubkey"]
     self.ksG = j["ksG"]
@@ -235,9 +200,7 @@ def commitResponse(self): #responder operation
                 "'" + self.ksG + "' " + "'" + str(datetime.now()) + "' " +\
                 self.currentswapname + "/sr " + self.currentswapname + "/x" \
                 ).read()
-    f = open(self.currentswapname + "/response_commitment.atomicswap", "w")
-    f.write(self.response)
-    f.close()
+    clean_file_open(self.currentswapname + "/response_commitment.atomicswap", "w", self.response)
     j = json.loads(self.response)
     self.xG = j["xG"]
     runElGamal = "./ElGamal encryptToPubKey " + \
@@ -266,10 +229,9 @@ def AtomicityScalarContractOperation(self): #responder operation
             "&& cp ../../AtomicMultiSigSecp256k1/contracts/ReentrancyGuard.sol . " + \
             "&& cp ../../AtomicMultiSigSecp256k1/contracts/EllipticCurve.sol . "
     cpy = os.popen(contract_copy).read()
-    rename = str(open("Atomicity/" + self.currentswapname + "/contracts/" + self.currentswapname + ".sol", "r").read() )
-    rewrite = open("Atomicity/" + self.currentswapname + "/contracts/" + self.currentswapname + ".sol", "w")
-    rewrite.write(rename.replace('AtomicMultiSigSecp256k1', self.currentswapname))
-    rewrite.close()
+    rename = str(clean_file_open("Atomicity/" + self.currentswapname + "/contracts/" + self.currentswapname + ".sol", "r"))
+    clean_file_open("Atomicity/" + self.currentswapname + "/contracts/" + self.currentswapname + ".sol", "w", \
+            rename.replace('AtomicMultiSigSecp256k1', self.currentswapname))
     specifyChain = os.popen("echo 'CurrentChain=\"" + self.responderChainOption.get() + "\"' >> Atomicity/" + \
             self.currentswapname + "/.env").read()
 
