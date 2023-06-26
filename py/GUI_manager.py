@@ -228,7 +228,7 @@ def setSwapTab(self, first):
             self.swap_tab_view.add(self.currentswapname)
 
 def SwapResponderGUI(self):
-    from swap import copyResponse, deployAndFundScalarSwapContract, receiverCheck, \
+    from swap import copyResponse, deployAndFundScalarSwapContract, responderCheck, \
             getLocalLockTime, AtomicityRefund, updateDataBasedOnOpenTab, AutoClaim, responderClaim #TODO rename receiver to responder?
 
     def goCopyResponse():
@@ -240,7 +240,7 @@ def SwapResponderGUI(self):
         t.start()
 
     def goResponderCheck():
-        t = threading.Thread(target=receiverCheck, args=(self,))
+        t = threading.Thread(target=responderCheck, args=(self,))
         t.start()
 
     def goReceiverClaim():
@@ -284,7 +284,7 @@ def SwapResponderGUI(self):
                                 else:
                                     break
                     else:
-                        receiverCheck(self)
+                        responderCheck(self)
                         time.sleep(5)
                         continue
                 else:
@@ -306,7 +306,7 @@ def SwapResponderGUI(self):
                                         self.swap_tab_view.claimButton.configure(state="normal")
                                         break
                                 else: 
-                                    receiverCheck(self)
+                                    responderCheck(self)
                                     break
                     else:
                         break
@@ -334,7 +334,7 @@ def SwapResponderGUI(self):
                                     else:
                                         break
                                 else:
-                                    receiverCheck(self)
+                                    responderCheck(self)
                                     time.sleep(5)
                                     continue
                     else:
@@ -359,7 +359,7 @@ def SwapResponderGUI(self):
                                     else:
                                         break
                                 else:
-                                    receiverCheck(self)
+                                    responderCheck(self)
                                     time.sleep(5)
                                     continue
                     else:

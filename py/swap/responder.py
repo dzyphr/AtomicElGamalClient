@@ -40,7 +40,7 @@ def responderClaim(self):
         return returnVal
 
 
-def receiverCheck(self): #responder operatio
+def responderCheck(self): #responder operatio
     updateDataBasedOnOpenTab(self)
     if self.swap_tab_view.finalizeEntry.get() == "":
         print("paste in the finalization to claim!")
