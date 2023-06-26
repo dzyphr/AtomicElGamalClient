@@ -232,11 +232,11 @@ def SwapResponderGUI(self):
             getLocalLockTime, AtomicityRefund, updateDataBasedOnOpenTab, AutoClaim, responderClaim #TODO rename receiver to responder?
 
     def goCopyResponse():
-        t = threading.Thread(target=copyResponse, args=(self,))
+        t = threading.Thread(target=copyResponse, args=(self, self.currentswapname))
         t.start()
 
     def goDeployAndFundScalarSwapContract():
-        t = threading.Thread(target=deployAndFundScalarSwapContract, args=(self,))
+        t = threading.Thread(target=deployAndFundScalarSwapContract, args=(self, self.currentswapname))
         t.start()
 
     def goResponderCheck():
@@ -244,7 +244,7 @@ def SwapResponderGUI(self):
         t.start()
 
     def goReceiverClaim():
-        t = threading.Thread(target=responderClaim, args=(self,))
+        t = threading.Thread(target=responderClaim, args=(self, self.currentswapname))
         t.start()
 
     def goCheckLockTime():
@@ -257,7 +257,7 @@ def SwapResponderGUI(self):
             print("error checking locktime")
 
     def goRefund():
-        t = threading.Thread(target=AtomicityRefund, args=(self,))
+        t = threading.Thread(target=AtomicityRefund, args=(self, self.currentswapname))
         t.start()
 
 

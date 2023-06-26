@@ -117,10 +117,10 @@ def draftFinalSignature(self): #create the final sig ss and pub value sG #initia
                 print(finalSigJson)
                 clean_file_open(self.currentswapname + "/finalize.atomicswap", "w", finalSigJson)
                 SigmaParticleAtomicSchnorr(self)
-                time.sleep(4)
+                time.sleep(6)
                 boxId = clean_file_open("SigmaParticle/" + self.currentswapname + "/boxId", "r")
                 mod = finalSigJson
-                modified = mod.replace("\"\n}", "\",\n    \"boxId\": \"" + boxId + "\"\n}")
+                modified = mod.replace("\"\n}", "\",\n    \"boxId\": \"" + str(boxId) + "\"\n}")
                 print(modified)
                 clean_file_open(self.currentswapname + "/finalize.atomicswap", "w", modified)
                 cmd = \

@@ -39,7 +39,7 @@ def AutoClaim(self, relevantTab):
                                         break
                                     else:
                                         if int(minimum) < int(val):
-                                            return responderClaim(self)
+                                            return responderClaim(self, relevantTab)
                                             break
                                         else:
                                             print("under minimum value")
@@ -73,16 +73,17 @@ def initiateSwap(self): #currently ambiguous as it facilitates initiator and res
         elif self.isInitiator == False:
             #make sure active tab functions get swap name from current open tab
             self.currentswapname = determineSwapName()
+            relevantTab = self.currentswapname
             if self.swapTabSet == False:
                 setSwapTab(self, True)
             else:
                 setSwapTab(self, False)
             if self.initiatorCommitment.get() != "":
-                writeInitiation(self)
-                decryptInitiation(self)
+                writeInitiation(self, relevantTab)
+                decryptInitiation(self, relevantTab)
                 setCrossChainPubkeyDerived(self)
                 GUI_ReArrange_Chain_Based(self)
-                commitResponse(self)
+                commitResponse(self, relevantTab)
                 SwapResponderGUI(self)
                 saveRole(self)
             else:
