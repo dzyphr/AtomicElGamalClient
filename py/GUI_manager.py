@@ -110,6 +110,14 @@ def setSwapTab(self, first):
                 t = threading.Thread(target=SigmaParticleRefund, args=(self, self.currentswapname))
                 t.start()
 
+    def goAutoClaim():
+        updateDataBasedOnOpenTab(self)
+        relevantTab = self.currentswapname
+        while True:
+            if os.path.isfile(relevantTab + "/AutoClaim") == False:
+                print("no autoclaim file found yet creating one")
+                clean_file_open(relevantTab + "/AutoClaim", "w", "true", "AutoClaim file not writable")
+                self.swap_tab_view.claim.configure(state="disabled")
 
 #    def goDecryptResponse():`
 #        decryptResponse(self)
