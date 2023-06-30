@@ -120,7 +120,16 @@ def setSwapTab(self, first):
                 if self.swap_tab_view.autoClaimCheckbox.get() == 1:
                     clean_file_open(relevantTab + "/AutoClaim", "w", "true", "AutoClaim file not writable")
                     self.swap_tab_view.claim.configure(state="disabled")
-                    AutoClaim(self, relevantTab)
+                    r = AutoClaim(self, relevantTab)
+                    if type(r) == type(None):
+                        continue
+                    if type(r) == type(str):
+                        if "ValueError" in r:
+                            continue
+                        else:
+                            break
+                    else:
+                        break
             if os.path.isfile(relevantTab + "/AutoClaim") == True:
                 print(" autoclaim file found ")
                 autoClaimFile = clean_file_open(relevantTab + "/AutoClaim", "r")
@@ -128,7 +137,16 @@ def setSwapTab(self, first):
                     clean_file_open(relevantTab + "/AutoClaim", "w", "true", "AutoClaim file not writable")
                     print("autoclaim ON")
                     self.swap_tab_view.claim.configure(state="disabled")
-                    AutoClaim(self, relevantTab)
+                    r = AutoClaim(self, relevantTab)
+                    if type(r) == type(None):
+                        continue
+                    if type(r) == type(str):
+                        if "ValueError" in r:
+                            continue
+                        else:
+                            break
+                    else:
+                        break
                 if self.swap_tab_view.autoClaimCheckbox.get() == 0 and autoClaimFile == "true":
                     print("autoclaim OFF")
                     clean_file_open(relevantTab + "/AutoClaim", "w", "false", "AutoClaim file not writable")
@@ -136,7 +154,17 @@ def setSwapTab(self, first):
                     break
                 if self.swap_tab_view.autoClaimCheckbox.get() == 1 and autoClaimFile == "true":
                     print("autoclaim ON")
-                    AutoClaim(self, relevantTab)
+                    r = AutoClaim(self, relevantTab)
+                    if type(r) == type(None):
+                        continue
+                    if type(r) == type(str):
+                        if "ValueError" in r:
+                            continue
+                        else:
+                            break
+                    else:
+                        break
+
             time.sleep(5)
 
 
@@ -323,6 +351,8 @@ def SwapResponderGUI(self):
                                 if type(returnVal) == type(str):
                                     if "error"  in returnVal:
                                         continue
+                                    else:
+                                        break
                                 else:
                                     break
                     else:
@@ -373,6 +403,9 @@ def SwapResponderGUI(self):
                                     if type(returnVal) == type(str):
                                         if "error"  in returnVal:
                                             continue
+                                        else:
+                                            break
+
                                     else:
                                         break
                                 else:
@@ -398,6 +431,9 @@ def SwapResponderGUI(self):
                                     if type(returnVal) == type(str):
                                         if "error"  in returnVal:
                                             continue
+                                        else:
+                                            break
+
                                     else:
                                         break
                                 else:

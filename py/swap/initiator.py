@@ -189,7 +189,7 @@ def deduce_x(self, relevantTab):
     claimScript = \
                 "cd Atomicity/" + chain + " && ./deploy.sh claim " + contractAddr + " " + x + " " + gas + " " + gasMod
     print(claimScript)
-    print(os.popen(claimScript).read())
+    return os.popen(claimScript).read()
 
 def deploySigmaParticleAtomicSchorr(self, relevantTab):
     command = "cd SigmaParticle/" + relevantTab + " && ./deploy.sh deposit"

@@ -51,9 +51,8 @@ def AutoClaim(self, relevantTab):
                                     if os.path.isfile(relevantTab + "/DEC_response.atomicswap") == True:
                                         j = json.loads(clean_file_open(relevantTab + "/DEC_response.atomicswap", "r"))
                                         if j["chain"] == "Sepolia": #responder is on sepolia chain
-                                            t = threading.Thread(target=deduce_x, args=(self, relevantTab))
-                                            t.start()
                                             print("autoclaiming!")
+                                            return deduce_x(self, relevantTab)
                                             break
                                 except:
                                     print("failure: retrying in five...")
