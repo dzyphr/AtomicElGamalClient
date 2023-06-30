@@ -64,7 +64,8 @@ def GUI_Arrange_Swap_Based(self): #here we are updating the GUI according to the
 
 def setSwapTab(self, first):
     from swap import SwapTab, copyENCInit, inspectScalarLockContract, draftFinalSignature,\
-            checkTreeForFinalization, deduce_sr, getLocalLockTime, SigmaParticleRefund, updateDataBasedOnOpenTab
+            checkTreeForFinalization, deduce_x, getLocalLockTime, SigmaParticleRefund, updateDataBasedOnOpenTab,\
+            AutoClaim
 
     def goCopyENCInit():
         copyENCInit(self, self.currentswapname)
@@ -81,8 +82,8 @@ def setSwapTab(self, first):
         t = threading.Thread(target=checkTreeForFinalization, args=(self, self.currentswapname))
         t.start()
 
-    def goDeduce_sr():
-        t = threading.Thread(target=deduce_sr, args=(self, self.currentswapname))
+    def goDeduce_x():
+        t = threading.Thread(target=deduce_x, args=(self, self.currentswapname))
         t.start()
 
     def goCheckLockTime():
@@ -116,8 +117,36 @@ def setSwapTab(self, first):
         while True:
             if os.path.isfile(relevantTab + "/AutoClaim") == False:
                 print("no autoclaim file found yet creating one")
-                clean_file_open(relevantTab + "/AutoClaim", "w", "true", "AutoClaim file not writable")
-                self.swap_tab_view.claim.configure(state="disabled")
+                if self.swap_tab_view.autoClaimCheckbox.get() == 1:
+                    clean_file_open(relevantTab + "/AutoClaim", "w", "true", "AutoClaim file not writable")
+                    self.swap_tab_view.claim.configure(state="disabled")
+                    AutoClaim(self, relevantTab)
+            if os.path.isfile(relevantTab + "/AutoClaim") == True:
+                print(" autoclaim file found ")
+                autoClaimFile = clean_file_open(relevantTab + "/AutoClaim", "r")
+                if self.swap_tab_view.autoClaimCheckbox.get() == 1 and autoClaimFile == "false":
+                    clean_file_open(relevantTab + "/AutoClaim", "w", "true", "AutoClaim file not writable")
+                    print("autoclaim ON")
+                    self.swap_tab_view.claim.configure(state="disabled")
+                    AutoClaim(self, relevantTab)
+                if self.swap_tab_view.autoClaimCheckbox.get() == 0 and autoClaimFile == "true":
+                    print("autoclaim OFF")
+                    clean_file_open(relevantTab + "/AutoClaim", "w", "false", "AutoClaim file not writable")
+                    self.swap_tab_view.claim.configure(state="normal")
+                    break
+                if self.swap_tab_view.autoClaimCheckbox.get() == 1 and autoClaimFile == "true":
+                    print("autoclaim ON")
+                    AutoClaim(self, relevantTab)
+            time.sleep(5)
+
+
+
+    def goAutoClaimTHREAD():
+        t = threading.Thread(target=goAutoClaim)
+        t.start()
+
+
+
 
 #    def goDecryptResponse():`
 #        decryptResponse(self)
@@ -190,7 +219,7 @@ def setSwapTab(self, first):
 
         self.swap_tab_view.claim = \
                 customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
-                text="Claim", command=goDeduce_sr, width=5, height=7, state="disabled")
+                text="Claim", command=goDeduce_x, width=5, height=7, state="disabled")
         self.swap_tab_view.claim.grid(row=10, column=1, padx=4, pady=4)
         self.swap_tab_view.checkRefundLockTime = \
                 customtkinter.CTkButton(master=self.swap_tab_view.tab(self.currentswapname), \
@@ -204,14 +233,13 @@ def setSwapTab(self, first):
                 customtkinter.CTkLabel(master=self.swap_tab_view.tab(self.currentswapname), \
                 text="Refund Lock Time Remaining: uninitiated")
         self.swap_tab_view.RefundLockTimeLabel.grid(row=12, column=0, padx=4, pady=4)
-        self.swap_tab_view.minimumValueAutoClaim = \
-            customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname), \
-        placeholder_text="minimum autoclaim val in wei", width=300, height=5) #TODO automate denomination label
-        self.swap_tab_view.minimumValueAutoClaim.grid(row=13, column=0, padx=4, pady=4)
+#        self.swap_tab_view.minimumValueAutoClaim = \ #doesnt make sense here, should be auto finalize then claim with min before final
+#            customtkinter.CTkEntry(master=self.swap_tab_view.tab(self.currentswapname), \
+#        placeholder_text="minimum autoclaim val in wei", width=300, height=5) #TODO automate denomination label
+#        self.swap_tab_view.minimumValueAutoClaim.grid(row=13, column=0, padx=4, pady=4)
         self.swap_tab_view.autoClaimCheckbox = \
                 customtkinter.CTkCheckBox(master=self.swap_tab_view.tab(self.currentswapname) \
-                , text="AutoClaim")#, \
-        #            command=goAutoClaimTHREAD)
+                , text="AutoClaim", command=goAutoClaimTHREAD)
         self.swap_tab_view.autoClaimCheckbox.grid(row=13, column=1, padx=4, pady=4)
 
 
@@ -240,22 +268,27 @@ def SwapResponderGUI(self):
             getLocalLockTime, AtomicityRefund, updateDataBasedOnOpenTab, AutoClaim, responderClaim #TODO rename receiver to responder?
 
     def goCopyResponse():
+        updateDataBasedOnOpenTab(self)
         t = threading.Thread(target=copyResponse, args=(self, self.currentswapname))
         t.start()
 
     def goDeployAndFundScalarSwapContract():
+        updateDataBasedOnOpenTab(self)
         t = threading.Thread(target=deployAndFundScalarSwapContract, args=(self, self.currentswapname))
         t.start()
 
     def goResponderCheck():
+        updateDataBasedOnOpenTab(self)
         t = threading.Thread(target=responderCheck, args=(self, self.currentswapname))
         t.start()
 
     def goReceiverClaim():
+        updateDataBasedOnOpenTab(self)
         t = threading.Thread(target=responderClaim, args=(self, self.currentswapname))
         t.start()
 
     def goCheckLockTime():
+        updateDataBasedOnOpenTab(self)
         lockTime = getLocalLockTime(self, self.currentswapname)
         if lockTime != None:
             self.swap_tab_view.lockTimeLabel.configure(text="LockTime: " + lockTime)
@@ -265,6 +298,7 @@ def SwapResponderGUI(self):
             print("error checking locktime")
 
     def goRefund():
+        updateDataBasedOnOpenTab(self)
         t = threading.Thread(target=AtomicityRefund, args=(self, self.currentswapname))
         t.start()
 
@@ -310,7 +344,7 @@ def SwapResponderGUI(self):
                             if chain == "Ergo":
                                 if os.path.isfile(relevantTab + "/InitiatorContractValue"):
                                     val =  clean_file_open(relevantTab + "/InitiatorContractValue", "r")
-                                    if val > 1:
+                                    if int(val) > 1:
                                         self.swap_tab_view.claimButton.configure(state="normal")
                                         break
                                 else: 
@@ -379,6 +413,7 @@ def SwapResponderGUI(self):
                     continue
 
     def goAutoClaimTHREAD():
+        updateDataBasedOnOpenTab(self)
         t = threading.Thread(target=goAutoClaim)
         t.start()
 

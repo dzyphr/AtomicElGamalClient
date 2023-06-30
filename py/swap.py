@@ -35,7 +35,7 @@ def AutoClaim(self, relevantTab):
                                     if minimum == "":
                                         print("enter minimum val!")
                                         clean_file_open(relevantTab + "/AutoClaim", "w", "false", truncate=True)
-                                        self.swap_tab_view.autoClaimCheckbox.toggle()
+                                        self.swap_tab_view.tab(relevantTab).children["!ctkcheckbox"].toggle()
                                         break
                                     else:
                                         if int(minimum) < int(val):
@@ -43,6 +43,33 @@ def AutoClaim(self, relevantTab):
                                             break
                                         else:
                                             print("under minimum value")
+                    if role == "initiator":
+                        localChain = json.loads(clean_file_open(relevantTab +"/initiation.atomicswap", "r"))["localChain"]
+                        if localChain == "Ergo":
+                            if os.path.isfile(relevantTab + "/atomicClaim_tx1") and os.path.isfile(relevantTab + "/sr"):
+                                try:
+                                    if os.path.isfile(relevantTab + "/DEC_response.atomicswap") == True:
+                                        j = json.loads(clean_file_open(relevantTab + "/DEC_response.atomicswap", "r"))
+                                        if j["chain"] == "Sepolia": #responder is on sepolia chain
+                                            t = threading.Thread(target=deduce_x, args=(self, relevantTab))
+                                            t.start()
+                                            print("autoclaiming!")
+                                            break
+                                except:
+                                    print("failure: retrying in five...")
+                                    time.sleep(5)
+                                    continue
+                            else:
+                                print("atomicClaim not found, rechecking in 5...")
+                                t = threading.Thread(target=checkTreeForFinalization, args=(self, relevantTab))
+                                t.start()
+                                time.sleep(5)
+                                continue
+
+
+
+
+
                 else:
                     time.sleep(5)
         else:

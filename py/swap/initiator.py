@@ -116,7 +116,7 @@ def draftFinalSignature(self, relevantTab): #create the final sig ss and pub val
                 print(finalSigJson)
                 clean_file_open(relevantTab + "/finalize.atomicswap", "w", finalSigJson)
                 SigmaParticleAtomicSchnorr(self, relevantTab)
-                time.sleep(6)
+                time.sleep(10)
                 boxId = clean_file_open("SigmaParticle/" + relevantTab + "/boxId", "r")
                 mod = finalSigJson
                 modified = mod.replace("\"\n}", "\",\n    \"boxId\": \"" + str(boxId) + "\"\n}")
@@ -144,26 +144,29 @@ def draftFinalSignature(self, relevantTab): #create the final sig ss and pub val
 def checkTreeForFinalization(self, relevantTab):
     updateDataBasedOnOpenTab(self)
     tree = clean_file_open("SigmaParticle/" + relevantTab + "/ergoTree", "r")
-    j = json.loads(clean_file_open(relevantTab + "/finalize.atomicswap", "r"))
-    boxId = j["boxId"]
-    treeToAddrCmd = \
-            "cd SigmaParticle/treeToAddr && ./deploy.sh " + tree
-    addr = json.loads(os.popen(treeToAddrCmd).read())["address"]
-    print("addr: ", addr)
-    boxFilterCmd =\
-            "cd SigmaParticle/boxFilter &&" +\
-            "./deploy.sh " + addr + " " + boxId + " ../../" + relevantTab + "/atomicClaim"
-    print(os.popen(boxFilterCmd).read())
-    if os.path.isfile(relevantTab + "/atomicClaim_tx1"):
-        j = json.loads(clean_file_open(relevantTab + "/atomicClaim_tx1", "r"))
-        R4 = j["outputs"][0]["additionalRegisters"]["R4"]
-        clean_file_open(relevantTab + "/sr", "w", R4)
-        self.swap_tab_view.claim.configure(state="normal")
+    if clean_file_open(relevantTab + "/finalize.atomicswap", "r") == None:
+        return print("finalization not created yet...")
     else:
-        print("no atomic claim transactions found")
+        j = json.loads(clean_file_open(relevantTab + "/finalize.atomicswap", "r"))
+        boxId = j["boxId"]
+        treeToAddrCmd = \
+                "cd SigmaParticle/treeToAddr && ./deploy.sh " + tree
+        addr = json.loads(os.popen(treeToAddrCmd).read())["address"]
+        print("addr: ", addr)
+        boxFilterCmd =\
+                "cd SigmaParticle/boxFilter &&" +\
+                "./deploy.sh " + addr + " " + boxId + " ../../" + relevantTab + "/atomicClaim"
+        print(os.popen(boxFilterCmd).read())
+        if os.path.isfile(relevantTab + "/atomicClaim_tx1"):
+            j = json.loads(clean_file_open(relevantTab + "/atomicClaim_tx1", "r"))
+            R4 = j["outputs"][0]["additionalRegisters"]["R4"]
+            clean_file_open(relevantTab + "/sr", "w", R4)
+            self.swap_tab_view.claim.configure(state="normal")
+        else:
+            print("no atomic claim transactions found")
 
 
-def deduce_sr(self, relevantTab):
+def deduce_x(self, relevantTab):
     updateDataBasedOnOpenTab(self)
 
     j = json.loads(clean_file_open(relevantTab + "/DEC_response.atomicswap", "r"))

@@ -37,6 +37,7 @@ def responderClaim(self, relevantTab):
         claimCMD = \
                 "cd SigmaParticle/" + relevantTab + " && ./deploy.sh claim"
         returnVal = os.popen(claimCMD).read()
+        time.sleep(5)
         return returnVal
 
 
@@ -114,7 +115,6 @@ def copyResponse(self, relevantTab): #esponder operation
                         "    \"chain\": " + "\"" + self.responderChain.rstrip() + "\"" + ",\n" + \
                         "    \"" + self.crossChain  + "_chainPubkey\": " + "\"" + self.chainPubkey.rstrip() + "\"" + "\n" + \
                         "}")
-                clean_file_open(relevantTab + "/response_commitment.atomicswap", "w", edit)
                 runElGamal = "./ElGamal encryptToPubKey " + \
                     self.currentReceiver + ' ' + \
                     self.ElGamalKeyFileName + ' ' + \
