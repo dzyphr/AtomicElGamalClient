@@ -79,7 +79,7 @@ def AtomicityRefund(self, relevantTab):
     addr = json.loads(clean_file_open(relevantTab + "/response_commitment.atomicswap", "r"))["contractAddr"]
     refundCMD = \
             "cd Atomicity/" + relevantTab + " && ./deploy.sh refund " + addr
-    print(os.popen(refundCMD).read())
+    return os.popen(refundCMD).read()
 
 def SigmaParticleRefund(self, relevantTab):
     updateDataBasedOnOpenTab(self)

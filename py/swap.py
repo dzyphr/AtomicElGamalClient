@@ -65,7 +65,6 @@ def AutoClaim(self, relevantTab):
                                 time.sleep(5)
                                 continue
 
-                    AutoRefund(self, relevantTab)
 
 
 
@@ -75,17 +74,28 @@ def AutoClaim(self, relevantTab):
             print("cant find path: " +  relevantTab + "/AutoClaim")
 
 def AutoRefund(self, relevantTab):
-    while True:
-        if os.path.isfile(relevantTab + "/roleData.json") == True:
-            role = json.loads(clean_file_open(relevantTab + "/roleData.json", "r"))["role"]
-            if role == "responder":
-                if os.path.isfile(relevantTab + "DEC_response.atomicswap"):
-                    j = json.loads(clean_file_open(relevantTab + "DEC_response.atomicswap"))
+    print("autoRefund loop start")
+    if os.path.isfile(relevantTab + "/roleData.json") == True:
+        role = json.loads(clean_file_open(relevantTab + "/roleData.json", "r"))["role"]
+        if role == "responder":
+            print("role is responder...")
+            if os.path.isfile(relevantTab + "/response_commitment.atomicswap"):
+                j = json.loads(clean_file_open(relevantTab + "/response_commitment.atomicswap", "r"))
+                if "chain" in j:
                     chain = j["chain"]
                     if chain == "Sepolia":
+                        print("chain is Sepolia")
                         lockTime = getLocalLockTime(self, relevantTab)
-                        if lockTime <= 0:
-                            AtomicityRefund(self, relevantTab)
+                        print("lockTime = ", lockTime)
+                        if lockTime != "":
+                            if type(lockTime) != type(None):
+                                if int(lockTime) <= 0 or int(lockTime) == 0:  
+                                    response = AtomicityRefund(self, relevantTab)
+                                    print("refundResponse: \n", response)
+                                    if "Traceback" not in response:
+                                        return "Success"
+                                    else:
+                                        return "Fail"
 
 def initiateSwap(self): #currently ambiguous as it facilitates initiator and responder swap start
     if self.isInitiator == True and (self.initiatorChain  == "NotSelected" or self.responderChain == "NotSelected"):

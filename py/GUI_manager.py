@@ -293,7 +293,8 @@ def setSwapTab(self, first):
 
 def SwapResponderGUI(self):
     from swap import copyResponse, deployAndFundScalarSwapContract, responderCheck, \
-            getLocalLockTime, AtomicityRefund, updateDataBasedOnOpenTab, AutoClaim, responderClaim #TODO rename receiver to responder?
+            getLocalLockTime, AtomicityRefund, updateDataBasedOnOpenTab, AutoClaim, \
+            AutoRefund, responderClaim #TODO rename receiver to responder?
 
     def goCopyResponse():
         updateDataBasedOnOpenTab(self)
@@ -361,6 +362,10 @@ def SwapResponderGUI(self):
                         continue
                 else:
                     print("finalization not found, waiting...")
+                    refundStatus = AutoRefund(self, relevantTab)
+                    if type(refundStatus) != type(None):
+                        if refundStatus == "Success":
+                            break
                     time.sleep(5)
                     continue
             elif os.path.isfile(relevantTab + "/AutoClaim") == True:
@@ -413,6 +418,11 @@ def SwapResponderGUI(self):
                                     time.sleep(5)
                                     continue
                     else:
+                        print("finalization not found, waiting...")
+                        refundStatus = AutoRefund(self, relevantTab)
+                        if type(refundStatus) != type(None):
+                            if refundStatus == "Success":
+                                break
                         time.sleep(5)
                         continue
                 if b == "true" and self.swap_tab_view.autoClaimCheckbox.get() == 1: 
@@ -442,6 +452,10 @@ def SwapResponderGUI(self):
                                     continue
                     else:
                         print("finalization not found, waiting...")
+                        refundStatus = AutoRefund(self, relevantTab)
+                        if type(refundStatus) != type(None):
+                            if refundStatus == "Success":
+                                break
                         time.sleep(5)
                         continue
                 else:
