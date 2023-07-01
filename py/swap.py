@@ -65,7 +65,7 @@ def AutoClaim(self, relevantTab):
                                 time.sleep(5)
                                 continue
 
-
+                    AutoRefund(self, relevantTab)
 
 
 
@@ -74,7 +74,18 @@ def AutoClaim(self, relevantTab):
         else:
             print("cant find path: " +  relevantTab + "/AutoClaim")
 
-
+def AutoRefund(self, relevantTab):
+    while True:
+        if os.path.isfile(relevantTab + "/roleData.json") == True:
+            role = json.loads(clean_file_open(relevantTab + "/roleData.json", "r"))["role"]
+            if role == "responder":
+                if os.path.isfile(relevantTab + "DEC_response.atomicswap"):
+                    j = json.loads(clean_file_open(relevantTab + "DEC_response.atomicswap"))
+                    chain = j["chain"]
+                    if chain == "Sepolia":
+                        lockTime = getLocalLockTime(self, relevantTab)
+                        if lockTime <= 0:
+                            AtomicityRefund(self, relevantTab)
 
 def initiateSwap(self): #currently ambiguous as it facilitates initiator and responder swap start
     if self.isInitiator == True and (self.initiatorChain  == "NotSelected" or self.responderChain == "NotSelected"):

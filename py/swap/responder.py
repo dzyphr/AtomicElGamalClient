@@ -94,39 +94,13 @@ def SigmaParticleRefund(self, relevantTab):
 
 def copyResponse(self, relevantTab): #esponder operation
     updateDataBasedOnOpenTab(self)
-    if os.path.isfile(relevantTab + "/responderContractAddress"):
-        if os.path.isfile(self.swap_tab_view.get() + "/response_commitment.atomicswap"):
-            addr = clean_file_open(relevantTab + "/responderContractAddress", "r").rstrip()
-            response = clean_file_open(self.swap_tab_view.get() + "/response_commitment.atomicswap", "r")
-            if "chain" not in response :
-                j = json.loads(clean_file_open(relevantTab + "/DEC_initiation.atomicswap", "r"))
-                self.counterpartyChainPubkey = j["chainPubkey"]
-                self.crossChain = j["localChain"]
-                if self.crossChain == "Ergo": #TODO: any non account chain
-                    if self.chainPubkeyEntry.get() == "":
-                        self.chainPubkeyEntry.insert(0, "0")
-                        print("pubkey index not specified using 0")
-                setCrossChainPubkeyDerived(self)
-                GUI_ReArrange_Chain_Based(self)
-                edit = response.replace(\
-                        "\n}", \
-                        ",\n" +
-                        "    \"contractAddr\": " + "\"" + addr.rstrip() + "\"" + ",\n"  + \
-                        "    \"chain\": " + "\"" + self.responderChain.rstrip() + "\"" + ",\n" + \
-                        "    \"" + self.crossChain  + "_chainPubkey\": " + "\"" + self.chainPubkey.rstrip() + "\"" + "\n" + \
-                        "}")
-                runElGamal = "./ElGamal encryptToPubKey " + \
-                    self.currentReceiver + ' ' + \
-                    self.ElGamalKeyFileName + ' ' + \
-                    "\'" + edit + "\' " + \
-                    relevantTab + "/ENC_response_commitment.atomicswap"
-                ElGamal = os.popen(runElGamal).read()
-                enc_response = clean_file_open(relevantTab + "/ENC_response_commitment.atomicswap", "r")
-                pyperclip.copy(enc_response) #if the response wont paste into GUI entry encryption is too large
-                self.swap_tab_view.checkButton.configure(state="normal")
-                self.swap_tab_view.checkLockTimeButton.configure(state="normal")
+    if os.path.isfile(relevantTab + "/ENC_response_commitment.atomicswap"):
+        enc_response = clean_file_open(relevantTab + "/ENC_response_commitment.atomicswap", "r")
+        pyperclip.copy(enc_response) #if the response wont paste into GUI entry encryption is too large
+        self.swap_tab_view.checkButton.configure(state="normal")
+        self.swap_tab_view.checkLockTimeButton.configure(state="normal")
     else:
-        print("swap contract not deployed yet!")
+        print("cannot find: " + relevantTab + "/ENC_response_commitment.atomicswap")
 
 def deployAndFundScalarSwapContract(self, relevantTab): #responder operation
     updateDataBasedOnOpenTab(self)
@@ -151,6 +125,35 @@ def deployAndFundScalarSwapContract(self, relevantTab): #responder operation
                 #but more importantly to make sure the contract was properly uploaded to the chain before sending funds to it!!!
                 fundScalarContract(self, relevantTab)
                 self.swap_tab_view.copyResponseButton.configure(state="normal")
+                if os.path.isfile(relevantTab + "/responderContractAddress"):
+                    if os.path.isfile(self.swap_tab_view.get() + "/response_commitment.atomicswap"):
+                        addr = clean_file_open(relevantTab + "/responderContractAddress", "r").rstrip()
+                        response = clean_file_open(self.swap_tab_view.get() + "/response_commitment.atomicswap", "r")
+                        if "chain" not in response :
+                            j = json.loads(clean_file_open(relevantTab + "/DEC_initiation.atomicswap", "r"))
+                            self.counterpartyChainPubkey = j["chainPubkey"]
+                            self.crossChain = j["localChain"]
+                            if self.crossChain == "Ergo": #TODO: any non account chain
+                                if self.chainPubkeyEntry.get() == "":
+                                    self.chainPubkeyEntry.insert(0, "0")
+                                    print("pubkey index not specified using 0")
+                            setCrossChainPubkeyDerived(self)
+                            GUI_ReArrange_Chain_Based(self)
+                            edit = response.replace(\
+                                    "\n}", \
+                                    ",\n" +
+                                    "    \"contractAddr\": " + "\"" + addr.rstrip() + "\"" + ",\n"  + \
+                                    "    \"chain\": " + "\"" + self.responderChain.rstrip() + "\"" + ",\n" + \
+                                    "    \"" + self.crossChain  + "_chainPubkey\": " + "\"" + self.chainPubkey.rstrip() + "\"" + "\n" + \
+                                    "}")
+                            clean_file_open(self.swap_tab_view.get() + "/response_commitment.atomicswap", \
+                                    "w", edit, "failed to update response committment")
+                            runElGamal = "./ElGamal encryptToPubKey " + \
+                                self.currentReceiver + ' ' + \
+                                self.ElGamalKeyFileName + ' ' + \
+                                "\'" + edit + "\' " + \
+                                relevantTab + "/ENC_response_commitment.atomicswap"
+                            ElGamal = os.popen(runElGamal).read()
             else:
                 print("addr should be output instead got:", addr)
         elif customgas == True:
@@ -163,6 +166,35 @@ def deployAndFundScalarSwapContract(self, relevantTab): #responder operation
                 #but more importantly to make sure the contract was properly uploaded to the chain before sending funds to it!!!
                 fundScalarContract(self, relevantTab)
                 self.swap_tab_view.copyResponseButton.configure(state="normal")
+                if os.path.isfile(relevantTab + "/responderContractAddress"):
+                    if os.path.isfile(self.swap_tab_view.get() + "/response_commitment.atomicswap"):
+                        addr = clean_file_open(relevantTab + "/responderContractAddress", "r").rstrip()
+                        response = clean_file_open(self.swap_tab_view.get() + "/response_commitment.atomicswap", "r")
+                        if "chain" not in response :
+                            j = json.loads(clean_file_open(relevantTab + "/DEC_initiation.atomicswap", "r"))
+                            self.counterpartyChainPubkey = j["chainPubkey"]
+                            self.crossChain = j["localChain"]
+                            if self.crossChain == "Ergo": #TODO: any non account chain
+                                if self.chainPubkeyEntry.get() == "":
+                                    self.chainPubkeyEntry.insert(0, "0")
+                                    print("pubkey index not specified using 0")
+                            setCrossChainPubkeyDerived(self)
+                            GUI_ReArrange_Chain_Based(self)
+                            edit = response.replace(\
+                                    "\n}", \
+                                    ",\n" +
+                                    "    \"contractAddr\": " + "\"" + addr.rstrip() + "\"" + ",\n"  + \
+                                    "    \"chain\": " + "\"" + self.responderChain.rstrip() + "\"" + ",\n" + \
+                                    "    \"" + self.crossChain  + "_chainPubkey\": " + "\"" + self.chainPubkey.rstrip() + "\"" + "\n" + \
+                                    "}")
+                            clean_file_open(self.swap_tab_view.get() + "/response_commitment.atomicswap", \
+                                    "w", edit, "failed to update response committment")
+                            runElGamal = "./ElGamal encryptToPubKey " + \
+                                self.currentReceiver + ' ' + \
+                                self.ElGamalKeyFileName + ' ' + \
+                                "\'" + edit + "\' " + \
+                                relevantTab + "/ENC_response_commitment.atomicswap"
+                            ElGamal = os.popen(runElGamal).read()
             else:
                 print("addr should be output instead got:", addr)
     else:
