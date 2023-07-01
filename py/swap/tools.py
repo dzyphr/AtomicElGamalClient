@@ -104,11 +104,11 @@ def getLocalLockTime(self, relevantTab): #for refunds #returns lock time in # of
             else:
                 print("cant find path:", relevantTab + "/localChain_lockHeight", "\n\n box not uploaded yet or invalid ")
     if role == "responder":
-        f = open(relevantTab + "/DEC_response.atomicswap", "r")
+        f = open(relevantTab + "/response_commitment.atomicswap", "r")
         responderChain = json.loads(f.read())["chain"]
         f.close()
         if responderChain == "Sepolia":
-            f = open(relevantTab + "/DEC_response.atomicswap", "r")
+            f = open(relevantTab + "/response_commitment.atomicswap", "r")
             addr = json.loads(f.read())["contractAddr"]
             f.close()
             cmd = \
