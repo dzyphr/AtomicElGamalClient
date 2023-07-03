@@ -81,17 +81,6 @@ def AtomicityRefund(self, relevantTab):
             "cd Atomicity/" + relevantTab + " && ./deploy.sh refund " + addr
     return os.popen(refundCMD).read()
 
-def SigmaParticleRefund(self, relevantTab):
-    updateDataBasedOnOpenTab(self)
-    devnull = open(os.devnull, 'wb')
-    boxId = clean_file_open("SigmaParticle/" + relevantTab + "/boxId", "r")
-    echoBoxIdCMD = \
-            "echo '\natomicBox=" + boxId + "' >> SigmaParticle/" + relevantTab + "/.env"
-    os.popen(echoBoxIdCMD).read()
-
-    cmd =  "cd SigmaParticle/" + relevantTab + "&& ./deploy.sh refund"
-    print(os.popen(cmd).read())
-
 def copyResponse(self, relevantTab): #esponder operation
     updateDataBasedOnOpenTab(self)
     if os.path.isfile(relevantTab + "/ENC_response_commitment.atomicswap"):

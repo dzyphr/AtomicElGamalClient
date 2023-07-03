@@ -74,7 +74,6 @@ def AutoClaim(self, relevantTab):
             print("cant find path: " +  relevantTab + "/AutoClaim")
 
 def AutoRefund(self, relevantTab):
-    print("autoRefund loop start")
     if os.path.isfile(relevantTab + "/roleData.json") == True:
         role = json.loads(clean_file_open(relevantTab + "/roleData.json", "r"))["role"]
         if role == "responder":
@@ -96,6 +95,22 @@ def AutoRefund(self, relevantTab):
                                         return "Success"
                                     else:
                                         return "Fail"
+        if role == "initiator":
+            print("role is initiator...")
+            localChain = json.loads(clean_file_open(relevantTab +"/initiation.atomicswap", "r"))["localChain"]
+            if localChain == "Ergo":
+                print("chain is Ergo")
+                lockTime = getLocalLockTime(self, relevantTab)
+                print("lockTime = ", lockTime)
+                if lockTime != "":
+                    if type(lockTime) != type(None):
+                        if int(lockTime) <= 0 or int(lockTime) == 0:
+                            response = SigmaParticleRefund(self, relevantTab)
+                            print("refundResponse: \n", response)
+                            if "error" not in response:
+                                return "Success"
+                            else:
+                                return "Fail"
 
 def initiateSwap(self): #currently ambiguous as it facilitates initiator and responder swap start
     if self.isInitiator == True and (self.initiatorChain  == "NotSelected" or self.responderChain == "NotSelected"):
@@ -125,7 +140,7 @@ def initiateSwap(self): #currently ambiguous as it facilitates initiator and res
             if self.swapTabSet == False:
                 setSwapTab(self, True)
             else:
-                setSwapTab(self, False)
+                setSwapTab(self, False, relevantTab)
             if self.initiatorCommitment.get() != "":
                 writeInitiation(self, relevantTab)
                 decryptInitiation(self, relevantTab)

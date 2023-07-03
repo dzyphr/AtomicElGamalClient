@@ -198,6 +198,17 @@ def deploySigmaParticleAtomicSchorr(self, relevantTab):
                          stdout=devnull, stderr=devnull,
                          close_fds=True)
 
+def SigmaParticleRefund(self, relevantTab):
+    updateDataBasedOnOpenTab(self)
+    devnull = open(os.devnull, 'wb')
+    boxId = clean_file_open("SigmaParticle/" + relevantTab + "/boxId", "r")
+    echoBoxIdCMD = \
+            "echo '\natomicBox=" + boxId + "' >> SigmaParticle/" + relevantTab + "/.env"
+    os.popen(echoBoxIdCMD).read()
+
+    cmd =  "cd SigmaParticle/" + relevantTab + "&& ./deploy.sh refund"
+    return os.popen(cmd).read()
+
 
 def SigmaParticleAtomicSchnorr(self, relevantTab):
     updateDataBasedOnOpenTab(self)

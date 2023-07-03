@@ -62,7 +62,7 @@ def GUI_Arrange_Swap_Based(self): #here we are updating the GUI according to the
             self.swap_tab_view.pack()
 
 
-def setSwapTab(self, first):
+def setSwapTab(self, first, relevantTab=None):
     from swap import SwapTab, copyENCInit, inspectScalarLockContract, draftFinalSignature,\
             checkTreeForFinalization, deduce_x, getLocalLockTime, SigmaParticleRefund, updateDataBasedOnOpenTab,\
             AutoClaim
@@ -281,7 +281,6 @@ def setSwapTab(self, first):
         else:
             self.swap_tab_view.add(self.currentswapname)
             InitiatorGui()
-
     else:
         if first == True:
             self.swap_tab_view = SwapTab(master=self.frame, width=600, height=600)
@@ -289,8 +288,10 @@ def setSwapTab(self, first):
             self.swap_tab_view.pack()
             self.swapTabSet = True
         else:
-            self.swap_tab_view.add(self.currentswapname)
-
+            if relevantTab == None:
+                self.swap_tab_view.add(self.currentswapname)
+            else:
+                self.swap_tab_view.add(relevantTab)
 def SwapResponderGUI(self):
     from swap import copyResponse, deployAndFundScalarSwapContract, responderCheck, \
             getLocalLockTime, AtomicityRefund, updateDataBasedOnOpenTab, AutoClaim, \
