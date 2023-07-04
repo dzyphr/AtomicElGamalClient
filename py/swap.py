@@ -137,18 +137,18 @@ def initiateSwap(self): #currently ambiguous as it facilitates initiator and res
             #make sure active tab functions get swap name from current open tab
             self.currentswapname = determineSwapName()
             relevantTab = self.currentswapname
-            if self.swapTabSet == False:
-                setSwapTab(self, True)
-            else:
-                setSwapTab(self, False, relevantTab)
             if self.initiatorCommitment.get() != "":
                 writeInitiation(self, relevantTab)
                 decryptInitiation(self, relevantTab)
                 setCrossChainPubkeyDerived(self)
                 GUI_ReArrange_Chain_Based(self)
                 commitResponse(self, relevantTab)
-                SwapResponderGUI(self)
+#                SwapResponderGUI(self)
                 saveRole(self)
             else:
                 print("paste in the encrypted initiator commitment")
+            if self.swapTabSet == False:
+                setSwapTab(self, True)
+            else:
+                setSwapTab(self, False, relevantTab)
 

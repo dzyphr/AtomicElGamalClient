@@ -9,5 +9,6 @@ python3 -m pip install ergpy &&
 python3 -m pip install numpy &&
 python3 -m pip install libnum &&
 python3 -m pip install customtkinter && 
-python3 py/main.py 
+python3 py/main.py &&
+deactivate
 

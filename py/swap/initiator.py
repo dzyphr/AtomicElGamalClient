@@ -52,14 +52,12 @@ def initiatorStart(self, relevantTab): #initiator operation #start operations sh
 
 
 def copyENCInit(self, relevantTab):
-    updateDataBasedOnOpenTab(self)
     pyperclip.copy(clean_file_open(relevantTab + "/ENC_initiation.atomicswap", "r"))
     self.swap_tab_view.decryptResponderCommitmentButton.configure(state="normal")
 
     #make sure active tab functions get swap name from current open tab
 
 def inspectScalarLockContract(self, relevantTab): #initiator operation
-    updateDataBasedOnOpenTab(self)
     decryptResponse(self, relevantTab)
     j = json.loads(clean_file_open(relevantTab + "/DEC_response.atomicswap", "r"))
     chain = j["chain"]
@@ -80,7 +78,6 @@ def inspectScalarLockContract(self, relevantTab): #initiator operation
 
 
 def decryptResponse(self, relevantTab): #initiator operation
-    updateDataBasedOnOpenTab(self)
     if os.path.isfile(relevantTab + "/response.atomicswap"):
         print("response commitment already collected for ", relevantTab)
     else:
@@ -142,7 +139,6 @@ def draftFinalSignature(self, relevantTab): #create the final sig ss and pub val
         pyperclip.copy(encryption)
 
 def checkTreeForFinalization(self, relevantTab):
-    updateDataBasedOnOpenTab(self)
     tree = clean_file_open("SigmaParticle/" + relevantTab + "/ergoTree", "r")
     if clean_file_open(relevantTab + "/finalize.atomicswap", "r") == None:
         return print("finalization not created yet...")
@@ -167,7 +163,6 @@ def checkTreeForFinalization(self, relevantTab):
 
 
 def deduce_x(self, relevantTab):
-    updateDataBasedOnOpenTab(self)
 
     j = json.loads(clean_file_open(relevantTab + "/DEC_response.atomicswap", "r"))
     sr_ = j["sr_"]
@@ -199,7 +194,6 @@ def deploySigmaParticleAtomicSchorr(self, relevantTab):
                          close_fds=True)
 
 def SigmaParticleRefund(self, relevantTab):
-    updateDataBasedOnOpenTab(self)
     devnull = open(os.devnull, 'wb')
     boxId = clean_file_open("SigmaParticle/" + relevantTab + "/boxId", "r")
     echoBoxIdCMD = \
@@ -211,7 +205,6 @@ def SigmaParticleRefund(self, relevantTab):
 
 
 def SigmaParticleAtomicSchnorr(self, relevantTab):
-    updateDataBasedOnOpenTab(self)
     response = clean_file_open(relevantTab + "/DEC_response.atomicswap", "r")
     j = json.loads(response)
     krG = ast.literal_eval(j["krG"])
