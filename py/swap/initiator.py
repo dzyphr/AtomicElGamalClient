@@ -87,7 +87,8 @@ def decryptResponse(self, relevantTab): #initiator operation
                         "./ElGamal decryptFromPubKey " + relevantTab + "/response.atomicswap " + \
                         self.currentReceiver + ' ' + self.ElGamalKeyFileName
             decrypt = os.popen(decryptElGamal).read()
-            clean_file_open(relevantTab + "/DEC_response.atomicswap", "w", decrypt)
+            time.sleep(10)
+            clean_file_open(relevantTab + "/DEC_response.atomicswap", "w", decrypt, "FAILED TO WRITE DECRYPTED RESPONSE FILE")
             print(decrypt)
         else:
             print("enter the commitment from responder!")
@@ -144,22 +145,25 @@ def checkTreeForFinalization(self, relevantTab):
         return print("finalization not created yet...")
     else:
         j = json.loads(clean_file_open(relevantTab + "/finalize.atomicswap", "r"))
-        boxId = j["boxId"]
-        treeToAddrCmd = \
-                "cd SigmaParticle/treeToAddr && ./deploy.sh " + tree
-        addr = json.loads(os.popen(treeToAddrCmd).read())["address"]
-        print("addr: ", addr)
-        boxFilterCmd =\
-                "cd SigmaParticle/boxFilter &&" +\
-                "./deploy.sh " + addr + " " + boxId + " ../../" + relevantTab + "/atomicClaim"
-        print(os.popen(boxFilterCmd).read())
-        if os.path.isfile(relevantTab + "/atomicClaim_tx1"):
-            j = json.loads(clean_file_open(relevantTab + "/atomicClaim_tx1", "r"))
-            R4 = j["outputs"][0]["additionalRegisters"]["R4"]
-            clean_file_open(relevantTab + "/sr", "w", R4)
-            self.swap_tab_view.claim.configure(state="normal")
+        if "boxId" in j.keys():
+            boxId = j["boxId"]
+            treeToAddrCmd = \
+                    "cd SigmaParticle/treeToAddr && ./deploy.sh " + tree
+            addr = json.loads(os.popen(treeToAddrCmd).read())["address"]
+            print("addr: ", addr)
+            boxFilterCmd =\
+                    "cd SigmaParticle/boxFilter &&" +\
+                    "./deploy.sh " + addr + " " + boxId + " ../../" + relevantTab + "/atomicClaim"
+            print(os.popen(boxFilterCmd).read())
+            if os.path.isfile(relevantTab + "/atomicClaim_tx1"):
+                j = json.loads(clean_file_open(relevantTab + "/atomicClaim_tx1", "r"))
+                R4 = j["outputs"][0]["additionalRegisters"]["R4"]
+                clean_file_open(relevantTab + "/sr", "w", R4)
+                self.swap_tab_view.claim.configure(state="normal")
+            else:
+                print("no atomic claim transactions found")
         else:
-            print("no atomic claim transactions found")
+            print("boxID not created yet")
 
 
 def deduce_x(self, relevantTab):

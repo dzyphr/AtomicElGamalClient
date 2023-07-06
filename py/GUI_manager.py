@@ -333,25 +333,31 @@ def setSwapTab(self, first, relevantTab=None):
 
 
     def goCopyENCInit():
+        updateDataBasedOnOpenTab(self)
         copyENCInit(self, self.currentswapname)
 
     def goInspectScalarLockContract():
+        updateDataBasedOnOpenTab(self)
         t = threading.Thread(target=inspectScalarLockContract, args=(self, self.currentswapname))
         t.start()
 
     def goDraftFinalSignature():
+        updateDataBasedOnOpenTab(self)
         t = threading.Thread(target=draftFinalSignature, args=(self, self.currentswapname))
         t.start()
 
     def goCheckTreeForFinalization():
+        updateDataBasedOnOpenTab(self)
         t = threading.Thread(target=checkTreeForFinalization, args=(self, self.currentswapname))
         t.start()
 
     def goDeduce_x():
+        updateDataBasedOnOpenTab(self)
         t = threading.Thread(target=deduce_x, args=(self, self.currentswapname))
         t.start()
 
     def goCheckLockTime():
+        updateDataBasedOnOpenTab(self)
         lockTime = getLocalLockTime(self, self.currentswapname)
         if lockTime != None: 
             if int(lockTime) > 0:
