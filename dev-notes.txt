@@ -1,0 +1,6 @@
+ONLY use UpdateDataBasedOnTab from GUI manager or any other direct GUI source. This will ensure there is no issue with automation.
+var Relevant tab will handle lifetime extention of this value, 
+we can store it in relevantTab and only update exactly when there is a GUI call.
+
+ALSO use self.swap_tab_view.tab(relevantTab).children in any GUI related functions instead of directly calling self.swap_tab_view
+direct calls will occasionaly glitch when automated due to untimely tab switches 

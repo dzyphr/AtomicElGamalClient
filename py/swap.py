@@ -55,21 +55,17 @@ def AutoClaim(self, relevantTab):
                                             return deduce_x(self, relevantTab)
                                             break
                                 except:
-                                    print("failure: retrying in five...")
-                                    time.sleep(5)
-                                    continue
+#                                    print("failure: retrying in five...")
+#                                    time.sleep(5)
+                                    break
                             else:
-                                print("atomicClaim not found, rechecking in 5...")
+                                print("atomicClaim file not found, rechecking tree...")
                                 t = threading.Thread(target=checkTreeForFinalization, args=(self, relevantTab))
                                 t.start()
                                 time.sleep(5)
-                                continue
-
-
-
-
+                                break
                 else:
-                    time.sleep(5)
+                    break
         else:
             print("cant find path: " +  relevantTab + "/AutoClaim")
 
@@ -95,22 +91,26 @@ def AutoRefund(self, relevantTab):
                                         return "Success"
                                     else:
                                         return "Fail"
-        if role == "initiator":
+        if role == "initiator": #TODO
             print("role is initiator...")
             localChain = json.loads(clean_file_open(relevantTab +"/initiation.atomicswap", "r"))["localChain"]
             if localChain == "Ergo":
                 print("chain is Ergo")
-                lockTime = getLocalLockTime(self, relevantTab)
-                print("lockTime = ", lockTime)
-                if lockTime != "":
-                    if type(lockTime) != type(None):
-                        if int(lockTime) <= 0 or int(lockTime) == 0:
-                            response = SigmaParticleRefund(self, relevantTab)
-                            print("refundResponse: \n", response)
-                            if "error" not in response:
-                                return "Success"
-                            else:
-                                return "Fail"
+                if os.path.isfile("SigmaParticle/" + relevantTab + "/boxId"):
+                    lockTime = getLocalLockTime(self, relevantTab)
+                    print("lockTime = ", lockTime)
+                    if lockTime != "":
+                        if type(lockTime) != type(None):
+                            if int(lockTime) <= 0 or int(lockTime) == 0:
+                                response = SigmaParticleRefund(self, relevantTab)
+                                print("refundResponse: \n", response)
+                                if "error" not in response:
+                                    return "Success"
+                                else:
+                                    return "Fail"
+                else:
+                    print("boxID not created yet")
+
 
 def initiateSwap(self): #currently ambiguous as it facilitates initiator and responder swap start
     if self.isInitiator == True and (self.initiatorChain  == "NotSelected" or self.responderChain == "NotSelected"):

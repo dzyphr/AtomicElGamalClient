@@ -63,6 +63,9 @@ def GUI_Arrange_Swap_Based(self): #here we are updating the GUI according to the
 
 
 def setSwapTab(self, first, relevantTab=None):
+    from swap import copyResponse, deployAndFundScalarSwapContract, responderCheck, \
+                getLocalLockTime, AtomicityRefund, updateDataBasedOnOpenTab, AutoClaim, \
+                AutoRefund, responderClaim
     from swap import SwapTab, copyENCInit, inspectScalarLockContract, draftFinalSignature,\
             checkTreeForFinalization, deduce_x, getLocalLockTime, SigmaParticleRefund, updateDataBasedOnOpenTab,\
             AutoClaim
@@ -235,7 +238,7 @@ def setSwapTab(self, first, relevantTab=None):
 
     def goAutoClaimTHREAD_RESPONDER():
         updateDataBasedOnOpenTab(self)
-        t = threading.Thread(target=goAutoClaim)
+        t = threading.Thread(target=goAutoClaimRESPONDER)
         t.start()
 
     def SwapResponderGUI(self):
@@ -376,12 +379,18 @@ def setSwapTab(self, first, relevantTab=None):
     def goAutoClaimINITIATOR():
         updateDataBasedOnOpenTab(self)
         relevantTab = self.currentswapname
+        tabObj = self.swap_tab_view.tab(relevantTab).children
         while True:
+            print("trying autorefund...")
+            refundStatus = AutoRefund(self, relevantTab)
+            if type(refundStatus) != type(None) and refundStatus == "Success":
+                break
+            time.sleep(5)
             if os.path.isfile(relevantTab + "/AutoClaim") == False:
                 print("no autoclaim file found yet creating one")
-                if self.swap_tab_view.autoClaimCheckbox.get() == 1:
+                if tabObj["!ctkcheckbox"].get() == 1:
                     clean_file_open(relevantTab + "/AutoClaim", "w", "true", "AutoClaim file not writable")
-                    self.swap_tab_view.claim.configure(state="disabled")
+#                    self.swap_tab_view.claim.configure(state="disabled") #TODO source this from tabObj for now dont use
                     r = AutoClaim(self, relevantTab)
                     if type(r) == type(None):
                         continue
@@ -392,13 +401,13 @@ def setSwapTab(self, first, relevantTab=None):
                             break
                     else:
                         break
-            if os.path.isfile(relevantTab + "/AutoClaim") == True:
+            elif os.path.isfile(relevantTab + "/AutoClaim") == True:
                 print(" autoclaim file found ")
                 autoClaimFile = clean_file_open(relevantTab + "/AutoClaim", "r")
-                if self.swap_tab_view.autoClaimCheckbox.get() == 1 and autoClaimFile == "false":
+                if tabObj["!ctkcheckbox"].get() == 1 and autoClaimFile == "false":
                     clean_file_open(relevantTab + "/AutoClaim", "w", "true", "AutoClaim file not writable")
                     print("autoclaim ON")
-                    self.swap_tab_view.claim.configure(state="disabled")
+#                    self.swap_tab_view.claim.configure(state="disabled") #TODO source this from tabObj for now dont use
                     r = AutoClaim(self, relevantTab)
                     if type(r) == type(None):
                         continue
@@ -409,12 +418,12 @@ def setSwapTab(self, first, relevantTab=None):
                             break
                     else:
                         break
-                if self.swap_tab_view.autoClaimCheckbox.get() == 0 and autoClaimFile == "true":
+                if tabObj["!ctkcheckbox"].get() == 0 and autoClaimFile == "true":
                     print("autoclaim OFF")
                     clean_file_open(relevantTab + "/AutoClaim", "w", "false", "AutoClaim file not writable")
-                    self.swap_tab_view.claim.configure(state="normal")
+#                    self.swap_tab_view.claim.configure(state="normal") #TODO source this from tabObj for now dont use
                     break
-                if self.swap_tab_view.autoClaimCheckbox.get() == 1 and autoClaimFile == "true":
+                if tabObj["!ctkcheckbox"].get() == 1 and autoClaimFile == "true":
                     print("autoclaim ON")
                     r = AutoClaim(self, relevantTab)
                     if type(r) == type(None):
@@ -426,8 +435,6 @@ def setSwapTab(self, first, relevantTab=None):
                             break
                     else:
                         break
-
-            time.sleep(5)
 
 
 
