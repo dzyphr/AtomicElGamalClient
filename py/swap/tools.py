@@ -97,7 +97,7 @@ def getLocalLockTime(self, relevantTab): #for refunds #returns lock time in # of
                 f = open(relevantTab + "/localChain_currentHeight")
                 currentHeight = f.read()
                 f.close()
-                if currentHeight.isnumeric() == True && lockHeight.isnumeric() == True:
+                if currentHeight.isnumeric() == True and lockHeight.isnumeric() == True:
                     if int(currentHeight) <= int(lockHeight):
                         return int(lockHeight) - int(currentHeight) + 1 #plus 1 because currently contract checks for GREATER THAN lock height
                     else:
