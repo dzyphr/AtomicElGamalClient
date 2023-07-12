@@ -361,9 +361,9 @@ def setSwapTab(self, first, relevantTab=None):
         lockTime = getLocalLockTime(self, self.currentswapname)
         if lockTime != None: 
             if int(lockTime) > 0:
-                self.swap_tab_view.RefundLockTimeLabel.configure(text="Refund Lock Time Remaining: " + str(lockTime))
+                self.swap_tab_view.lockTimeLabel.configure(text="Refund Lock Time Remaining: " + str(lockTime))
             else:
-                self.swap_tab_view.RefundLockTimeLabel.configure(text="Refund Lock Time Remaining: 0")
+                self.swap_tab_view.lockTimeLabel.configure(text="Refund Lock Time Remaining: 0")
                 self.swap_tab_view.RefundButton.configure(state="normal")
         else:
             print("cannot check locktime, contract not confirmed on chain yet?")
