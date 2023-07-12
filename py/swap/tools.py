@@ -103,7 +103,7 @@ def getLocalLockTime(self, relevantTab): #for refunds #returns lock time in # of
                     else:
                         return 0
                 else:
-                    return 0
+                    return None
             else:
                 print("cant find path:", relevantTab + "/localChain_lockHeight", "\n\n box not uploaded yet or invalid ")
     if role == "responder":
