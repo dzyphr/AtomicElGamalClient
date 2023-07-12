@@ -55,8 +55,6 @@ def AutoClaim(self, relevantTab):
                                             return deduce_x(self, relevantTab)
                                             break
                                 except:
-#                                    print("failure: retrying in five...")
-#                                    time.sleep(5)
                                     break
                             else:
                                 print("atomicClaim file not found, rechecking tree...")

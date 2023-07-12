@@ -36,6 +36,11 @@ class GUI(customtkinter.CTk):
             genNewElGamalKey(self)                                     
         newElGamalKeyButton = customtkinter.CTkButton(master=self.frame, text="New ElGamal Key", command=goGenElGamalKey)
         newElGamalKeyButton.pack(pady=2, padx=2) #ElGamal KeyGen Button
+        
+        def goCopyElGamalPublicKey():
+            copyElGamalPublicKey(self)
+        copyElGamalPublicKeyButton = customtkinter.CTkButton(master=self.frame, text="Copy", command=goCopyElGamalPublicKey)
+        copyElGamalPublicKeyButton.pack(pady=2, padx=2) #Copy Current ElGamal Key
 
         title = customtkinter.CTkLabel( \
             master=self.frame, \

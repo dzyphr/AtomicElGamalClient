@@ -2,7 +2,10 @@ import time
 import os
 import json
 from threading import *
+import pyperclip
 
+def copyElGamalPublicKey(self):
+    pyperclip.copy(self.ElGamalPublicKey)
 
 def dirElGamalKeysGetLast(self):
     Keys = []

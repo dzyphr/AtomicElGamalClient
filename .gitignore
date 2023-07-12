@@ -21,6 +21,7 @@ SwapKeyManager/py/__pycache__/*
 *.atom
 swap*/
 !py/swap/
+p2_testfolder
 solidity-flattener/*
 Atomicity/solidity-flattener/*
 Atomicity/AtomicMultiSigSecp256k1/.idea/*
