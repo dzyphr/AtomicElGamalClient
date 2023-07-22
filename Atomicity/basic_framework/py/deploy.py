@@ -539,6 +539,7 @@ if args_n > 1:
             print("enter address, optional: filepath as follup arguments")
 
     elif sys.argv[1] == "verify":
+        time.sleep(30)
         rpc, chain_id, senderAddr, senderPrivKey, url = pickChain()
         flat = checkMultiFile()
         contractAddr = grabExistingContractAddr()
@@ -558,7 +559,7 @@ if args_n > 1:
             abi, bytecode = exportBytecode(compilation)
             contractAddr = uploadContract(rpc, abi, bytecode, gas=gas, gasModExtra=gasModExtra)
             APISolcV = getSOLCVersion()
-            verify(flat, contractAddr, APISolcV, url, True)
+#            verify(flat, contractAddr, APISolcV, url, True)
             exit()
 
 else:
@@ -569,5 +570,5 @@ else:
     abi, bytecode = exportBytecode(compilation)
     contractAddr = uploadContract(rpc, abi, bytecode)
     APISolcV = getSOLCVersion()
-    verify(flat, contractAddr, APISolcV, url, True)
+#    verify(flat, contractAddr, APISolcV, url, True)
     exit()

@@ -186,6 +186,8 @@ def deployAndFundScalarSwapContract(self, relevantTab): #responder operation
                             ElGamal = os.popen(runElGamal).read()
             else:
                 print("addr should be output instead got:", addr)
+        verify = "cd Atomicity/" + relevantTab + "/ && python3 py/deploy.py verify"
+        os.popen(verify).read()
     else:
         print("enter value to spend to contract before deploying (to prevent manual overspending)")
 
